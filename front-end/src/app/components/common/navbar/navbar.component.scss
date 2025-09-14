@@ -1,0 +1,69 @@
+@import "colors";
+
+.navbar {
+  background-color: $background2;
+  color: $pale-text;
+  height: 100%;
+}
+
+.sidebar {
+  background-color: $background2;
+  color: $pale-text;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.sidebar-title {
+  cursor: pointer;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-left: 0.8rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.sidebar-line {
+  width: 100%;
+  border: 1px solid #303030;
+  margin-bottom: 2.2rem;
+}
+
+p {
+  display: flex;
+  align-items: center;
+  margin: 0.6rem 0;
+  font-size: 1.1rem;
+  padding-left: 1rem;
+  transition: color 0.3s ease;
+  cursor: pointer
+}
+
+p:hover {
+  color: $text;
+}
+
+.active-link {
+  color: $text;
+}
+
+mat-icon {
+  margin-right: 0.5rem;
+}
+
+.sudo {
+  color: $text;
+}
+
+.box {
+  color: $primary;
+}
+
+.logout {
+  margin-top: auto !important;
+  margin-bottom: 42px;
+}
