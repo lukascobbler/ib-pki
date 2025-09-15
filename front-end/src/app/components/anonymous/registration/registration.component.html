@@ -1,1 +1,56 @@
-<p>registration works!</p>
+<div>
+  <span class="sidebar-banner">
+    <img priority ngSrc="/banner.svg" alt="" fill>
+  </span>
+
+  <div class="container">
+    <p class="large-text">Registration</p>
+
+    <form class="register-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Surname</mat-label>
+        <input matInput />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Organization</mat-label>
+        <input matInput />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>E-mail</mat-label>
+        <input matInput />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" />
+      </mat-form-field>
+
+      <div class="password-strength-meter">
+        <div *ngFor="let _ of [].constructor(password_strength)" class="blue"></div>
+        <div *ngFor="let _ of [].constructor(4-password_strength)" class="white"></div>
+      </div>
+
+      <div class="password-strength-text">
+        <p *ngIf="password_strength === 0" class="white-text">Unsafe</p>
+        <p *ngIf="password_strength === 1" class="white-text">Weak</p>
+        <p *ngIf="password_strength === 2" class="white-text">Okay</p>
+        <p *ngIf="password_strength === 3" class="white-text">Good</p>
+        <p *ngIf="password_strength === 4" class="white-text">Strong</p>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Repeat password</mat-label>
+        <input matInput type="password" />
+      </mat-form-field>
+    </form>
+
+    <button class="blue-button button">Register</button>
+  </div>
+</div>
