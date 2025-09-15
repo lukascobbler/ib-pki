@@ -1,0 +1,47 @@
+@import "colors";
+
+.table-header {
+  min-width: 70vw;
+  padding-right: 16px;
+}
+
+.table-body-scroll {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 70vw;
+  padding-right: 8px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $edge2;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: $accent;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+mat-header-cell {
+  font-size: large;
+  font-weight: bold;
+}
+
+mat-header-row {
+  position: sticky;
+  top: 0;
+  background-color: $background2;
+  z-index: 10;
+}
+
+mat-cell {
+  font-size: small;
+}
