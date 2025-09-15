@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="table-header">
+  <div class="table-header table-width">
     <mat-table [dataSource]="certificatesDataSource">
 
       <ng-container matColumnDef="issuedBy">
@@ -34,7 +34,7 @@
     </mat-table>
   </div>
 
-  <div class="table-body-scroll">
+  <div class="table-body-scroll table-width">
     <mat-table [dataSource]="certificatesDataSource">
       <ng-container matColumnDef="issuedBy">
         <mat-cell class="issuedBy" *matCellDef="let element">

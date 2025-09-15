@@ -9,6 +9,14 @@
   background-color: $background;
 }
 
+.table-header {
+  padding-right: 16px;
+}
+
+.table-width {
+  min-width: 70vw;
+}
+
 .container {
   background-color: $background2;
   padding: 20px;

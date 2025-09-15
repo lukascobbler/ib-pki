@@ -1,0 +1,84 @@
+@import "table";
+@import "buttons";
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: $background;
+}
+
+.table-header {
+  padding-right: 8px;
+}
+
+.table-width {
+  min-width: 40vw;
+}
+
+.container {
+  background-color: $background2;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.fp {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.create-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 10px 40px;
+
+  button {
+    height: 60px;
+    width: 250px;
+  }
+}
+
+.align-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+// custom width
+
+mat-header-cell.name,
+mat-cell.name {
+  flex: 0 0 15%;
+}
+
+mat-header-cell.surname,
+mat-cell.surname {
+  flex: 0 0 15%;
+}
+
+mat-header-cell.organization,
+mat-cell.organization {
+  flex: 0 0 20%;
+}
+
+mat-header-cell.email,
+mat-cell.email {
+  flex: 0 0 40%;
+}
+
+mat-header-cell.actions,
+mat-cell.actions {
+  flex: 0 0 10%;
+}

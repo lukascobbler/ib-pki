@@ -1,19 +1,19 @@
 @import "colors";
 
-::ng-deep .blue-button, ::ng-deep .gray-button {
+.blue-button, .gray-button {
   font-family: Roboto, Arial, sans-serif;
   letter-spacing: 0.25px;
   padding: 8px 16px;
   font-weight: 500;
   font-size: 14px;
   margin-bottom: 20px;
-  border-radius: 8px;
+  border-radius: 16px;
   border: none;
   color: white;
   cursor: pointer;
 }
 
-::ng-deep .blue-button {
+.blue-button {
   background-color: $primary;
 
   &:hover {
@@ -21,7 +21,7 @@
   }
 }
 
-::ng-deep .gray-button {
+.gray-button {
   background-color: $edge2;
 
   &:hover {
@@ -29,14 +29,24 @@
   }
 }
 
-::ng-deep .blue-button:disabled {
+.blue-button:disabled {
   background-color: $accent2;
   color: $pale-text;
   border-color: $pale-text;
 }
 
-::ng-deep .gray-button:disabled {
+.gray-button:disabled {
   background-color: $accent2;
   color: $pale-text;
   border-color: $pale-text;
+}
+
+.close-button {
+  position: absolute;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  left: 1.5rem;
+  top: 2rem;
 }
