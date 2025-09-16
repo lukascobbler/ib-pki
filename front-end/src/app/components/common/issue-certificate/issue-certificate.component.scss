@@ -45,7 +45,7 @@
   }
 
   .extensions-container {
-    max-height: 30vh;
+    max-height: 20vh;
     overflow-y: auto;
     overflow-x: hidden;
     display: flex;
@@ -53,6 +53,7 @@
     gap: 20px;
     padding-right: 8px;
     padding-top: 10px;
+    padding-bottom: 10px;
     height: auto;
 
     &::-webkit-scrollbar {
