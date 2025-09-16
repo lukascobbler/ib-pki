@@ -25,6 +25,12 @@ services:
       - postgres
     volumes:
       - pgadmin:/var/lib/pgadmin
+  
+  smtp4dev:
+    image: rnwood/smtp4dev
+    container_name: sudobox-smtp
+    ports: ["3000:80","2525:25"]
+
 
 volumes:
   pgdata:

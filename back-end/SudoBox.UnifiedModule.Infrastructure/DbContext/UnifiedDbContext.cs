@@ -14,11 +14,13 @@ public class UnifiedDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<VerificationToken> VerificationTokens => Set<VerificationToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema(_schema);
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new VerificationTokenEntityTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }
