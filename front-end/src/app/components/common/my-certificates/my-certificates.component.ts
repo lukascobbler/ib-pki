@@ -13,7 +13,8 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {
   CaAddCertificateDialogComponent
 } from '../../admin/ca-user-management/ca-add-certificate-dialog/ca-add-certificate-dialog.component';
-import {RevokeCertificateDialogComponent} from './revoke-certificate-dialog/revoke-certificate-dialog.component';
+import {RevokeCertificateDialogComponent} from '../revoke-certificate-dialog/revoke-certificate-dialog.component';
+import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
 
 @Component({
   selector: 'app-my-certificates',
@@ -238,6 +239,13 @@ export class MyCertificatesComponent {
   openRevokeCertificate() {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {
       width: '30rem'
+    });
+  }
+
+  openCertificateDetails() {
+    const dialogRef: MatDialogRef<CertificateDetailsDialogComponent, null> = this.dialog.open(CertificateDetailsDialogComponent, {
+      width: '700px',
+      maxWidth: '70vw'
     });
   }
 }

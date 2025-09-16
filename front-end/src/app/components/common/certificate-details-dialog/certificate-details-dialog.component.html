@@ -1,1 +1,10 @@
-<p>certificate-details-dialog works!</p>
+<div class="container">
+  <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
+    <span class="material-symbols-rounded">close</span>
+  </button>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Certificate details</mat-label>
+    <textarea readonly [scrollTop]="0" rows="20" class="textarea" matInput [value]="certificateDetails" tabindex="-1"></textarea>
+  </mat-form-field>
+</div>
