@@ -11,9 +11,6 @@ import {
 import {MatIconButton} from '@angular/material/button';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {
-  RevokeCertificateDialogComponent
-} from '../../common/revoke-certificate-dialog/revoke-certificate-dialog.component';
-import {
   EditCertificateRequestDialogComponent
 } from './edit-certificate-request-dialog/edit-certificate-request-dialog.component';
 

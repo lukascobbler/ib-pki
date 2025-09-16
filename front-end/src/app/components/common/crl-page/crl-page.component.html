@@ -1,1 +1,69 @@
-<p>crl-list works!</p>
+<div class="container">
+  <div class="table-header table-width">
+    <mat-table [dataSource]="certificatesDataSource">
+
+      <ng-container matColumnDef="issuedBy">
+        <mat-header-cell class="issuedBy" *matHeaderCellDef><b>Issued by (DN)</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="issuedTo">
+        <mat-header-cell class="issuedTo" *matHeaderCellDef><b>Issued to (DN)</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="revocationReason">
+        <mat-header-cell class="revocationReason" *matHeaderCellDef><b>Reason for revocation</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-header-cell class="fingerprint" *matHeaderCellDef><b>Fingerprint</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    </mat-table>
+  </div>
+
+  <div class="table-body-scroll table-width">
+    <mat-table [dataSource]="certificatesDataSource">
+      <ng-container matColumnDef="issuedBy">
+        <mat-cell class="issuedBy" *matCellDef="let element">
+          {{ element.issuedBy }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="issuedTo">
+        <mat-cell class="issuedTo" *matCellDef="let element">
+          {{ element.issuedTo }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="revocationReason">
+        <mat-cell class="revocationReason" *matCellDef="let element">
+          {{ element.revocationReason }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-cell class="fingerprint" *matCellDef="let element">
+          <p class="fp">{{ element.fingerprint }}</p>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-cell class="actions" *matCellDef="let element">
+          <button (click)="openCertificateDetails()" mat-icon-button>
+            <span class="material-symbols-rounded">quick_reference_all</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">download</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>

@@ -10,9 +10,6 @@ import {
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {
-  CaAddCertificateDialogComponent
-} from '../../admin/ca-user-management/ca-add-certificate-dialog/ca-add-certificate-dialog.component';
 import {RevokeCertificateDialogComponent} from '../revoke-certificate-dialog/revoke-certificate-dialog.component';
 import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
 
