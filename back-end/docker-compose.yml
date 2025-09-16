@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: sudobox-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sudoBoxDb
+    ports:
+      - "5433:5432" 
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: sudobox-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com  
+      PGADMIN_DEFAULT_PASSWORD: admin        
+      PGADMIN_CONFIG_SERVER_MODE: "False"  
+      # PGADMIN_LISTEN_PORT: "80"                 # default
+    ports:
+      - "5050:80"   # open pgAdmin at http://localhost:5050
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+volumes:
+  pgdata:
+  pgadmin:

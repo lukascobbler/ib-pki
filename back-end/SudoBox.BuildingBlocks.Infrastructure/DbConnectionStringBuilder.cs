@@ -1,4 +1,4 @@
-namespace GymTracker.BuildingBlocks.Infrastructure;
+namespace Sudobox.BuildingBlocks.Infrastructure;
 
 public class DbConnectionStringBuilder
 {
