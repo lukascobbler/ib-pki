@@ -17,7 +17,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent implements OnInit{
-  currentUserRole: string = 'EE_USER'; // 'EE_USER', 'CA_USER', or 'ADMIN'
+  currentUserRole: string = 'CA_USER'; // 'EE_USER', 'CA_USER', or 'ADMIN'
   sidebarItems: any[];
 
   constructor() {

@@ -1,1 +1,76 @@
-<p>ca-certificate-requests works!</p>
+<div class="container">
+  <div class="table-header table-width">
+    <mat-table [dataSource]="certificateRequestsDataSource">
+
+      <ng-container matColumnDef="subject">
+        <mat-header-cell class="subject" *matHeaderCellDef><b>Subject (CN)</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="organization">
+        <mat-header-cell class="organization" *matHeaderCellDef><b>Organization</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="organizationUnit">
+        <mat-header-cell class="organizationUnit" *matHeaderCellDef><b>Organization unit</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="submittedOn">
+        <mat-header-cell class="submittedOn" *matHeaderCellDef><b>Submitted on</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-header-cell class="fingerprint" *matHeaderCellDef><b>Fingerprint</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    </mat-table>
+  </div>
+
+  <div class="table-body-scroll table-width">
+    <mat-table [dataSource]="certificateRequestsDataSource">
+      <ng-container matColumnDef="subject">
+        <mat-cell class="subject" *matCellDef="let element">
+          {{ element.subject }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="organization">
+        <mat-cell class="organization" *matCellDef="let element">
+          {{ element.organization }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="organizationUnit">
+        <mat-cell class="organizationUnit" *matCellDef="let element">
+          {{ element.organizationUnit }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="submittedOn">
+        <mat-cell class="submittedOn" *matCellDef="let element">
+          {{ element.submittedOn }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-cell class="fingerprint" *matCellDef="let element">
+          <p class="fp">{{ element.fingerprint }}</p>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-cell class="actions" *matCellDef="let element">
+          <button (click)="openEditCertificate()" mat-icon-button>
+            <span class="material-symbols-rounded">quick_reference_all</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>

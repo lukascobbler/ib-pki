@@ -1,1 +1,106 @@
-<p>edit-certificate-request-dialog works!</p>
+<div class="certificate-container">
+  <button (click)="onNoClick()" class="close-button" mat-icon-button tabindex="-1">
+    <span class="material-symbols-rounded">close</span>
+  </button>
+
+  <form class="certificate-form">
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Certificate type</mat-label>
+        <mat-select>
+          <mat-option value="signing">Signing certificate</mat-option>
+          <mat-option value="encryption">Encryption certificate</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Common Name (CN)</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Organization (O)</mat-label>
+        <input matInput />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Organizational Unit (OU)</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <mat-label>Email Address (E)</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Country (C)</mat-label>
+        <input matInput maxlength="2" />
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline">
+        <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
+        <mat-label>Not Before</mat-label>
+        <input matInput [matDatepicker]="pickerAfter">
+        <mat-datepicker-toggle matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
+        <mat-datepicker #pickerAfter></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Not After</mat-label>
+        <input matInput [matDatepicker]="pickerBefore">
+        <mat-datepicker-toggle matSuffix [for]="pickerBefore"></mat-datepicker-toggle>
+        <mat-datepicker #pickerBefore></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <div class="extensions-container">
+      <div class="row extension-row" *ngFor="let ext of extensions; let i = index">
+        <mat-form-field appearance="outline">
+          <mat-label>Extension key</mat-label>
+          <mat-select [(ngModel)]="ext.key" name="extKey{{i}}">
+            <mat-option value="keyUsage">keyUsage</mat-option>
+            <mat-option value="basicConstraints">basicConstraints</mat-option>
+            <mat-option value="subjectAltName">dodati jos opcija, dinamicki</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="ext.type === 0" appearance="outline">
+          <mat-label>Extension value</mat-label>
+          <input matInput [(ngModel)]="ext.value" name="extValue{{i}}" />
+        </mat-form-field>
+
+        <mat-form-field *ngIf="ext.type === 1" appearance="outline">
+          <mat-label>Extension value</mat-label>
+          <mat-select [(ngModel)]="ext.value" name="extKey{{i}}">
+            <mat-option value="aa">dodati opcije za predefinisane vrednosti</mat-option>
+            <mat-option value="bb">basicConstraints</mat-option>
+            <mat-option value="cc">dodati jos opcija, dinamicki</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button (click)="removeExtension(i)">
+          <span class="material-symbols-rounded">do_not_disturb_on</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="blue-button large-btn" type="button" (click)="addExtension()">
+        Add extension
+      </button>
+      <button class="blue-button large-btn" type="button">
+        Reject
+      </button>
+      <button class="blue-button large-btn" type="submit">
+        Approve
+      </button>
+    </div>
+
+  </form>
+</div>

@@ -74,10 +74,10 @@
 
       <ng-container matColumnDef="actions">
         <mat-cell class="actions" *matCellDef="let element">
-          <button mat-icon-button>
+          <button (click)="openRevokeCertificate()" mat-icon-button>
             <span class="material-symbols-rounded">block</span>
           </button>
-          <button mat-icon-button>
+          <button (click)="openCertificateDetails()" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
           </button>
           <button mat-icon-button>
