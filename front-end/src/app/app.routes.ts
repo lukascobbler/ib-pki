@@ -8,6 +8,7 @@ import {MyCertificatesComponent} from './components/common/my-certificates/my-ce
 import {RequestCertificateComponent} from './components/ee-user/request-certificate/request-certificate.component';
 import {CertificateRequestsComponent} from './components/ca-user/certificate-requests/certificate-requests.component';
 import {SignedCertificatesComponent} from './components/ca-user/signed-certificates/signed-certificates.component';
+import {CrlPageComponent} from './components/common/crl-page/crl-page.component';
 
 export const routes: Routes = [
   {path: "login", component: LoginComponent},
@@ -18,5 +19,6 @@ export const routes: Routes = [
   {path: "my-certificates", component: MyCertificatesComponent},
   {path: "request-certificate", component: RequestCertificateComponent},
   {path: "certificate-requests", component: CertificateRequestsComponent},
-  {path: "signed-certificates", component: SignedCertificatesComponent}
+  {path: "signed-certificates", component: SignedCertificatesComponent},
+  {path: "crl", component: CrlPageComponent}
 ];
