@@ -1,0 +1,82 @@
+<div class="container">
+  <div class="table-header table-width">
+    <mat-table [dataSource]="certificatesDataSource">
+
+      <ng-container matColumnDef="issuedBy">
+        <mat-header-cell class="issuedBy" *matHeaderCellDef><b>Issued by (DN)</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell class="status" *matHeaderCellDef><b>Status</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="validFrom">
+        <mat-header-cell class="validFrom" *matHeaderCellDef><b>Valid from</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="validUntil">
+        <mat-header-cell class="validUntil" *matHeaderCellDef><b>Valid until</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-header-cell class="fingerprint" *matHeaderCellDef><b>Fingerprint</b></mat-header-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell class="actions" *matHeaderCellDef></mat-header-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    </mat-table>
+  </div>
+
+  <div class="table-body-scroll table-width">
+    <mat-table [dataSource]="certificatesDataSource">
+      <ng-container matColumnDef="issuedBy">
+        <mat-cell class="issuedBy" *matCellDef="let element">
+          {{ element.issuedBy }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-cell class="status" *matCellDef="let element">
+          {{ element.status }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="validFrom">
+        <mat-cell class="validFrom" *matCellDef="let element">
+          {{ element.validFrom }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="validUntil">
+        <mat-cell class="validUntil" *matCellDef="let element">
+          {{ element.validUntil }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="fingerprint">
+        <mat-cell class="fingerprint" *matCellDef="let element">
+          <p class="fp">{{ element.fingerprint }}</p>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-cell class="actions" *matCellDef="let element">
+          <button (click)="openRevokeCertificate()" mat-icon-button>
+            <span class="material-symbols-rounded">block</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">quick_reference_all</span>
+          </button>
+          <button mat-icon-button>
+            <span class="material-symbols-rounded">download</span>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+</div>
