@@ -6,6 +6,8 @@ import {LoginComponent} from './components/anonymous/login/login.component';
 import {RegistrationComponent} from './components/anonymous/registration/registration.component';
 import {MyCertificatesComponent} from './components/common/my-certificates/my-certificates.component';
 import {RequestCertificateComponent} from './components/ee-user/request-certificate/request-certificate.component';
+import {CertificateRequestsComponent} from './components/ca-user/certificate-requests/certificate-requests.component';
+import {SignedCertificatesComponent} from './components/ca-user/signed-certificates/signed-certificates.component';
 
 export const routes: Routes = [
   {path: "login", component: LoginComponent},
@@ -14,5 +16,7 @@ export const routes: Routes = [
   {path: "all-certificates", component: AllCertificatesComponent},
   {path: "manage-ca-users", component: CaUserManagementComponent},
   {path: "my-certificates", component: MyCertificatesComponent},
-  {path: "request-certificate", component: RequestCertificateComponent}
+  {path: "request-certificate", component: RequestCertificateComponent},
+  {path: "certificate-requests", component: CertificateRequestsComponent},
+  {path: "signed-certificates", component: SignedCertificatesComponent}
 ];
