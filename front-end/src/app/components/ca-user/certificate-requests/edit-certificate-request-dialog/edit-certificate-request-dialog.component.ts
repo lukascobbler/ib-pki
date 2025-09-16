@@ -25,8 +25,7 @@ import {MatDialogContent, MatDialogRef} from '@angular/material/dialog';
     MatSelect,
     NgForOf,
     NgIf,
-    ReactiveFormsModule,
-    MatDialogContent
+    ReactiveFormsModule
   ],
   templateUrl: './edit-certificate-request-dialog.component.html',
   styleUrl: './edit-certificate-request-dialog.component.scss'
