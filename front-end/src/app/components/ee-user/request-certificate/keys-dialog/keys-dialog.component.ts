@@ -1,12 +1,32 @@
-import { Component } from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatIconButton} from '@angular/material/button';
+import {MatDialogRef} from '@angular/material/dialog';
+import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
+import {MatInput} from '@angular/material/input';
 
 @Component({
   selector: 'app-keys-dialog',
   standalone: true,
-  imports: [],
+  imports: [
+    MatFormField,
+    MatIconButton,
+    CdkCopyToClipboard,
+    MatLabel,
+    MatInput
+  ],
   templateUrl: './keys-dialog.component.html',
   styleUrl: './keys-dialog.component.scss'
 })
 export class KeysDialogComponent {
+  @Input() privateKey: string = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/1i8fVR5uYhg mz4BipMlGScmDgGqkS5tNfNPSOx7Sb6mbT/zP/6kCqOKlctd2QWj5VdY2bY9yM+oUB1i9U5V5H2C3m2tn5H8i6tX9Sgk9lShxXypbhnfkuE+Erxk85rY27/ntwYyFJoR19JhKjZg8b4X6Vm2W9HIf4Tkx+Gr3HMCtzl3ZQRGQ1g6X6XnD5wbNRuK2Fl0OwKohMik4l5zWUf9MRP8I9BuKItndwXjFchTLtLB9hzkPWqUe5TDx+3mHYZyPC9S0YI4UuFKNtu5V1a3N1ByCZvqOujQDo9C6y5AfsZjxS/1CKoFk3e2Q5lUq8dy+G9A1lPj3kdTRFkbzAgMBAAECggEBAKNpWbVuyN0hO5HDl/jv+0oYOkZUEjM7IxlfTwRg3EZLhJdnxV6uY3oS2eZ9b72X4rV1MFjW0wll6VzVYry6jltR8vhAcncZzZs+eMWgLkQkxwKhzP9OmEcbVtCrPf3CrjtF1HB52Xb9Hk3E5p3oA6ZOnVLCcUeoi2I5LpOepbQbGJm0z74lV7r89pNUDkglrWrXlpC7IqlQpn2U42shS9e6GX3n8dTGL39xCD86m4+oD6Ibq3dxH5TAYedkbDzpBpXAY04dl0Te0MMeYfO9gZ4WoN0AMfjOnv6xG1HeZgHbkqHTPG+RtRJJ2E3vMMS9p0BdKQ68S+uS6ohs72yTbeECgYEA8fOrU6I0dIGfKrO7VJk7hRxXwc6pYrAepP3r36SaQ5WBRH5qNtnFHTE3cZq2+Vv5Wr6uhf5X1Ew6gtdltAf1oc5oK6k86J5A8vHv9IR+whA5dj5bd9U+T/z62hpvCZBPo5Rr5WYn1s+nmvXyhXbT88B2C+lmEhUFPwpuvhvPUGkCgYEAzYWxuhyOf3+M9P1xgbrjAWcB00hzXtGi4BgpPn5f4uRtmsRM+zQjEtbdFdd3+TfRCxM6LBmbVd7FsnL2j3uQ3Khht0Qn1NDrypsqQ9Brr2RPOl45uF+F0kFhOISwoQyRfmnBJcM/o3BMfwcB3gyOgjmGdXcewpbtZqgRQWZt2BMCgYEAuGk7hP6Q4kw8I93hZ7QFGSL8tQp9FkuT5vNShTDHjW8tkF7ZO1GvZ9q85mgLd+5tWq6NPgk8cMdyddkUmFgZlMDF9yLMdPp5uz6uHyBS9zZGn15yNm3gHLxv4QH7zAwUu21zfo3biLd8qDb1eN2xw6JcoExZaBjLsvstXhwrJt0CgYBbQuUpbtQDWcEnXvhlWyUqdbw1SH6M9OdxEqaMznWgPiULIfd1GvhS3C8LfBceQ+L+YdD/3CtP0+cULAnLORRg9cUrLpm5hwqGnKeuKUx7YIuYI8C6CdGgtsL8gn76CCckK2kgc+I+Xcm3Eb1nq7hujhYZINh+J3Ko9U1q4Z04fQKBgQCgC/YUSN81fnk5TeXzbRugikgDGHd4iSwLNmTWeCGNHkp1YRR5afzQjSKtYbHDccT8EStX6FQdTSWAtccWxXnWz1WfrA0v4h1zjvLB1XlF5Ti0r+ElEwXWJZ9vDLoLLJttb6cQ8mrTDYFwJz0ku0Pw6twgYic9ofbZCkpaGdZqRw==\n-----END PRIVATE KEY-----";
+  @Input() publicKey: string = "-----BEGIN PUBLIC KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/1i8fVR5uYhg mz4BipMlGScmDgGqkS5tNfNPSOx7Sb6mbT/zP/6kCqOKlctd2QWj5VdY2bY9yM+oUB1i9U5V5H2C3m2tn5H8i6tX9Sgk9lShxXypbhnfkuE+Erxk85rY27/ntwYyFJoR19JhKjZg8b4X6Vm2W9HIf4Tkx+Gr3HMCtzl3ZQRGQ1g6X6XnD5wbNRuK2Fl0OwKohMik4l5zWUf9MRP8I9BuKItndwXjFchTLtLB9hzkPWqUe5TDx+3mHYZyPC9S0YI4UuFKNtu5V1a3N1ByCZvqOujQDo9C6y5AfsZjxS/1CKoFk3e2Q5lUq8dy+G9A1lPj3kdTRFkbzAgMBAAECggEBAKNpWbVuyN0hO5HDl/jv+0oYOkZUEjM7IxlfTwRg3EZLhJdnxV6uY3oS2eZ9b72X4rV1MFjW0wll6VzVYry6jltR8vhAcncZzZs+eMWgLkQkxwKhzP9OmEcbVtCrPf3CrjtF1HB52Xb9Hk3E5p3oA6ZOnVLCcUeoi2I5LpOepbQbGJm0z74lV7r89pNUDkglrWrXlpC7IqlQpn2U42shS9e6GX3n8dTGL39xCD86m4+oD6Ibq3dxH5TAYedkbDzpBpXAY04dl0Te0MMeYfO9gZ4WoN0AMfjOnv6xG1HeZgHbkqHTPG+RtRJJ2E3vMMS9p0BdKQ68S+uS6ohs72yTbeECgYEA8fOrU6I0dIGfKrO7VJk7hRxXwc6pYrAepP3r36SaQ5WBRH5qNtnFHTE3cZq2+Vv5Wr6uhf5X1Ew6gtdltAf1oc5oK6k86J5A8vHv9IR+whA5dj5bd9U+T/z62hpvCZBPo5Rr5WYn1s+nmvXyhXbT88B2C+lmEhUFPwpuvhvPUGkCgYEAzYWxuhyOf3+M9P1xgbrjAWcB00hzXtGi4BgpPn5f4uRtmsRM+zQjEtbdFdd3+TfRCxM6LBmbVd7FsnL2j3uQ3Khht0Qn1NDrypsqQ9Brr2RPOl45uF+F0kFhOISwoQyRfmnBJcM/o3BMfwcB3gyOgjmGdXcewpbtZqgRQWZt2BMCgYEAuGk7hP6Q4kw8I93hZ7QFGSL8tQp9FkuT5vNShTDHjW8tkF7ZO1GvZ9q85mgLd+5tWq6NPgk8cMdyddkUmFgZlMDF9yLMdPp5uz6uHyBS9zZGn15yNm3gHLxv4QH7zAwUu21zfo3biLd8qDb1eN2xw6JcoExZaBjLsvstXhwrJt0CgYBbQuUpbtQDWcEnXvhlWyUqdbw1SH6M9OdxEqaMznWgPiULIfd1GvhS3C8LfBceQ+L+YdD/3CtP0+cULAnLORRg9cUrLpm5hwqGnKeuKUx7YIuYI8C6CdGgtsL8gn76CCckK2kgc+I+Xcm3Eb1nq7hujhYZINh+J3Ko9U1q4Z04fQKBgQCgC/YUSN81fnk5TeXzbRugikgDGHd4iSwLNmTWeCGNHkp1YRR5afzQjSKtYbHDccT8EStX6FQdTSWAtccWxXnWz1WfrA0v4h1zjvLB1XlF5Ti0r+ElEwXWJZ9vDLoLLJttb6cQ8mrTDYFwJz0ku0Pw6twgYic9ofbZCkpaGdZqRw==\n-----END PUBLIC KEY-----";
 
+  constructor(
+    public dialogRef: MatDialogRef<KeysDialogComponent, null>) {
+  }
+
+  onNoClick() {
+    this.dialogRef.close(undefined);
+  }
 }
