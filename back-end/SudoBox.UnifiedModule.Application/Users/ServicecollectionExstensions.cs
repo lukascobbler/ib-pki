@@ -2,6 +2,7 @@
 using SudoBox.UnifiedModule.Application.Users.Utils.Password;
 using SudoBox.UnifiedModule.Application.Users.Features.Registration;
 using SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
+using SudoBox.UnifiedModule.Application.Users.Features.Auth;
 
 namespace SudoBox.UnifiedModule.Application.Users;
 
@@ -18,7 +19,7 @@ public static class ServiceCollectionExtensions
         // Feature services
         services.AddScoped<IRegistrationService, RegistrationService>();
         services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
-
+        services.AddScoped<IAuthService, AuthService>();
         return services;
     }
 }

@@ -21,6 +21,7 @@ public class UnifiedDbContext : DbContext
         modelBuilder.HasDefaultSchema(_schema);
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new VerificationTokenEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenEntityTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }
