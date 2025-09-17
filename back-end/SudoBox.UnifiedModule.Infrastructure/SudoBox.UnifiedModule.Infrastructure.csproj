@@ -14,4 +14,9 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SudoBox.BuildingBlocks.Infrastructure\SudoBox.BuildingBlocks.Infrastructure.csproj" />
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Application\SudoBox.UnifiedModule.Application.csproj" />
+    </ItemGroup>
+
 </Project>

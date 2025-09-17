@@ -6,4 +6,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Domain\SudoBox.UnifiedModule.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+    </ItemGroup>
+
 </Project>

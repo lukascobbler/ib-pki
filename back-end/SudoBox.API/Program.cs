@@ -1,11 +1,17 @@
+using SudoBox.UnifiedModule.API.Certificates;
+using SudoBox.UnifiedModule.Infrastructure.Certificates;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors();
+builder.Services.ConfigureCertificates();
 
 var app = builder.Build();
+
+app.MapCertificateEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
