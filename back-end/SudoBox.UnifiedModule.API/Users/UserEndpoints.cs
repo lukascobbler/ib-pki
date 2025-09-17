@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
 using SudoBox.UnifiedModule.Application.Users.Contracts.Registration;
 using SudoBox.UnifiedModule.Application.Users.Features.Registration;
 using SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 using Microsoft.AspNetCore.Builder;
 using SudoBox.UnifiedModule.Application.Users.Features.Auth;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 using SudoBox.UnifiedModule.Application.Users.Contracts.Auth;
 
-
-namespace SudoBox.UnifiedModule.Application.Users;
+namespace SudoBox.UnifiedModule.API.Users;
 
 public static class UserEndpoints
 {

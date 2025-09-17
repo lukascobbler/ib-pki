@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using SudoBox.UnifiedModule.Application.Users.Contracts.Auth;
 using SudoBox.UnifiedModule.Application.Users.Utils.Auth;
 using SudoBox.UnifiedModule.Domain.Users;
-using SudoBox.UnifiedModule.Infrastructure;
+using SudoBox.UnifiedModule.Application.Abstractions;
 using BC = BCrypt.Net.BCrypt;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.Auth;
@@ -23,14 +23,14 @@ public interface IAuthService
 
 public sealed class AuthService : IAuthService
 {
-    private readonly UnifiedDbContext _db;
+    private readonly IUnifiedDbContext _db;
     private readonly JwtSecurityTokenHandler _jwt = new();
     private readonly RSA _rsa;
     private readonly string _issuer, _audience;
     private readonly int _accessMinutes;
     private readonly TimeSpan _refreshTtl;
 
-    public AuthService(IConfiguration cfg, UnifiedDbContext db)
+    public AuthService(IConfiguration cfg, IUnifiedDbContext db)
     {
         _db = db;
 

@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using SudoBox.BuildingBlocks.Infrastructure;
 using SudoBox.UnifiedModule.Infrastructure;
-using SudoBox.UnifiedModule.Infrastructure.Email;
-using SudoBox.UnifiedModule.Application.Users;
-using Microsoft.AspNetCore.Builder;
+using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using SudoBox.UnifiedModule.API.Users;
+using SudoBox.UnifiedModule.Infrastructure.Users;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,13 +30,7 @@ builder.WebHost.ConfigureKestrel((ctx, kestrel) =>
 
 
 // EF Core
-builder.Services.AddDbContext<UnifiedDbContext>(opt =>
-{
-    var schema = builder.Configuration.GetValue<string>("Database:Schema") ?? "unified";
-    var conn = DbConnectionStringBuilder.Build(schema);
-    opt.UseNpgsql(conn, npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", schema))
-       .UseSnakeCaseNamingConvention();
-});
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Email + user features (password common-list)
 builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();

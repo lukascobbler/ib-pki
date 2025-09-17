@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SudoBox.UnifiedModule.Domain\SudoBox.UnifiedModule.Domain.csproj" />
-      <ProjectReference Include="..\SudoBox.UnifiedModule.Infrastructure\SudoBox.UnifiedModule.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,6 +23,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+	  <PackageReference Include="MailKit" Version="4.13.0" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
 	  <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />

@@ -1,9 +1,9 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
-using MimeKit;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
 
-namespace SudoBox.UnifiedModule.Infrastructure.Email;
+namespace SudoBox.UnifiedModule.Application.Users.Utils.Email;
 
 public sealed class SmtpEmailSender(IConfiguration cfg) : IEmailSender
 {

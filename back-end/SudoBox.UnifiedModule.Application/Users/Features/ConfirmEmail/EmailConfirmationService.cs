@@ -1,12 +1,12 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Domain.Users;
-using SudoBox.UnifiedModule.Infrastructure;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 
-public sealed class EmailConfirmationService(UnifiedDbContext db) : IEmailConfirmationService
+public sealed class EmailConfirmationService(IUnifiedDbContext db) : IEmailConfirmationService
 {
     public async Task<ConfirmationResult> ConfirmAsync(string token, CancellationToken ct)
     {

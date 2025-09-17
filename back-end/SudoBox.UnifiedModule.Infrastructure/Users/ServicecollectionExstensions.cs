@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SudoBox.UnifiedModule.Application.Users.Utils.Password;
-using SudoBox.UnifiedModule.Application.Users.Features.Registration;
-using SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 using SudoBox.UnifiedModule.Application.Users.Features.Auth;
+using SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
+using SudoBox.UnifiedModule.Application.Users.Features.Registration;
+using SudoBox.UnifiedModule.Application.Users.Utils.Password;
 
-namespace SudoBox.UnifiedModule.Application.Users;
+namespace SudoBox.UnifiedModule.Infrastructure.Users;
 
 public static class ServiceCollectionExtensions
 {

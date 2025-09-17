@@ -5,14 +5,14 @@ using Microsoft.Extensions.Configuration;
 using SudoBox.UnifiedModule.Application.Users.Contracts.Registration;
 using SudoBox.UnifiedModule.Application.Users.Utils.Password;
 using SudoBox.UnifiedModule.Domain.Users;
-using SudoBox.UnifiedModule.Infrastructure;
-using SudoBox.UnifiedModule.Infrastructure.Email;
+using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using static SudoBox.UnifiedModule.Application.Users.Utils.Password.PasswordPolicy;
+using SudoBox.UnifiedModule.Application.Abstractions;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.Registration;
 
 public sealed class RegistrationService(
-    UnifiedDbContext db,
+    IUnifiedDbContext db,
     IEmailSender email,
     ICommonPasswordStore commonStore,
     IConfiguration cfg

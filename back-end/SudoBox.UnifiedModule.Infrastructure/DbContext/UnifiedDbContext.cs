@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SudoBox.UnifiedModule.Domain.Users;
+using SudoBox.UnifiedModule.Application.Abstractions;
 namespace SudoBox.UnifiedModule.Infrastructure;
 
-public class UnifiedDbContext : DbContext
+public class UnifiedDbContext : DbContext, IUnifiedDbContext
 {
     private readonly string _schema;
 
