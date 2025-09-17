@@ -10,7 +10,7 @@
 }
 
 .table-width {
-  min-width: 70vw;
+  min-width: max(1400px, 70vw);
 }
 
 .container {
