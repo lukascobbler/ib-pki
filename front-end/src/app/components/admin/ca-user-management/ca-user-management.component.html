@@ -3,19 +3,19 @@
     <mat-table [dataSource]="caUsersDataSource">
 
       <ng-container matColumnDef="name">
-        <mat-header-cell class="name" *matHeaderCellDef><b>Name</b></mat-header-cell>
+        <mat-header-cell class="name" *matHeaderCellDef>Name</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="surname">
-        <mat-header-cell class="surname" *matHeaderCellDef><b>Surname</b></mat-header-cell>
+        <mat-header-cell class="surname" *matHeaderCellDef>Surname</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="organization">
-        <mat-header-cell class="organization" *matHeaderCellDef><b>Organization</b></mat-header-cell>
+        <mat-header-cell class="organization" *matHeaderCellDef>Organization</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="email">
-        <mat-header-cell class="email" *matHeaderCellDef><b>Email</b></mat-header-cell>
+        <mat-header-cell class="email" *matHeaderCellDef>Email</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -26,7 +26,7 @@
     </mat-table>
   </div>
 
-  <div class="table-body-scroll table-width">
+  <div class="table-width">
     <mat-table [dataSource]="caUsersDataSource">
       <ng-container matColumnDef="name">
         <mat-cell class="name" *matCellDef="let element">

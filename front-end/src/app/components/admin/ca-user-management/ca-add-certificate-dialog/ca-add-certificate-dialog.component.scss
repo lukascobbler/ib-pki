@@ -8,21 +8,19 @@
   position: relative;
   overflow: hidden;
   display: flex;
-  padding: 5rem 3rem 3rem;
+  padding: 80px 60px 60px 60px;
   color: $text;
 }
 
 mat-form-field {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-mat-form-field {
+  margin-bottom: 42px;
   width: 100%;
 }
 
 .finish {
-  margin-bottom: 0;
-  width: 14rem;
-  height: 3rem;
+  width: 9rem;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
 }

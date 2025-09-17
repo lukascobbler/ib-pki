@@ -1,14 +1,41 @@
 @import "colors";
 @import "buttons";
 
-.certificate-container {
-  padding: 75px;
-  border-radius: 20px;
-  background-color: $background;
-  height: 100%;
+:host {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: $background;
+  padding: 80px 54px;
+}
+
+.certificate-container {
+  padding: 6px 18px;
+  border-radius: 20px;
+  max-height: 72vh;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $edge2;
+    border-radius: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: $edge3;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  @-moz-document url-prefix() {
+    scrollbar-width: thin;
+    scrollbar-color: $edge2 transparent;
+  }
 }
 
 .certificate-form {
@@ -16,6 +43,7 @@
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  margin-bottom: 56px;
 
   .row {
     display: flex;
@@ -23,11 +51,6 @@
 
     mat-form-field {
       flex: 1;
-
-      ::ng-deep .mat-mdc-text-field-wrapper {
-        background-color: transparent !important;
-        border-radius: 6px;
-      }
 
       ::ng-deep .mat-mdc-input-element {
         color: $text;
@@ -40,33 +63,10 @@
   }
 
   .extensions-container {
-    max-height: 18vh;
-    overflow-y: auto;
-    overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-right: 8px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     height: auto;
-
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: $edge2;
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: $accent;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
+    gap: 20px;
   }
 
   .extension-row {
@@ -75,6 +75,7 @@
     gap: 20px;
 
     button[mat-icon-button] {
+      margin-left: -8px;
       transform: scale(1.1);
       color: $whitish;
       display: flex;
@@ -82,19 +83,16 @@
       align-items: center;
     }
   }
+}
 
-  .actions {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
-    gap: 12px;
-  }
+.actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  gap: 20px;
 }
 
 .large-btn {
-  font-size: 16px;
-  padding: 12px 24px;
-  border-radius: 10px;
   width: 100%;
 }
 

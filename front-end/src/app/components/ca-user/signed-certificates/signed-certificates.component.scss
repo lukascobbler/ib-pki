@@ -5,12 +5,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $background;
-}
-
-.table-header {
-  padding-right: 16px;
 }
 
 .table-width {
@@ -19,9 +15,9 @@
 
 .container {
   background-color: $background2;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  padding: 24px 24px 40px 24px;
+  border-radius: 24px;
+  margin: 90px 0 140px 0;
 }
 
 .fp {
@@ -41,7 +37,7 @@
 
 mat-header-cell.issuedTo,
 mat-cell.issuedTo {
-  flex: 0 0 35%;
+  flex: 0 0 32%;
 }
 
 mat-header-cell.status,
@@ -51,12 +47,12 @@ mat-cell.status {
 
 mat-header-cell.validFrom,
 mat-cell.validFrom {
-  flex: 0 0 11%;
+  flex: 0 0 13%;
 }
 
 mat-header-cell.validUntil,
 mat-cell.validUntil {
-  flex: 0 0 11%;
+  flex: 0 0 13%;
 }
 
 mat-header-cell.fingerprint,
@@ -66,5 +62,5 @@ mat-cell.fingerprint {
 
 mat-header-cell.actions,
 mat-cell.actions {
-  flex: 0 0 15%;
+  flex: 0 0 14%;
 }

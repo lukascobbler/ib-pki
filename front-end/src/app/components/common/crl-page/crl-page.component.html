@@ -3,19 +3,19 @@
     <mat-table [dataSource]="certificatesDataSource">
 
       <ng-container matColumnDef="issuedBy">
-        <mat-header-cell class="issuedBy" *matHeaderCellDef><b>Issued by (DN)</b></mat-header-cell>
+        <mat-header-cell class="issuedBy" *matHeaderCellDef>Issued by (DN)</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="issuedTo">
-        <mat-header-cell class="issuedTo" *matHeaderCellDef><b>Issued to (DN)</b></mat-header-cell>
+        <mat-header-cell class="issuedTo" *matHeaderCellDef>Issued to (DN)</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="revocationReason">
-        <mat-header-cell class="revocationReason" *matHeaderCellDef><b>Reason for revocation</b></mat-header-cell>
+        <mat-header-cell class="revocationReason" *matHeaderCellDef>Reason for revocation</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="fingerprint">
-        <mat-header-cell class="fingerprint" *matHeaderCellDef><b>Fingerprint</b></mat-header-cell>
+        <mat-header-cell class="fingerprint" *matHeaderCellDef>Fingerprint</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -26,7 +26,7 @@
     </mat-table>
   </div>
 
-  <div class="table-body-scroll table-width">
+  <div class="table-width">
     <mat-table [dataSource]="certificatesDataSource">
       <ng-container matColumnDef="issuedBy">
         <mat-cell class="issuedBy" *matCellDef="let element">

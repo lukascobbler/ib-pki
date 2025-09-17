@@ -1,32 +1,22 @@
 @import "colors";
 
-.blue-button, .gray-button {
+.blue-button {
   font-family: Roboto, Arial, sans-serif;
+  background-color: $primary;
   letter-spacing: 0.25px;
   padding: 8px 16px;
   font-weight: 500;
   font-size: 14px;
-  margin-bottom: 20px;
-  border-radius: 16px;
+  margin-bottom: 0;
+  border-radius: 8px;
   border: none;
   color: white;
   cursor: pointer;
+  height: 48px;
 }
 
-.blue-button {
-  background-color: $primary;
-
-  &:hover {
-    background-color: lighten($primary, 5.5%);
-  }
-}
-
-.gray-button {
-  background-color: $edge2;
-
-  &:hover {
-    background-color: lighten($edge2, 5.5%);
-  }
+.blue-button:hover {
+  background-color: lighten($primary, 5.5%);
 }
 
 .blue-button:disabled {
@@ -35,18 +25,13 @@
   border-color: $pale-text;
 }
 
-.gray-button:disabled {
-  background-color: $accent2;
-  color: $pale-text;
-  border-color: $pale-text;
-}
-
 .close-button {
   position: absolute;
+  color: $pale-text;
   background: none;
   cursor: pointer;
   outline: none;
   border: none;
-  left: 1.5rem;
-  top: 2rem;
+  left: 20px;
+  top: 20px;
 }

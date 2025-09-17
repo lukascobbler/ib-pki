@@ -5,23 +5,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   background-color: $background;
 }
 
-.table-header {
-  padding-right: 8px;
-}
-
 .table-width {
-  min-width: 40vw;
+  width: 45vw;
+  min-width: 660px;
 }
 
 .container {
   background-color: $background2;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  padding: 24px 24px 40px 24px;
+  border-radius: 24px;
+  margin: 90px 0 140px 0;
 }
 
 .fp {
@@ -54,6 +51,7 @@
   align-items: center;
   gap: 10px;
   justify-content: center;
+  border-radius: 16px;
 }
 
 // custom width

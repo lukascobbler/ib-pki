@@ -1,44 +1,47 @@
-import { Component } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatIconButton} from '@angular/material/button';
-import {MatInput} from '@angular/material/input';
-import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import {Component, ElementRef, ViewChild, NgZone} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {NgForOf, NgIf} from '@angular/common';
-import {MatDialogContent, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogRef} from '@angular/material/dialog';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule} from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
+import {MatIconModule} from '@angular/material/icon';
+import {CUSTOM_DATE_FORMATS} from '../../../common/custom-components/custom-date-formats';
+import {CustomDateAdapter} from '../../../common/custom-components/custom-date-adapter';
 
 @Component({
   selector: 'app-edit-certificate-request-dialog',
   standalone: true,
   imports: [
     FormsModule,
-    MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatFormField,
-    MatIconButton,
-    MatInput,
-    MatLabel,
-    MatOption,
-    MatSelect,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
     NgForOf,
-    NgIf,
-    ReactiveFormsModule
+    NgIf
+  ],
+  providers: [
+    {provide: DateAdapter, useClass: CustomDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS}
   ],
   templateUrl: './edit-certificate-request-dialog.component.html',
   styleUrl: './edit-certificate-request-dialog.component.scss'
 })
 export class EditCertificateRequestDialogComponent {
-  extensions: {key: string, value: string, type: number}[] = [];
+  @ViewChild('scrollableDialog') scrollContainer!: ElementRef<HTMLDivElement>;
+  extensions: { key: string, value: string, type: number }[] = [];
+  dateNotBefore: Date | null = null;
+  dateNotAfter: Date | null = null;
 
   constructor(
-    public dialogRef: MatDialogRef<EditCertificateRequestDialogComponent, null>) {
-  }
-
-  closeDialog() {
-    this.dialogRef.close(null);
+    public dialogRef: MatDialogRef<EditCertificateRequestDialogComponent, null>, public ngZone: NgZone) {
   }
 
   onNoClick() {
@@ -46,7 +49,16 @@ export class EditCertificateRequestDialogComponent {
   }
 
   addExtension() {
-    this.extensions.push({ key: '', value: '', type: Math.round(Math.random()) });
+    this.extensions.push({key: '', value: '', type: Math.round(Math.random())});
+    const sub = this.ngZone.onStable.subscribe(() => {
+      this.scrollToBottom();
+      sub.unsubscribe();
+    });
+  }
+
+  scrollToBottom() {
+    const container = this.scrollContainer?.nativeElement;
+    if (container) container.scrollTop = container.scrollHeight;
   }
 
   removeExtension(index: number) {
