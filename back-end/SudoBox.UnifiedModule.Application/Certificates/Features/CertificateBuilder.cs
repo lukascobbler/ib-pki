@@ -1,261 +1,121 @@
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Contracts;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Operators;
-using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
-using Contracts;
+using Org.BouncyCastle.Math;
+using SudoBox.UnifiedModule.Domain.Certificates;
 using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
+using System.Collections.Generic;
+using System.Linq;
 
-public static class CertificateBuilder
-{
-    public static (X509Certificate certificate, AsymmetricCipherKeyPair subjectKeyPair, byte[] certEncoded) 
-        CreateCertificate(
-            CreateCertificateDto dto,
-            AsymmetricKeyParameter issuerPrivateKey,
-            X509Certificate issuerCertificate,
-            AsymmetricCipherKeyPair subjectKeyPair
-        )
-    {
-        var serial = CreateSerialNumber();
-
-        var subjectName = BuildX509Name(dto);
-        var issuerName = issuerCertificate != null ? issuerCertificate.SubjectDN : new X509Name($"CN={issuerCertificate.SubjectDN}") ;
+public static class CertificateBuilder {
+    public static Certificate CreateCertificate(CreateCertificateDto dto, AsymmetricCipherKeyPair subjectKeyPair, Certificate? issuerCertificate) {
+        var guidBytes = Guid.NewGuid().ToByteArray();
+        var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
+        var subjectName = dto.GetX509Name();
+        var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedBy) : subjectName;
 
         var certGen = new X509V3CertificateGenerator();
-        certGen.SetSerialNumber(serial);
-        certGen.SetIssuerDN(issuerCertificate.SubjectDN);
-        
+        certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
+        certGen.SetSubjectDN(subjectName);
+        certGen.SetIssuerDN(issuerName);
+
         if (dto.NotBefore.HasValue)
-            certGen.SetNotBefore(dto.NotBefore.Value);    
-        
+            certGen.SetNotBefore(dto.NotBefore.Value);
         if (dto.NotAfter.HasValue)
             certGen.SetNotAfter(dto.NotAfter.Value);
-        
-        
-        certGen.SetSubjectDN(subjectName);
+
         certGen.SetPublicKey(subjectKeyPair.Public);
 
-        if (dto.BasicConstraints != null)
-        {
-            var isCa = dto.BasicConstraints.IsCa;
-            var pathLen = dto.BasicConstraints.PathLenConstraint.HasValue ? dto.BasicConstraints.PathLenConstraint.Value : -1;
-            certGen.AddExtension(X509Extensions.BasicConstraints, true, pathLen >= 0 ? new BasicConstraints(pathLen) : new BasicConstraints(isCa));
+        if (dto.BasicConstraints != null) {
+            var basicConstraintsValue = dto.BasicConstraints.PathLen >= 0
+                ? new BasicConstraints(dto.BasicConstraints.PathLen)
+                : new BasicConstraints(dto.BasicConstraints.IsCa);
+            certGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
         }
 
-        if (dto.KeyUsage != null && dto.KeyUsage.Any())
-        {
+        if (dto.KeyUsage != null && dto.KeyUsage.Count != 0) {
             var usageBits = 0;
             foreach (var ku in dto.KeyUsage)
-            {
-                switch (ku)
-                {
-                    case KeyUsageValue.DigitalSignature:
-                        usageBits |= KeyUsage.DigitalSignature;
-                        break;
-                    case KeyUsageValue.NonRepudiation:
-                        usageBits |= KeyUsage.NonRepudiation;
-                        break;
-                    case KeyUsageValue.KeyEncipherment:
-                        usageBits |= KeyUsage.KeyEncipherment;
-                        break;
-                    case KeyUsageValue.DataEncipherment:
-                        usageBits |= KeyUsage.DataEncipherment;
-                        break;
-                    case KeyUsageValue.KeyAgreement:
-                        usageBits |= KeyUsage.KeyAgreement;
-                        break;
-                    case KeyUsageValue.CertificateSigning:
-                        usageBits |= KeyUsage.KeyCertSign;
-                        break;
-                    case KeyUsageValue.CrlSigning:
-                        usageBits |= KeyUsage.CrlSign;
-                        break;
-                    case KeyUsageValue.EncipherOnly:
-                        usageBits |= KeyUsage.EncipherOnly;
-                        break;
-                    case KeyUsageValue.DecipherOnly:
-                        usageBits |= KeyUsage.DecipherOnly;
-                        break;
-                }
-            }
+                if (keyUsageMap.TryGetValue(ku, out int value))
+                    usageBits |= value;
+
             certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
         }
 
-        if (dto.ExtendedKeyUsage != null && dto.ExtendedKeyUsage.Any())
-        {
+        if (dto.ExtendedKeyUsage != null && dto.ExtendedKeyUsage.Any()) {
             var ekuOids = new List<DerObjectIdentifier>();
             foreach (var eku in dto.ExtendedKeyUsage)
-            {
-                switch (eku)
-                {
-                    case ExtendedKeyUsageValue.ServerAuthentication:
-                        ekuOids.Add(KeyPurposeID.id_kp_serverAuth);
-                        break;
-                    case ExtendedKeyUsageValue.ClientAuthentication:
-                        ekuOids.Add(KeyPurposeID.id_kp_clientAuth);
-                        break;
-                    case ExtendedKeyUsageValue.CodeSigning:
-                        ekuOids.Add(KeyPurposeID.id_kp_codeSigning);
-                        break;
-                    case ExtendedKeyUsageValue.EmailProtection:
-                        ekuOids.Add(KeyPurposeID.id_kp_emailProtection);
-                        break;
-                    case ExtendedKeyUsageValue.IpSecEndSystem:
-                        ekuOids.Add(KeyPurposeID.id_kp_ipsecEndSystem);
-                        break;
-                    case ExtendedKeyUsageValue.IpSecTunnel:
-                        ekuOids.Add(KeyPurposeID.id_kp_ipsecTunnel);
-                        break;
-                    case ExtendedKeyUsageValue.IpSecUser:
-                        ekuOids.Add(KeyPurposeID.id_kp_ipsecUser);
-                        break;
-                    case ExtendedKeyUsageValue.TimeStamping:
-                        ekuOids.Add(KeyPurposeID.id_kp_timeStamping);
-                        break;
-                    case ExtendedKeyUsageValue.OcspSigning:
-                        ekuOids.Add(KeyPurposeID.id_kp_OCSPSigning);
-                        break;
-                    case ExtendedKeyUsageValue.Dvcs:
-                        ekuOids.Add(KeyPurposeID.id_kp_dvcs);
-                        break;
-                }
-            }
+                if (extendedKeyUsageMap.TryGetValue(eku, out var oid))
+                    ekuOids.Add(oid);
+
             certGen.AddExtension(X509Extensions.ExtendedKeyUsage, false, new ExtendedKeyUsage(ekuOids.ToArray()));
         }
 
-        if (dto.SubjectAlternativeNames != null)
-        {
-            var san = BuildGeneralNames(dto.SubjectAlternativeNames);
+        if (dto.SubjectAlternativeNames != null) {
+            var san = new GeneralNames(dto.SubjectAlternativeNames.ToGeneralNames());
             certGen.AddExtension(X509Extensions.SubjectAlternativeName, false, san);
         }
 
-        if (dto.IssuerAlternativeNames != null)
-        {
-            var ian = BuildGeneralNames(dto.IssuerAlternativeNames);
+        if (dto.IssuerAlternativeNames != null) {
+            var ian = new GeneralNames(dto.IssuerAlternativeNames.ToGeneralNames());
             certGen.AddExtension(X509Extensions.IssuerAlternativeName, false, ian);
         }
 
-        if (dto.NameConstraints != null)
-        {
-            var permitted = BuildGeneralSubtrees(dto.NameConstraints);
-            var excluded = Array.Empty<GeneralSubtree>();
-            var nameConstraints = new NameConstraints(permitted.Length > 0 ? permitted : null, excluded.Length > 0 ? excluded : null);
+        if (dto.NameConstraints != null) {
+            var permitted = dto.NameConstraints.Permitted.ToGeneralSubtrees();
+            var excluded = dto.NameConstraints.Excluded.ToGeneralSubtrees();
+            var nameConstraints = new NameConstraints(permitted.Count > 0 ? permitted : null, excluded.Count > 0 ? excluded : null);
             certGen.AddExtension(X509Extensions.NameConstraints, true, nameConstraints);
         }
 
-        if (dto.CertificatePolicies != null && dto.CertificatePolicies.Policies != null && dto.CertificatePolicies.Policies.Any())
-        {
-            var policyInfos = dto.CertificatePolicies.Policies.Select(p => new PolicyInformation(new DerObjectIdentifier(p.Oid))).ToArray();
-            certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfos));
+        if (dto.CertificatePolicy != null) {
+            PolicyInformation policyInfo = dto.CertificatePolicy.ToPolicyInformation();
+            certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
         }
 
-        var sigAlg = "SHA256WithRSA";
-        var signer = new Asn1SignatureFactory(sigAlg, issuerPrivateKey, new SecureRandom());
+        var signer = new Asn1SignatureFactory("SHA256WithRSA", issuerCertificate?.PrivateKey ?? subjectKeyPair.Private, new SecureRandom());
         var certificate = certGen.Generate(signer);
 
-        var encoded = certificate.GetEncoded();
-
-        return (certificate, subjectKeyPair, encoded);
+        return new Certificate {
+            SerialNumber = serialNumber,
+            IssuedBy = issuerName.ToString(),
+            IssuedTo = subjectName.ToString(),
+            NotAfter = certificate.NotAfter.ToUniversalTime(),
+            NotBefore = certificate.NotBefore.ToUniversalTime(),
+            EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
+            PrivateKey = subjectKeyPair.Private,
+            IsApproved = true
+        };
     }
 
-    private static BigInteger CreateSerialNumber()
-    {
-        var random = new SecureRandom();
-        var bytes = new byte[16];
-        random.NextBytes(bytes);
-        return new BigInteger(1, bytes);
-    }
+    public static readonly Dictionary<KeyUsageValue, int> keyUsageMap = new() {
+        { KeyUsageValue.DigitalSignature, KeyUsage.DigitalSignature },
+        { KeyUsageValue.NonRepudiation, KeyUsage.NonRepudiation },
+        { KeyUsageValue.KeyEncipherment, KeyUsage.KeyEncipherment },
+        { KeyUsageValue.DataEncipherment, KeyUsage.DataEncipherment },
+        { KeyUsageValue.KeyAgreement, KeyUsage.KeyAgreement },
+        { KeyUsageValue.CertificateSigning, KeyUsage.KeyCertSign },
+        { KeyUsageValue.CrlSigning, KeyUsage.CrlSign },
+        { KeyUsageValue.EncipherOnly, KeyUsage.EncipherOnly },
+        { KeyUsageValue.DecipherOnly, KeyUsage.DecipherOnly }
+    };
 
-    private static X509Name BuildX509Name(CreateCertificateDto dto)
-    {
-        var attrs = new List<DerObjectIdentifier>();
-        var values = new List<string>();
-        attrs.Add(X509Name.CN);
-        values.Add(dto.CommonName);
-        if (!string.IsNullOrEmpty(dto.Organization))
-        {
-            attrs.Add(X509Name.O);
-            values.Add(dto.Organization);
-        }
-        if (!string.IsNullOrEmpty(dto.OrganizationalUnit))
-        {
-            attrs.Add(X509Name.OU);
-            values.Add(dto.OrganizationalUnit);
-        }
-        if (!string.IsNullOrEmpty(dto.Email))
-        {
-            attrs.Add(X509Name.EmailAddress);
-            values.Add(dto.Email);
-        }
-        if (!string.IsNullOrEmpty(dto.Country))
-        {
-            attrs.Add(X509Name.C);
-            values.Add(dto.Country);
-        }
-        return new X509Name(attrs, values);
-    }
-
-    private static GeneralNames BuildGeneralNames(AlternativeNames alt)
-    {
-        var names = new List<GeneralName>();
-        if (alt.DnsNames != null)
-        {
-            foreach (var d in alt.DnsNames) names.Add(new GeneralName(GeneralName.DnsName, d));
-        }
-        if (alt.Rfc822Names != null)
-        {
-            foreach (var r in alt.Rfc822Names) names.Add(new GeneralName(GeneralName.Rfc822Name, r));
-        }
-        if (alt.UriNames != null)
-        {
-            foreach (var u in alt.UriNames) names.Add(new GeneralName(GeneralName.UniformResourceIdentifier, u));
-        }
-        if (alt.IpAddresses != null)
-        {
-            foreach (var ip in alt.IpAddresses) names.Add(new GeneralName(GeneralName.IPAddress, ip));
-        }
-        if (alt.DirectoryNames != null)
-        {
-            foreach (var dn in alt.DirectoryNames) names.Add(new GeneralName(GeneralName.DirectoryName, new X509Name(dn)));
-        }
-        return new GeneralNames(names.ToArray());
-    }
-
-    private static GeneralSubtree[] BuildGeneralSubtrees(AlternativeNames constraints)
-    {
-        var names = new List<GeneralSubtree>();
-        if (constraints.DnsNames != null)
-        {
-            foreach (var d in constraints.DnsNames)
-            {
-                var gn = new GeneralName(GeneralName.DnsName, d);
-                names.Add(new GeneralSubtree(gn));
-            }
-        }
-        if (constraints.IpAddresses != null)
-        {
-            foreach (var ip in constraints.IpAddresses)
-            {
-                var gn = new GeneralName(GeneralName.IPAddress, ip);
-                names.Add(new GeneralSubtree(gn));
-            }
-        }
-        if (constraints.UriNames != null)
-        {
-            foreach (var u in constraints.UriNames)
-            {
-                var gn = new GeneralName(GeneralName.UniformResourceIdentifier, u);
-                names.Add(new GeneralSubtree(gn));
-            }
-        }
-        return names.ToArray();
-    }
+    public static readonly Dictionary<ExtendedKeyUsageValue, DerObjectIdentifier> extendedKeyUsageMap = new() {
+        { ExtendedKeyUsageValue.ServerAuthentication, KeyPurposeID.id_kp_serverAuth },
+        { ExtendedKeyUsageValue.ClientAuthentication, KeyPurposeID.id_kp_clientAuth },
+        { ExtendedKeyUsageValue.CodeSigning, KeyPurposeID.id_kp_codeSigning },
+        { ExtendedKeyUsageValue.EmailProtection, KeyPurposeID.id_kp_emailProtection },
+        { ExtendedKeyUsageValue.IpSecEndSystem, KeyPurposeID.id_kp_ipsecEndSystem },
+        { ExtendedKeyUsageValue.IpSecTunnel, KeyPurposeID.id_kp_ipsecTunnel },
+        { ExtendedKeyUsageValue.IpSecUser, KeyPurposeID.id_kp_ipsecUser },
+        { ExtendedKeyUsageValue.TimeStamping, KeyPurposeID.id_kp_timeStamping },
+        { ExtendedKeyUsageValue.OcspSigning, KeyPurposeID.id_kp_OCSPSigning },
+        { ExtendedKeyUsageValue.Dvcs, KeyPurposeID.id_kp_dvcs }
+    };
 }

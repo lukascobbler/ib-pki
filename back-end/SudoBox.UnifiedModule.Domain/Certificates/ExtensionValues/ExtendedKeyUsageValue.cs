@@ -1,6 +1,6 @@
 namespace SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
-public enum ExtendedKeyUsageValue
-{
+
+public enum ExtendedKeyUsageValue {
     ServerAuthentication,
     ClientAuthentication,
     CodeSigning,
