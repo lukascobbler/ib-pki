@@ -3,23 +3,23 @@
     <mat-table [dataSource]="certificatesDataSource">
 
       <ng-container matColumnDef="issuedBy">
-        <mat-header-cell class="issuedBy" *matHeaderCellDef><b>Issued by (DN)</b></mat-header-cell>
+        <mat-header-cell class="issuedBy" *matHeaderCellDef>Issued by (DN)</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="status">
-        <mat-header-cell class="status" *matHeaderCellDef><b>Status</b></mat-header-cell>
+        <mat-header-cell class="status" *matHeaderCellDef>Status</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="validFrom">
-        <mat-header-cell class="validFrom" *matHeaderCellDef><b>Valid from</b></mat-header-cell>
+        <mat-header-cell class="validFrom" *matHeaderCellDef>Valid from</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="validUntil">
-        <mat-header-cell class="validUntil" *matHeaderCellDef><b>Valid until</b></mat-header-cell>
+        <mat-header-cell class="validUntil" *matHeaderCellDef>Valid until</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="fingerprint">
-        <mat-header-cell class="fingerprint" *matHeaderCellDef><b>Fingerprint</b></mat-header-cell>
+        <mat-header-cell class="fingerprint" *matHeaderCellDef>Fingerprint</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -30,7 +30,7 @@
     </mat-table>
   </div>
 
-  <div class="table-body-scroll table-width">
+  <div class="table-width">
     <mat-table [dataSource]="certificatesDataSource">
       <ng-container matColumnDef="issuedBy">
         <mat-cell class="issuedBy" *matCellDef="let element">

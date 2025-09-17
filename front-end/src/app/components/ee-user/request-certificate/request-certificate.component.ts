@@ -1,49 +1,59 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from '@angular/material/datepicker';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatIconButton} from '@angular/material/button';
-import {MatInput} from '@angular/material/input';
-import {MatOption} from '@angular/material/core';
-import {MatSelect} from '@angular/material/select';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatButtonModule} from '@angular/material/button';
+import {MatInputModule} from '@angular/material/input';
+import {DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule} from '@angular/material/core';
+import {MatSelectModule} from '@angular/material/select';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatTab, MatTabContent, MatTabGroup} from '@angular/material/tabs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {KeysDialogComponent} from './keys-dialog/keys-dialog.component';
+import {MatIconModule} from '@angular/material/icon';
+import {CustomDateAdapter} from '../../common/custom-components/custom-date-adapter';
+import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date-formats';
 
 @Component({
   selector: 'app-request-certificate',
   standalone: true,
   imports: [
     FormsModule,
-    MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerToggle,
-    MatFormField,
-    MatIconButton,
-    MatInput,
-    MatLabel,
-    MatOption,
-    MatSelect,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
     NgForOf,
     NgIf,
     MatTabGroup,
     MatTab,
     MatTabContent
   ],
+  providers: [
+    {provide: DateAdapter, useClass: CustomDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS}
+  ],
   templateUrl: './request-certificate.component.html',
   styleUrl: './request-certificate.component.scss'
 })
 export class RequestCertificateComponent {
-  extensions: {key: string, value: string, type: number}[] = [];
+  extensions: { key: string, value: string, type: number }[] = [];
   isDragging = false;
   fileName: string | null = null;
+  dateNotBeforeCSR: Date | null = null;
+  dateNotBefore: Date | null = null;
+  dateNotAfter: Date | null = null;
 
   constructor(private dialog: MatDialog) {
   }
 
   addExtension() {
-    this.extensions.push({ key: '', value: '', type: Math.round(Math.random()) });
+    this.extensions.push({key: '', value: '', type: Math.round(Math.random())});
+    const content = document.querySelector('.content');
+    if (content) content.scrollTop = content.scrollHeight;
   }
 
   removeExtension(index: number) {
@@ -83,7 +93,7 @@ export class RequestCertificateComponent {
 
   openCopyKeysDialog() {
     const dialogRef: MatDialogRef<KeysDialogComponent, null> = this.dialog.open(KeysDialogComponent, {
-      width: '30rem'
+      width: '500px'
     });
   }
 }

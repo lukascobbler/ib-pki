@@ -5,12 +5,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: $background;
-}
-
-.table-header {
-  padding-right: 16px;
+  min-height: 100vh;
+  background-color: $background3;
 }
 
 .table-width {
@@ -18,10 +14,14 @@
 }
 
 .container {
-  background-color: $background2;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  background-color: $background;
+  padding: 24px 24px 40px 24px;
+  border-radius: 24px;
+  margin: 72px 0 100px 0;
+}
+
+mat-header-row, mat-table {
+  background-color: $background;
 }
 
 .fp {

@@ -37,7 +37,7 @@
                 <p class="hint" *ngIf="!fileName">Supported: .csr</p>
               </div>
 
-              <input type="file" #fileInput accept=".csr" hidden (change)="onFileChosen($event)" />
+              <input type="file" #fileInput accept=".csr" hidden (change)="onFileChosen($event)"/>
             </div>
           </div>
 
@@ -45,18 +45,17 @@
             <mat-form-field appearance="outline">
               <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
               <mat-label>Not Before</mat-label>
-              <input matInput [matDatepicker]="pickerAfter">
-              <mat-datepicker-toggle matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
-              <mat-datepicker #pickerAfter></mat-datepicker>
+              <input matInput [matDatepicker]="pickerNotBeforeCSR" [(ngModel)]="dateNotBeforeCSR" name="notBeforeCSR">
+              <mat-datepicker-toggle matSuffix [for]="pickerNotBeforeCSR"></mat-datepicker-toggle>
+              <mat-datepicker #pickerNotBeforeCSR></mat-datepicker>
             </mat-form-field>
           </div>
-
-          <div class="actions">
-            <button (click)="openCopyKeysDialog()" class="blue-button medium-btn" type="submit">
-              Request
-            </button>
-          </div>
         </form>
+        <div class="actions">
+          <button (click)="openCopyKeysDialog()" class="blue-button medium-btn" type="submit">
+            Request
+          </button>
+        </div>
       </div>
     </mat-tab>
 
@@ -66,40 +65,40 @@
           <form class="certificate-form">
             <div class="row">
               <mat-form-field appearance="outline">
-                <mat-label>Certificate type</mat-label>
+                <mat-label>CA Issuer</mat-label>
                 <mat-select>
-                  <mat-option value="signing">Signing certificate</mat-option>
-                  <mat-option value="encryption">Encryption certificate</mat-option>
+                  <mat-option value="ca1">CA1</mat-option>
+                  <mat-option value="ca2">CA2</mat-option>
                 </mat-select>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Common Name (CN)</mat-label>
-                <input matInput />
+                <input matInput/>
               </mat-form-field>
             </div>
 
             <div class="row">
               <mat-form-field appearance="outline">
                 <mat-label>Organization (O)</mat-label>
-                <input matInput />
+                <input matInput/>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Organizational Unit (OU)</mat-label>
-                <input matInput />
+                <input matInput/>
               </mat-form-field>
             </div>
 
             <div class="row">
               <mat-form-field appearance="outline">
                 <mat-label>Email Address (E)</mat-label>
-                <input matInput type="email" />
+                <input matInput type="email"/>
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Country (C)</mat-label>
-                <input matInput maxlength="2" />
+                <input matInput maxlength="2"/>
               </mat-form-field>
             </div>
 
@@ -107,19 +106,19 @@
               <mat-form-field appearance="outline">
                 <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
                 <mat-label>Not Before</mat-label>
-                <input matInput [matDatepicker]="pickerAfter">
-                <mat-datepicker-toggle matSuffix [for]="pickerAfter"></mat-datepicker-toggle>
-                <mat-datepicker #pickerAfter></mat-datepicker>
+                <input matInput [matDatepicker]="pickerNotBefore" [(ngModel)]="dateNotBefore" name="notBefore">
+                <mat-datepicker-toggle matSuffix [for]="pickerNotBefore"></mat-datepicker-toggle>
+                <mat-datepicker #pickerNotBefore></mat-datepicker>
               </mat-form-field>
               <mat-form-field appearance="outline">
                 <mat-label>Not After</mat-label>
-                <input matInput [matDatepicker]="pickerBefore">
-                <mat-datepicker-toggle matSuffix [for]="pickerBefore"></mat-datepicker-toggle>
-                <mat-datepicker #pickerBefore></mat-datepicker>
+                <input matInput [matDatepicker]="pickerNotAfter" [(ngModel)]="dateNotAfter" name="notAfter">
+                <mat-datepicker-toggle matSuffix [for]="pickerNotAfter"></mat-datepicker-toggle>
+                <mat-datepicker #pickerNotAfter></mat-datepicker>
               </mat-form-field>
             </div>
 
-            <div class="extensions-container">
+            <div class="extensions-container" *ngIf="extensions.length > 0">
               <div class="row extension-row" *ngFor="let ext of extensions; let i = index">
                 <mat-form-field appearance="outline">
                   <mat-label>Extension key</mat-label>
@@ -132,7 +131,7 @@
 
                 <mat-form-field *ngIf="ext.type === 0" appearance="outline">
                   <mat-label>Extension value</mat-label>
-                  <input matInput [(ngModel)]="ext.value" name="extValue{{i}}" />
+                  <input matInput [(ngModel)]="ext.value" name="extValue{{i}}"/>
                 </mat-form-field>
 
                 <mat-form-field *ngIf="ext.type === 1" appearance="outline">
@@ -149,16 +148,16 @@
                 </button>
               </div>
             </div>
-
-            <div class="actions">
-              <button class="blue-button large-btn" type="button" (click)="addExtension()">
-                Add extension
-              </button>
-              <button class="blue-button large-btn" type="submit">
-                Request
-              </button>
-            </div>
           </form>
+
+          <div class="actions">
+            <button class="blue-button large-btn" type="button" (click)="addExtension()">
+              Add extension
+            </button>
+            <button class="blue-button large-btn" type="submit">
+              Request
+            </button>
+          </div>
         </div>
       </ng-template>
     </mat-tab>

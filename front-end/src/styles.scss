@@ -8,6 +8,7 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat.core();
+@import "colors";
 
 
 $blue-palette: (
@@ -21,7 +22,7 @@ $blue-palette: (
   50: #3388CB,
   60: #5599DC,
   70: #7AA9EE,
-  80: #9ACBFF,
+  80: $accent,
   90: #DCECFF,
   95: #EDF7FF,
   98: #F7FBFF,
@@ -29,12 +30,12 @@ $blue-palette: (
   100: #FFFFFF,
   secondary: (
     0: #000000,
-    10: #00182a,
-    20: #002d40,
-    25: #00384c,
-    30: #004357,
-    35: #004f63,
-    40: #005b70,
+    10: #00162b,
+    20: #002945,
+    25: #003250,
+    30: #303134,
+    35: #004667,
+    40: #005173,
     50: #7389a0,
     60: #8ca4b8,
     70: #a7bfce,
@@ -63,7 +64,7 @@ $blue-palette: (
     99: #fffbff,
     100: #ffffff,
     4: #0f1011,
-    6: #151618,
+    6: #161616,
     12: #212225,
     17: #2b2d2d,
     22: #363838,
@@ -82,7 +83,7 @@ $blue-palette: (
     35: #51555a,
     40: #5c6166,
     50: #757b7f,
-    60: #8e9599,
+    60: #81858C,
     70: #a9b0b3,
     80: #c4cbcfc,
     90: #e0e8eb,
@@ -140,3 +141,11 @@ $blue-theme: mat.define-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-floating-label {
+  color: $pale-text !important;
+}
+
+.mat-datepicker-toggle {
+  margin-right: 8px;
+}

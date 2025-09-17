@@ -6,9 +6,22 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  gap: 20px;
-  background-color: $background2;
+  min-height: 100vh;
+  background-color: $background3;
+}
+
+.sidebar-banner {
+  width: 15rem;
+  height: 3rem;
+  margin-top: 2.6rem;
+  margin-left: 2rem;
+  position: absolute;
+}
+
+.large-text {
+  color: $text;
+  font-size: xx-large;
+  margin-bottom: 24px;
 }
 
 .register-form {
@@ -16,21 +29,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-}
-
-.sidebar-banner {
-  width: 15rem;
-  height: 3rem;
-  margin-top: 2.6rem;
-  margin-left: 1.5rem;
-  position: absolute;
-}
-
-.large-text {
-  color: $text;
-  font-size: xx-large;
-  margin-bottom: 5px;
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
@@ -38,26 +38,28 @@
 }
 
 mat-form-field {
-  width: 400px;
-
-  ::ng-deep .mat-mdc-text-field-wrapper {
-    background-color: $background3 !important;
-    border-radius: 6px;
-  }
-
-  ::ng-deep .mat-mdc-input-element {
-    color: $text;
-  }
-
-  ::ng-deep .mat-mdc-floating-label {
-    color: $whitish !important;
-  }
+  width: 360px;
 }
 
 .button {
-  width: 400px;
-  height: 50px;
-  margin: 0
+  width: 360px;
+}
+
+.password-strength-wrapper{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: none;
+  margin-top: -16px;
+  max-height: 0;
+  opacity: 0;
+}
+
+.password-strength-wrapper.visible {
+  margin-top: 0;
+  max-height: 100%;
+  opacity: 1;
+  transition: opacity 0.25s;
 }
 
 .password-strength-text {
@@ -68,13 +70,14 @@ mat-form-field {
 
 .white-text {
   color: $whitish;
-  margin: 1px 1px 10px;
+  margin: 6px 0 0;
   font-size: large;
 }
 
 .password-strength-meter {
+  margin-top: -6px;
   display: flex;
-  gap: 5px;
+  gap: 7px;
   justify-content: center;
   width: 100%;
 }
@@ -83,12 +86,12 @@ mat-form-field {
   background: $whitish;
   border-radius: 3px;
   width: 25%;
-  height: 5px;
+  height: 6px;
 }
 
 .blue {
   background: $accent;
   border-radius: 3px;
   width: 25%;
-  height: 5px;
+  height: 6px;
 }

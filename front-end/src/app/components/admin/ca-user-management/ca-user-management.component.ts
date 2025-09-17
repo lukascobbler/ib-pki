@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -8,8 +8,7 @@ import {
   MatHeaderRowDef,
   MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
-import {MatFabButton, MatIconButton} from "@angular/material/button";
-import {MatIcon} from '@angular/material/icon';
+import {MatIconButton} from "@angular/material/button";
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {CaRegistrationDialogComponent} from './ca-registration-dialog/ca-registration-dialog.component';
 import {CaAddCertificateDialogComponent} from './ca-add-certificate-dialog/ca-add-certificate-dialog.component';
@@ -28,9 +27,7 @@ import {CaAddCertificateDialogComponent} from './ca-add-certificate-dialog/ca-ad
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef,
-    MatFabButton,
-    MatIcon
+    MatHeaderCellDef
   ],
   templateUrl: './ca-user-management.component.html',
   styleUrl: './ca-user-management.component.scss'
@@ -47,7 +44,7 @@ export class CaUserManagementComponent {
     'actions'
   ];
 
-  caUsersDataSource: {name: string, surname: string, organization: string, email: string}[] = [
+  caUsersDataSource: { name: string, surname: string, organization: string, email: string }[] = [
     {
       name: 'Michael',
       surname: 'Scott',
@@ -77,13 +74,12 @@ export class CaUserManagementComponent {
       surname: 'Scott',
       organization: 'Dunder Mifflin',
       email: 'michael.scott@dundermifflin.com',
-    },{
+    }, {
       name: 'Michael',
       surname: 'Scott',
       organization: 'Dunder Mifflin',
       email: 'michael.scott@dundermifflin.com',
-    },
-    {
+    }, {
       name: 'Michael',
       surname: 'Scott',
       organization: 'Dunder Mifflin',

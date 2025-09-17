@@ -191,7 +191,7 @@ export class CertificateRequestsComponent {
     const dialogRef: MatDialogRef<EditCertificateRequestDialogComponent, null> = this.dialog.open(EditCertificateRequestDialogComponent, {
       width: '700px',
       maxWidth: '80vw',
-      height: '750px',
+      autoFocus: false
     });
   }
 }
