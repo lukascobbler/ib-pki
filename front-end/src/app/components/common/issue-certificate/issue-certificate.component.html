@@ -35,7 +35,7 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Country (C)</mat-label>
-        <input matInput maxlength="2" [(ngModel)]="country" name="country" required/>
+        <input matInput maxlength="2" [(ngModel)]="country" name="country" (input)="onCountryInput($event)" required/>
       </mat-form-field>
     </div>
 

@@ -54,6 +54,14 @@ export class IssueCertificateComponent {
   constructor(private certificateService: CertificatesService) {
   }
 
+  onCountryInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const pos = input.selectionStart!;
+    this.country = input.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+    input.value = this.country;
+    input.setSelectionRange(pos, pos);
+  }
+
   allExtensionKeys = [
     {value: 'keyUsage', label: 'Key Usage'},
     {value: 'extendedKeyUsage', label: 'Extended Key Usage'},
