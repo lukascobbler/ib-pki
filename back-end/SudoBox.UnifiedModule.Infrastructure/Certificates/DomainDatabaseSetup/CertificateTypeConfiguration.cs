@@ -11,7 +11,7 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
         b.ToTable("certificates");
         b.HasKey(x => x.SerialNumber);
 
-        b.Property(x => x.SerialNumber).HasConversion(TypeConverters.BigIntConverter).HasColumnType("varchar(max)");
+        b.Property(x => x.SerialNumber).HasConversion(TypeConverters.BigIntConverter).HasColumnType("text");
         b.Property(x => x.EncodedValue).HasMaxLength(65536).IsRequired(false);
         b.Property(x => x.IsApproved);
         b.Property(x => x.IssuedBy);
@@ -21,7 +21,7 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
 
         b.Property(e => e.PrivateKey)
             .HasConversion(TypeConverters.KeyConverter)
-            .HasColumnType("varchar(max)")
+            .HasColumnType("text")
             .IsRequired(false);
     }
 }
