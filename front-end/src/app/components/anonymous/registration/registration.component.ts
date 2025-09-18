@@ -53,7 +53,7 @@ export class RegistrationComponent implements OnInit {
       name: ['', Validators.required],
       surname: ['', Validators.required],
       organization: ['', Validators.required],
-      email: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64)]],
       repeatPassword: ['', Validators.required],
     }, { validators: passwordsMatch() });
@@ -63,6 +63,7 @@ export class RegistrationComponent implements OnInit {
     });
   }
 
+  get emailCtrl() { return this.form.get('email')!; }
   get passwordCtrl() { return this.form.get('password')!; }
   get repeatPasswordCtrl() { return this.form.get('repeatPassword')!; }
 
@@ -71,7 +72,10 @@ export class RegistrationComponent implements OnInit {
     return ['name','surname','organization','email','password','repeatPassword']
       .some(k => !v[k] || v[k].trim().length === 0);
   }
-
+  get invalidEmailFormat(): boolean {
+    const ctrl = this.emailCtrl;
+    return !!ctrl.value && ctrl.hasError('email');
+  }
   get badPasswordLength(): boolean {
     return this.passwordCtrl.hasError('minlength') || this.passwordCtrl.hasError('maxlength');
   }

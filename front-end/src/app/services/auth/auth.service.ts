@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthState } from '../../models/AuthState';
 import { BasicUser } from '../../models/BasicUser';
@@ -7,14 +7,8 @@ import { LoginResponseDTO } from '../../models/LoginResponseDTO';
 import { RegisterRequestDTO } from '../../models/RegisterRequestDTO';
 import { RefreshRequestDTO } from '../../models/RefreshRequestDTO';
 import { RefreshResponseDTO } from '../../models/RefreshResponseDTO';
-import {
-  BehaviorSubject,
-  Observable,
-  map,
-  tap,
-  finalize,
-  throwError,
-} from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, throwError, of } from 'rxjs';
+import { finalize, shareReplay, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -200,13 +194,6 @@ export class AuthService {
     }, Math.min(dueIn, 2_147_000_000)); // clamp to 24 days
   }
 
-  private authHeaders(): HttpHeaders {
-    const token = this._state$.value.accessToken;
-    return token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : new HttpHeaders();
-  }
-
   private decodeJwt(token: string): Record<string, unknown> {
     try {
       const [, payload] = token.split('.');
@@ -224,5 +211,34 @@ export class AuthService {
     else if (pad === 3) b64 += '=';
     else if (pad !== 0) b64 += '===';
     return b64;
+  }
+
+  private refreshInFlight$?: Observable<void>;
+
+  private msUntilAccessExpiry(): number {
+    const expIso = this._state$.value.accessExpiresAt;
+    return expIso ? new Date(expIso).getTime() - Date.now() : -Infinity;
+  }
+
+  isAccessTokenFresh(skewMs = 30_000): boolean {
+    return this.msUntilAccessExpiry() > skewMs;
+  }
+
+  // ensure theres a fresh access token, refreshing if needed
+  ensureValidAccessToken(skewMs = 30_000): Observable<void> {
+    if (this.isAccessTokenFresh(skewMs)) return of(void 0);
+    if (this.refreshInFlight$) return this.refreshInFlight$;
+
+    this.refreshInFlight$ = this.refresh().pipe(
+      catchError((err) => {
+        this.clearState();
+        return throwError(() => err);
+      }),
+      finalize(() => {
+        this.refreshInFlight$ = undefined;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+    return this.refreshInFlight$;
   }
 }

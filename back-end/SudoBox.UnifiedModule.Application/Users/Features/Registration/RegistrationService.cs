@@ -8,6 +8,7 @@ using SudoBox.UnifiedModule.Domain.Users;
 using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using static SudoBox.UnifiedModule.Application.Users.Utils.Password.PasswordPolicy;
 using SudoBox.UnifiedModule.Application.Abstractions;
+using System.ComponentModel.DataAnnotations;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.Registration;
 
@@ -18,12 +19,15 @@ public class RegistrationService(
     IConfiguration cfg
 ) : IRegistrationService
 {
+    private static readonly EmailAddressAttribute EmailAttr = new();
+
     public async Task<RegistrationResult> RegisterAsync(RegisterRequest req, CancellationToken ct)
     {
         var emailNorm = (req.Email ?? "").Trim();
         if (string.IsNullOrWhiteSpace(emailNorm))
             return new(false, 400, new { error = "Email is required." });
-
+        if (!EmailAttr.IsValid(emailNorm))
+            return new(false, 400, new { error = "Invalid email format." });
         if (req.Password != req.ConfirmPassword)
             return new(false, 400, new { error = "Passwords do not match." });
 
