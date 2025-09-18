@@ -6,53 +6,61 @@
   <div class="container">
     <p class="large-text">Registration</p>
 
-    <form class="register-form">
+    <form class="register-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <mat-form-field appearance="outline">
         <mat-label>Name</mat-label>
-        <input matInput/>
+        <input matInput formControlName="name" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Surname</mat-label>
-        <input matInput/>
+        <input matInput formControlName="surname" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Organization</mat-label>
-        <input matInput/>
+        <input matInput formControlName="organization" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>E-mail</mat-label>
-        <input matInput/>
+        <input matInput formControlName="email" autocomplete="email" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput type="password" [(ngModel)]="password" name="password"/>
+        <input matInput type="password" formControlName="password" autocomplete="new-password" />
       </mat-form-field>
 
-      <div class="password-strength-wrapper" [class.visible]="password">
+      <div class="password-strength-wrapper" [class.visible]="passwordCtrl.value">
         <div class="password-strength-meter">
-          <div *ngFor="let _ of Array(password_strength)" class="blue"></div>
-          <div *ngFor="let _ of Array(4-password_strength)" class="white"></div>
+          <div *ngFor="let i of bars" [class.blue]="i < strength" [class.white]="i >= strength"></div>
         </div>
 
         <div class="password-strength-text">
-          <p *ngIf="password_strength === 0" class="white-text">Unsafe</p>
-          <p *ngIf="password_strength === 1" class="white-text">Weak</p>
-          <p *ngIf="password_strength === 2" class="white-text">Okay</p>
-          <p *ngIf="password_strength === 3" class="white-text">Good</p>
-          <p *ngIf="password_strength === 4" class="white-text">Strong</p>
+          <p class="white-text" *ngIf="strength === 0">Unsafe</p>
+          <p class="white-text" *ngIf="strength === 1">Weak</p>
+          <p class="white-text" *ngIf="strength === 2">Okay</p>
+          <p class="white-text" *ngIf="strength === 3">Good</p>
+          <p class="white-text" *ngIf="strength === 4">Strong</p>
         </div>
       </div>
 
       <mat-form-field appearance="outline">
         <mat-label>Repeat password</mat-label>
-        <input matInput type="password"/>
+        <input matInput type="password" formControlName="repeatPassword" autocomplete="new-password" />
       </mat-form-field>
+
+      <ul class="hints">
+        <li *ngIf="badPasswordLength">Password must be between 8 and 64 characters</li>
+        <li *ngIf="passwordsDontMatch">Passwords don’t match</li>
+        <li *ngIf="someRequiredMissing">All fields must be filled</li>
+      </ul>
+
+      <button class="blue-button button" type="submit" [disabled]="loading" style="margin-bottom: 32px;">Register</button>
+      <button class="blue-button button" type="button" (click)="goLogin()">Login</button>
+
     </form>
 
-    <button class="blue-button button">Register</button>
   </div>
 </div>
