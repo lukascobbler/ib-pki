@@ -7,7 +7,9 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using SudoBox.UnifiedModule.API.Certificates;
 using SudoBox.UnifiedModule.API.Users;
+using SudoBox.UnifiedModule.Infrastructure.Certificates;
 using SudoBox.UnifiedModule.Infrastructure.Users;
 
 
@@ -77,7 +79,7 @@ builder.Services.AddAuthorization(opt =>
 
 
 builder.Services.AddUserFeatures(commonPath);
-
+builder.Services.ConfigureCertificates();
 
 // Swagger/CORS
 builder.Services.AddEndpointsApiExplorer();
@@ -138,6 +140,7 @@ using (var scope = app.Services.CreateScope())
 
 // Minimal API endpoints
 app.MapUserEndpoints();
+app.MapCertificateEndpoints();
 
 // who am i test
 var api = app.MapGroup("/api");
