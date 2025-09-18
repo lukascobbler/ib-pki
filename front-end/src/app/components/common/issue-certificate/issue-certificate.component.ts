@@ -152,7 +152,6 @@ export class IssueCertificateComponent {
       dto.notAfter = this.dateNotAfter;
 
     this.extensions.forEach(extension => {
-      console.log(extension);
       if (extension.key === 'keyUsage')
         dto.keyUsage = extension.value.map((v: number) => KeyUsageValue[v]);
       else if (extension.key === 'extendedKeyUsage')
@@ -163,8 +162,8 @@ export class IssueCertificateComponent {
         dto.issuerAlternativeNames = {value: this.generalNamesToString(extension.value)};
       else if (extension.key === 'nameConstraints' && (this.generalNamesToString(extension.value[0]) || this.generalNamesToString(extension.value[1])))
         dto.nameConstraints = {
-          permittedSubtrees: {value: this.generalNamesToString(extension.value[0])},
-          excludedSubtrees: {value: this.generalNamesToString(extension.value[1])}
+          permitted: {value: this.generalNamesToString(extension.value[0])},
+          excluded: {value: this.generalNamesToString(extension.value[1])}
         };
       else if (extension.key === 'basicConstraints')
         dto.basicConstraints = extension.value;
@@ -172,6 +171,14 @@ export class IssueCertificateComponent {
         dto.certificatePolicy = extension.value;
     })
 
-    this.certificateService.issueCertificate(dto);
+    this.certificateService.issueCertificate(dto).subscribe({
+      next: value => {
+        console.log(value)
+        // todo add response with toastr
+      },
+      error: err => {
+        // todo add response with toastr
+      }
+    });
   }
 }

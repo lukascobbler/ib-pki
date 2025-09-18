@@ -24,8 +24,8 @@ export interface ListOfNames {
 }
 
 export interface NamesConstraintsValue {
-  permittedSubtrees?: ListOfNames;
-  excludedSubtrees?: ListOfNames;
+  permitted?: ListOfNames;
+  excluded?: ListOfNames;
 }
 
 export interface BasicConstraintsValue {

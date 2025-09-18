@@ -6,18 +6,17 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using SudoBox.UnifiedModule.API.Certificates;
 using SudoBox.UnifiedModule.API.Users;
 using SudoBox.UnifiedModule.Infrastructure;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
-using Microsoft.Extensions.Options;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-// https
+// HTTPS
 builder.WebHost.ConfigureKestrel((ctx, kestrel) =>
 {
     var pfxRel = "secrets/dev-tls.pfx";
@@ -42,7 +41,6 @@ var commonPath = builder.Configuration["Password:CommonListPath"]
                  ?? Path.Combine(AppContext.BaseDirectory, "Users", "data", "common_passwords.txt");
 
 // Auth
-
 var cfg = builder.Configuration;
 var certPath = cfg["Auth:Jwt:SigningCertificate:Path"]!;
 var certPass = cfg["Auth:Jwt:SigningCertificate:Password"]!;
@@ -80,8 +78,12 @@ builder.Services.AddAuthorization(opt =>
     opt.AddPolicy("CaOrEe", p => p.RequireRole("CaUser", "EeUser"));
 });
 
+// JSON deserialization
+builder.Services.ConfigureHttpJsonOptions(options => {
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
-
+// Module dependency injection
 builder.Services.AddUserFeatures(commonPath);
 builder.Services.ConfigureCertificates();
 
@@ -132,8 +134,6 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
-
 
 // Apply migrations on startup
 using (var scope = app.Services.CreateScope())

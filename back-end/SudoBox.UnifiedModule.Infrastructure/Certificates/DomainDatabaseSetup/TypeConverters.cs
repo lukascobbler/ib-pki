@@ -24,7 +24,7 @@ public static class TypeConverters
         var pw = new PemWriter(sw);
         pw.WriteObject(key);
         pw.Writer.Flush();
-        return sw.ToString();
+        return sw.ToString().Split("\n")[1];
     }
 
     private static AsymmetricKeyParameter? FromPem(string? pem)

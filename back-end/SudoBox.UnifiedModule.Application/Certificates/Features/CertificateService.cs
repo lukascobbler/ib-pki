@@ -15,18 +15,26 @@ public class CertificateService {
         _db = db;
     }
     
-    public string? CreateCertificate(CreateCertificateDto createCertificateDto) {
+    public async Task<string?> CreateCertificate(CreateCertificateDto createCertificateDto) {
         var kpGen = new RsaKeyPairGenerator();
         kpGen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
-        AsymmetricCipherKeyPair subjectKeyPair = kpGen.GenerateKeyPair();
+        var subjectKeyPair = kpGen.GenerateKeyPair();
 
-        //Certificate signingCertificate = findCertificate(createCertificateDto.SigningCertificateId);
+        // Certificate signingCertificate = findCertificate(createCertificateDto.SigningCertificateId);
+        // var signingCertificate = await _db.Certificates.FindAsync(createCertificateDto.SigningCertificate);
+        // if (signingCertificate == null)
+        // {
+        //     throw new Exception("Signing certificate not found");
+        // }
+        
+        // todo opasan: self signing certificates
 
         Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateDto, subjectKeyPair, null); // signingCertificate);
 
-        // Save the certificate to the database or any storage
+        await _db.Certificates.AddAsync(certificate);
+        await _db.SaveChangesAsync();
 
-        return certificate.EncodedValue;
+        return await Task.FromResult(certificate.EncodedValue);
     }
 
     public async Task<ICollection<CertificateDto>> GetAllCertificates()

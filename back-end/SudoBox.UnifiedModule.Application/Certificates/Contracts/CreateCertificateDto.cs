@@ -6,7 +6,7 @@ using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
 namespace SudoBox.UnifiedModule.Application.Certificates.Contracts;
 
 public record CreateCertificateDto {
-    public required string SigningCertificateId { get; set; }
+    public required string SigningCertificate { get; set; }
     public required string CommonName { get; set; }
     public required string Organization { get; set; }
     public required string OrganizationalUnit { get; set; }
