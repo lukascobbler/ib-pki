@@ -9,7 +9,7 @@ import {MatSelect, MatSelectModule} from '@angular/material/select';
 import {NgForOf, NgIf} from '@angular/common';
 import {CustomDateAdapter} from '../custom-components/custom-date-adapter';
 import {CUSTOM_DATE_FORMATS} from '../custom-components/custom-date-formats';
-import {CreateCertificateDTO} from '../../../models/CreateCertificateDTO';
+import {CreateCertificate} from '../../../models/CreateCertificate';
 import {MatChipsModule} from '@angular/material/chips';
 import {KeyUsageValue} from '../../../models/KeyUsageValue';
 import {ExtendedKeyUsageValue} from '../../../models/ExtendedKeyUsageValue';
@@ -129,7 +129,7 @@ export class IssueCertificateComponent {
   onSubmit(form: NgForm) {
     if (!form.valid) return;
 
-    const dto: CreateCertificateDTO = {
+    const dto: CreateCertificate = {
       signingCertificate: "0",
       commonName: this.commonName,
       organization: this.organization,

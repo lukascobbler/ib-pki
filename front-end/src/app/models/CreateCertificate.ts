@@ -1,7 +1,7 @@
 import {ExtendedKeyUsageValue} from './ExtendedKeyUsageValue';
 import {KeyUsageValue} from './KeyUsageValue';
 
-export interface CreateCertificateDTO {
+export interface CreateCertificate {
   signingCertificate: string;
   commonName: string;
   organization: string;
