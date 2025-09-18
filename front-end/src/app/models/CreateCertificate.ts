@@ -1,15 +1,15 @@
 import {ExtendedKeyUsageValue} from './ExtendedKeyUsageValue';
 import {KeyUsageValue} from './KeyUsageValue';
 
-export interface CreateCertificateDTO {
-  signingCertificateId: string;
+export interface CreateCertificate {
+  signingCertificate: string;
   commonName: string;
   organization: string;
   organizationalUnit: string;
   email: string;
   country: string;
-  notBefore?: string;
-  notAfter?: string;
+  notBefore?: Date;
+  notAfter?: Date;
   keyUsage?: KeyUsageValue[];
   extendedKeyUsage?: ExtendedKeyUsageValue[];
   subjectAlternativeNames?: ListOfNames;
@@ -30,7 +30,7 @@ export interface NamesConstraintsValue {
 
 export interface BasicConstraintsValue {
   isCa: boolean;
-  pathLenConstraint?: number;
+  pathLen?: number;
 }
 
 export interface CertificatePolicy {
