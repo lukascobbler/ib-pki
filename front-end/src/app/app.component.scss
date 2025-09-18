@@ -11,3 +11,9 @@
   background-color: $background;
   scrollbar-color: $edge2 transparent;
 }
+
+::ng-deep .loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

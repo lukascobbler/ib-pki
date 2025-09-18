@@ -54,7 +54,7 @@
 
       <ng-container matColumnDef="actions">
         <mat-cell class="actions" *matCellDef="let certificate">
-          <button (click)="openCertificateDetails()" mat-icon-button>
+          <button (click)="openCertificateDetails(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
           </button>
           <button mat-icon-button>

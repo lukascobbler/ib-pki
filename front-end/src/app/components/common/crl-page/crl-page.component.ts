@@ -9,8 +9,9 @@ import {
   MatRow, MatRowDef, MatTable
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
+import {Certificate} from '../../../models/Certificate';
 
 @Component({
   selector: 'app-crl-page',
@@ -143,10 +144,11 @@ export class CrlPageComponent {
     },
   ];
 
-  openCertificateDetails() {
-    const dialogRef: MatDialogRef<CertificateDetailsDialogComponent, null> = this.dialog.open(CertificateDetailsDialogComponent, {
+  openCertificateDetails(certificate: Certificate) {
+    this.dialog.open(CertificateDetailsDialogComponent, {
       width: '700px',
-      maxWidth: '70vw'
+      maxWidth: '70vw',
+      data: { decryptedCertificate: certificate.decryptedCertificate }
     });
   }
 }

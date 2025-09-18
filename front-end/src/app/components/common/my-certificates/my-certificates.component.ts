@@ -13,6 +13,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {RevokeCertificateDialogComponent} from '../revoke-certificate-dialog/revoke-certificate-dialog.component';
 import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
 import {DatePipe} from '@angular/common';
+import {Certificate} from '../../../models/Certificate';
 
 @Component({
   selector: 'app-my-certificates',
@@ -235,16 +236,17 @@ export class MyCertificatesComponent {
     },
   ];
 
-  openRevokeCertificate() {
+  openRevokeCertificate(certificate: Certificate) {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {
       width: '30rem'
     });
   }
 
-  openCertificateDetails() {
-    const dialogRef: MatDialogRef<CertificateDetailsDialogComponent, null> = this.dialog.open(CertificateDetailsDialogComponent, {
+  openCertificateDetails(certificate: Certificate) {
+    this.dialog.open(CertificateDetailsDialogComponent, {
       width: '700px',
-      maxWidth: '70vw'
+      maxWidth: '70vw',
+      data: { decryptedCertificate: certificate.decryptedCertificate }
     });
   }
 }
