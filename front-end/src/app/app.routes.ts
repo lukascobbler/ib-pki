@@ -10,15 +10,63 @@ import {CertificateRequestsComponent} from './components/ca-user/certificate-req
 import {SignedCertificatesComponent} from './components/ca-user/signed-certificates/signed-certificates.component';
 import {CrlPageComponent} from './components/common/crl-page/crl-page.component';
 
+import { authGuard, roleGuard } from './services/auth/auth.guard';
+import type { Role } from './models/Role';
+
 export const routes: Routes = [
-  {path: "login", component: LoginComponent},
-  {path: "register", component: RegistrationComponent},
-  {path: "issue-certificate", component: IssueCertificateComponent},
-  {path: "all-certificates", component: AllCertificatesComponent},
-  {path: "manage-ca-users", component: CaUserManagementComponent},
-  {path: "my-certificates", component: MyCertificatesComponent},
-  {path: "request-certificate", component: RequestCertificateComponent},
-  {path: "certificate-requests", component: CertificateRequestsComponent},
-  {path: "signed-certificates", component: SignedCertificatesComponent},
-  {path: "crl", component: CrlPageComponent}
+  // Public
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegistrationComponent },
+  { path: 'crl', component: CrlPageComponent },
+
+  // EeUser
+  {
+    path: 'my-certificates',
+    component: MyCertificatesComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['EeUser', 'CaUser'] as Role[] }, // CaUser as well
+  },
+  {
+    path: 'request-certificate',
+    component: RequestCertificateComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['EeUser'] as Role[] },
+  },
+
+  // CaUser
+  {
+    path: 'signed-certificates',
+    component: SignedCertificatesComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['CaUser'] as Role[] },
+  },
+  {
+    path: 'certificate-requests',
+    component: CertificateRequestsComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['CaUser'] as Role[] },
+  },
+  {
+    path: 'issue-certificate',
+    component: IssueCertificateComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['CaUser', 'Admin'] as Role[] }, // both CaUser and Admin
+  },
+
+  // Admin
+  {
+    path: 'all-certificates',
+    component: AllCertificatesComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin'] as Role[] },
+  },
+  {
+    path: 'manage-ca-users',
+    component: CaUserManagementComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Admin'] as Role[] },
+  },
+  { path: '**', redirectTo: 'login' },
+
 ];

@@ -11,7 +11,7 @@ export class CertificatesService {
   constructor(private httpClient: HttpClient) {
   }
 
-  urlCore = "http://localhost:8080/api/v1/certificates"
+  urlCore = "https://localhost:8081/api/v1/certificates"
 
   issueCertificate(createCertificate: CreateCertificate): Observable<string> {
     return this.httpClient.post<string>(`${this.urlCore}/issue`, createCertificate);

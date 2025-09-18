@@ -16,6 +16,7 @@
   margin-top: 2.6rem;
   margin-left: 2rem;
   position: absolute;
+  cursor: pointer;
 }
 
 .large-text {
@@ -95,3 +96,5 @@ mat-form-field {
   width: 25%;
   height: 6px;
 }
+.hints { margin: 8px 0 16px; padding-left: 1.2rem; }
+.hints li { list-style: disc; opacity: .9; color: $whitish; }
