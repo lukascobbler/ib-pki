@@ -12,4 +12,5 @@ public class User: Entity
     public required bool EmailConfirmed { get; set; }
     public required string HashedPassword { get; set; }
     public required string RefreshToken { get; set; }
+    public DateTimeOffset? RefreshTokenExpiresAt { get; set; }
 }
