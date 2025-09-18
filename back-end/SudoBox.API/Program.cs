@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using SudoBox.UnifiedModule.Infrastructure;
 using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -9,8 +8,10 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using SudoBox.UnifiedModule.API.Certificates;
 using SudoBox.UnifiedModule.API.Users;
-using SudoBox.UnifiedModule.Infrastructure.Certificates;
-using SudoBox.UnifiedModule.Infrastructure.Users;
+using SudoBox.UnifiedModule.Infrastructure;
+using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
+using SudoBox.UnifiedModule.Infrastructure.DbContext;
+using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
 
 
 var builder = WebApplication.CreateBuilder(args);

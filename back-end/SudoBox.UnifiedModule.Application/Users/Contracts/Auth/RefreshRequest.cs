@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace SudoBox.UnifiedModule.Application.Users.Contracts.Auth;
 
-public sealed record RefreshRequest(string RefreshToken);
+public record RefreshRequest(string RefreshToken);

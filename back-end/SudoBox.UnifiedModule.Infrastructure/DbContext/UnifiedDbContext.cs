@@ -1,10 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SudoBox.UnifiedModule.Domain.Users;
+using SudoBox.UnifiedModule.Domain.Certificates;
 using SudoBox.UnifiedModule.Application.Abstractions;
-namespace SudoBox.UnifiedModule.Infrastructure;
+using SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
+using SudoBox.UnifiedModule.Infrastructure.Users.DomainDatabaseSetup;
 
-public class UnifiedDbContext : DbContext, IUnifiedDbContext
+namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
+
+public class UnifiedDbContext : Microsoft.EntityFrameworkCore.DbContext, IUnifiedDbContext
 {
     private readonly string _schema;
 
@@ -16,6 +20,7 @@ public class UnifiedDbContext : DbContext, IUnifiedDbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<VerificationToken> VerificationTokens => Set<VerificationToken>();
+    public DbSet<Certificate> Certificates => Set<Certificate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,6 +28,7 @@ public class UnifiedDbContext : DbContext, IUnifiedDbContext
         modelBuilder.ApplyConfiguration(new UserEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new VerificationTokenEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new CertificateTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

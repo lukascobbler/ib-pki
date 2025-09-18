@@ -1,5 +1,5 @@
 ﻿namespace SudoBox.UnifiedModule.Application.Users.Contracts.Auth;
-public sealed record LoginResponse(
+public record LoginResponse(
     string AccessToken,
     DateTimeOffset AccessExpiresAt,
     string RefreshToken,

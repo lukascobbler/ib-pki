@@ -1,6 +1,6 @@
 ﻿namespace SudoBox.UnifiedModule.Application.Users.Utils.Password;
 
-public sealed class FileCommonPasswordStore : ICommonPasswordStore
+public class FileCommonPasswordStore : ICommonPasswordStore
 {
     private readonly HashSet<string> _set;
 

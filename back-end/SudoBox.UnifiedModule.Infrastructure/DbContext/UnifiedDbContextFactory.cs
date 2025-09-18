@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using SudoBox.BuildingBlocks.Infrastructure;
 
-namespace SudoBox.UnifiedModule.Infrastructure.DesignTime;
+namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
 
 public sealed class UnifiedDbContextFactory : IDesignTimeDbContextFactory<UnifiedDbContext>
 {

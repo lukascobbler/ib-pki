@@ -1,6 +1,6 @@
 ﻿namespace SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 
-public sealed record ConfirmationResult(bool Ok, int StatusCode, object Body);
+public record ConfirmationResult(bool Ok, int StatusCode, object Body);
 
 public interface IEmailConfirmationService
 {

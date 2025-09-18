@@ -1,3 +1,3 @@
 ﻿namespace SudoBox.UnifiedModule.Application.Users.Contracts.Registration;
 
-public sealed record RegisterResponse(string Message);
+public record RegisterResponse(string Message);

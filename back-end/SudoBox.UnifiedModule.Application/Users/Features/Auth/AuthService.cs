@@ -21,7 +21,7 @@ public interface IAuthService
     Task<int> LogoutAllAsync(Guid userId, CancellationToken ct);
 }
 
-public sealed class AuthService : IAuthService
+public class AuthService : IAuthService
 {
     private readonly IUnifiedDbContext _db;
     private readonly JwtSecurityTokenHandler _jwt = new();
@@ -158,8 +158,7 @@ public sealed class AuthService : IAuthService
 
         return (_jwt.WriteToken(token), exp);
     }
-
-    // refresh token as signed JWT; store SHA-256 of the whole token string
+    
     private async Task<(string refresh, DateTimeOffset exp)> RotateNewRefreshTokenAsync(User user, CancellationToken ct)
     {
         var now = DateTimeOffset.UtcNow;
@@ -210,8 +209,7 @@ public sealed class AuthService : IAuthService
             };
             var principal = _jwt.ValidateToken(token, parms, out var validated);
             if (validated is not JwtSecurityToken) return (false, null, "Invalid token");
-
-            // ensure it's a refresh token
+            
             var typ = principal.FindFirst("typ")?.Value;
             if (!string.Equals(typ, "refresh", StringComparison.Ordinal))
                 return (false, null, "Wrong token type");

@@ -4,7 +4,7 @@ using SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 using SudoBox.UnifiedModule.Application.Users.Features.Registration;
 using SudoBox.UnifiedModule.Application.Users.Utils.Password;
 
-namespace SudoBox.UnifiedModule.Infrastructure.Users;
+namespace SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
 
 public static class ServiceCollectionExtensions
 {

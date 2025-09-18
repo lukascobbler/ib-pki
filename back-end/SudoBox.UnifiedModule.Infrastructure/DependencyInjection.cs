@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SudoBox.BuildingBlocks.Infrastructure;
+using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Application.Abstractions;
 
 namespace SudoBox.UnifiedModule.Infrastructure;

@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SudoBox.UnifiedModule.Domain.Users;
 
+namespace SudoBox.UnifiedModule.Infrastructure.Users.DomainDatabaseSetup;
+
 public sealed class RefreshTokenEntityTypeConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
     public void Configure(EntityTypeBuilder<RefreshToken> b)

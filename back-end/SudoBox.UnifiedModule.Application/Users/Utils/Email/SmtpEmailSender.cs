@@ -5,7 +5,7 @@ using MimeKit;
 
 namespace SudoBox.UnifiedModule.Application.Users.Utils.Email;
 
-public sealed class SmtpEmailSender(IConfiguration cfg) : IEmailSender
+public class SmtpEmailSender(IConfiguration cfg) : IEmailSender
 {
     public async Task SendAsync(string toEmail, string subject, string htmlBody, CancellationToken ct = default)
     {

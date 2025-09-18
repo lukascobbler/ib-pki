@@ -1,6 +1,6 @@
 ﻿namespace SudoBox.UnifiedModule.Application.Users.Contracts.Registration;
 
-public sealed record RegisterRequest(
+public record RegisterRequest(
     string Email,
     string Password,
     string ConfirmPassword,

@@ -2,7 +2,7 @@
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.Registration;
 
-public sealed record RegistrationResult(bool Ok, int StatusCode, object Body);
+public record RegistrationResult(bool Ok, int StatusCode, object Body);
 
 public interface IRegistrationService
 {

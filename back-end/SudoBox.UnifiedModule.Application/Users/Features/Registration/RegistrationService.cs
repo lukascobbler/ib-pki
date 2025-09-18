@@ -11,7 +11,7 @@ using SudoBox.UnifiedModule.Application.Abstractions;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.Registration;
 
-public sealed class RegistrationService(
+public class RegistrationService(
     IUnifiedDbContext db,
     IEmailSender email,
     ICommonPasswordStore commonStore,

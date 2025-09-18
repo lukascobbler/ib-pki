@@ -6,7 +6,7 @@ using SudoBox.UnifiedModule.Domain.Users;
 
 namespace SudoBox.UnifiedModule.Application.Users.Features.ConfirmEmail;
 
-public sealed class EmailConfirmationService(IUnifiedDbContext db) : IEmailConfirmationService
+public class EmailConfirmationService(IUnifiedDbContext db) : IEmailConfirmationService
 {
     public async Task<ConfirmationResult> ConfirmAsync(string token, CancellationToken ct)
     {

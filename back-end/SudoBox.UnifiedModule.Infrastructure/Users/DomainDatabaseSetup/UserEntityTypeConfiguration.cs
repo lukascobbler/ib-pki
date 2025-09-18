@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SudoBox.UnifiedModule.Domain.Users;
 
-namespace SudoBox.UnifiedModule.Infrastructure;
+namespace SudoBox.UnifiedModule.Infrastructure.Users.DomainDatabaseSetup;
 
 internal sealed class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 {

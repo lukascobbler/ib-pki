@@ -2,14 +2,14 @@
 
 public interface ICommonPasswordStore { bool Contains(string candidate); }
 
-public sealed class NullCommonPasswordStore : ICommonPasswordStore
+public class NullCommonPasswordStore : ICommonPasswordStore
 {
     public bool Contains(string _) => false;
 }
 
 public static class PasswordPolicy
 {
-    public sealed record Result(bool Ok, List<string> Errors);
+    public record Result(bool Ok, List<string> Errors);
 
     public static Result Evaluate(string password, string email, string? name, string? surname, ICommonPasswordStore common)
     {
