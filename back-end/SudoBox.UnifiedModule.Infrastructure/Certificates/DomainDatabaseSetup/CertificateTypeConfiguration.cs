@@ -18,6 +18,8 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
         b.Property(x => x.IssuedTo);
         b.Property(x => x.NotAfter);
         b.Property(x => x.NotBefore);
+        b.Property(x => x.CanSign);
+        b.Property(x => x.PathLen);
 
         b.Property(e => e.PrivateKey)
             .HasConversion(TypeConverters.KeyConverter)
