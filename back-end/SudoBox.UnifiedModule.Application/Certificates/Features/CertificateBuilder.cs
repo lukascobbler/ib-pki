@@ -20,6 +20,9 @@ public static class CertificateBuilder {
         var subjectName = dto.GetX509Name();
         var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedBy) : subjectName;
 
+        var canSign = false;
+        var pathLen = 0;
+
         var certGen = new X509V3CertificateGenerator();
         certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
         certGen.SetSubjectDN(subjectName);
@@ -42,7 +45,7 @@ public static class CertificateBuilder {
         if (dto.KeyUsage != null && dto.KeyUsage.Count != 0) {
             var usageBits = 0;
             foreach (var ku in dto.KeyUsage)
-                if (keyUsageMap.TryGetValue(ku, out int value))
+                if (KeyUsageMap.TryGetValue(ku, out int value))
                     usageBits |= value;
 
             certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
@@ -51,7 +54,7 @@ public static class CertificateBuilder {
         if (dto.ExtendedKeyUsage != null && dto.ExtendedKeyUsage.Any()) {
             var ekuOids = new List<DerObjectIdentifier>();
             foreach (var eku in dto.ExtendedKeyUsage)
-                if (extendedKeyUsageMap.TryGetValue(eku, out var oid))
+                if (ExtendedKeyUsageMap.TryGetValue(eku, out var oid))
                     ekuOids.Add(oid);
 
             certGen.AddExtension(X509Extensions.ExtendedKeyUsage, false, new ExtendedKeyUsage(ekuOids.ToArray()));
@@ -90,11 +93,13 @@ public static class CertificateBuilder {
             NotBefore = certificate.NotBefore.ToUniversalTime(),
             EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
             PrivateKey = subjectKeyPair.Private,
-            IsApproved = true
+            IsApproved = true,
+            CanSign = canSign,
+            PathLen = pathLen
         };
     }
 
-    public static readonly Dictionary<KeyUsageValue, int> keyUsageMap = new() {
+    private static readonly Dictionary<KeyUsageValue, int> KeyUsageMap = new() {
         { KeyUsageValue.DigitalSignature, KeyUsage.DigitalSignature },
         { KeyUsageValue.NonRepudiation, KeyUsage.NonRepudiation },
         { KeyUsageValue.KeyEncipherment, KeyUsage.KeyEncipherment },
@@ -106,7 +111,7 @@ public static class CertificateBuilder {
         { KeyUsageValue.DecipherOnly, KeyUsage.DecipherOnly }
     };
 
-    public static readonly Dictionary<ExtendedKeyUsageValue, DerObjectIdentifier> extendedKeyUsageMap = new() {
+    private static readonly Dictionary<ExtendedKeyUsageValue, DerObjectIdentifier> ExtendedKeyUsageMap = new() {
         { ExtendedKeyUsageValue.ServerAuthentication, KeyPurposeID.id_kp_serverAuth },
         { ExtendedKeyUsageValue.ClientAuthentication, KeyPurposeID.id_kp_clientAuth },
         { ExtendedKeyUsageValue.CodeSigning, KeyPurposeID.id_kp_codeSigning },

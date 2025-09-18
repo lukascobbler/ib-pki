@@ -14,6 +14,18 @@ public static class CertificateEndpoints {
             } catch (Exception e) {
                 return Results.BadRequest(e.Message);
             }
-        });
+        }).RequireAuthorization("Admin"); // todo or CA
+
+        app.MapGet("api/v1/certificates/get-all", async (CertificateService certificateService) =>
+        {
+            var response = await certificateService.GetAllCertificates();
+            return Results.Ok(response);
+        }).AllowAnonymous();
+        
+        app.MapGet("api/v1/certificates/get-all-signing", async (CertificateService certificateService) =>
+        {
+            var response = await certificateService.GetAllSigningCertificates();
+            return Results.Ok(response);
+        }).AllowAnonymous();
     }
 }
