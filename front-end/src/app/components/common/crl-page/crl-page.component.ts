@@ -39,107 +39,107 @@ export class CrlPageComponent {
     'issuedBy',
     'issuedTo',
     'revocationReason',
-    'fingerprint',
+    'serialNumber',
     'actions'
   ];
 
-  certificatesDataSource: {issuedBy: string, issuedTo: string, revocationReason: string, fingerprint: string}[] = [
+  certificatesDataSource: {issuedBy: string, issuedTo: string, revocationReason: string, serialNumber: string}[] = [
 
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'keyCompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'affiliationChanged',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'privilegeWithdrawn',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'cACompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'keyCompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'affiliationChanged',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'privilegeWithdrawn',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'cACompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'keyCompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'affiliationChanged',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'privilegeWithdrawn',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'cACompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'keyCompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'affiliationChanged',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'privilegeWithdrawn',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
     {
       issuedBy: 'John Doe, IT, Example Corp, US',
       issuedTo: 'John Doe, IT, Example Corp, US',
       revocationReason: 'cACompromise',
-      fingerprint: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
+      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
     },
   ];
 

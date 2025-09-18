@@ -42,148 +42,148 @@ export class CertificateRequestsComponent {
     'organization',
     'organizationUnit',
     'submittedOn',
-    'fingerprint',
+    'serialNumber',
     'actions'
   ];
 
-  certificateRequestsDataSource: {subject: string, organization: string, organizationUnit: string, submittedOn: string, fingerprint: string}[] = [
+  certificateRequestsDataSource: {subject: string, organization: string, organizationUnit: string, submittedOn: string, serialNumber: string}[] = [
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },{
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },{
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
     {
       subject: 'Michael Scott',
       organization: 'Dunder Mifflin',
       organizationUnit: 'Sales',
       submittedOn: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
     },
   ];
 

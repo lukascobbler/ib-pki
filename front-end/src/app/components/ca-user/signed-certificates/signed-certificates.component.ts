@@ -16,6 +16,7 @@ import {
 import {
   CertificateDetailsDialogComponent
 } from '../../common/certificate-details-dialog/certificate-details-dialog.component';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-signed-certificates',
@@ -31,7 +32,8 @@ import {
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    DatePipe
   ],
   templateUrl: './signed-certificates.component.html',
   styleUrl: './signed-certificates.component.scss'
@@ -45,106 +47,106 @@ export class SignedCertificatesComponent {
     'status',
     'validFrom',
     'validUntil',
-    'fingerprint',
+    'serialNumber',
     'actions'
   ];
 
-  signedCertificatesDataSource: {issuedTo: string, status: string, validFrom: string, validUntil: string, fingerprint: string}[] = [
+  signedCertificatesDataSource: {issuedTo: string, status: string, validFrom: string, validUntil: string, serialNumber: string}[] = [
     {
       issuedTo: 'John',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC'
+      serialNumber: '9A:BC'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },{
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },{
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     },
     {
       issuedTo: 'John Doe, IT, Example Corp, US',
       status: 'Active',
       validFrom: '2024-01-01',
       validUntil: '2026-01-01',
-      fingerprint: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
+      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
     }
   ];
 
