@@ -29,31 +29,31 @@
   <div class="table-width">
     <mat-table [dataSource]="caUsersDataSource">
       <ng-container matColumnDef="name">
-        <mat-cell class="name" *matCellDef="let element">
-          {{ element.name }}
+        <mat-cell class="name" *matCellDef="let caUser">
+          {{ caUser.name }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="surname">
-        <mat-cell class="surname" *matCellDef="let element">
-          {{ element.surname }}
+        <mat-cell class="surname" *matCellDef="let caUser">
+          {{ caUser.surname }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="organization">
-        <mat-cell class="organization" *matCellDef="let element">
-          {{ element.organization }}
+        <mat-cell class="organization" *matCellDef="let caUser">
+          {{ caUser.organization }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="email">
-        <mat-cell class="email" *matCellDef="let element">
-          {{ element.email }}
+        <mat-cell class="email" *matCellDef="let caUser">
+          {{ caUser.email }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <mat-cell class="actions" *matCellDef="let element">
+        <mat-cell class="actions" *matCellDef="let caUser">
           <button (click)="openAssignNewCertificate()" mat-icon-button>
             <span class="material-symbols-rounded">autorenew</span>
           </button>

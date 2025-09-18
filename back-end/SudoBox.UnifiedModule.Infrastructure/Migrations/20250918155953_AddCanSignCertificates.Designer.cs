@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
@@ -11,9 +12,11 @@ using SudoBox.UnifiedModule.Infrastructure.DbContext;
 namespace SudoBox.UnifiedModule.Infrastructure.Migrations
 {
     [DbContext(typeof(UnifiedDbContext))]
-    partial class UnifiedDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250918155953_AddCanSignCertificates")]
+    partial class AddCanSignCertificates
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,10 +63,6 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                     b.Property<DateTime>("NotBefore")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("not_before");
-
-                    b.Property<int>("PathLen")
-                        .HasColumnType("integer")
-                        .HasColumnName("path_len");
 
                     b.Property<string>("PrivateKey")
                         .HasColumnType("text")

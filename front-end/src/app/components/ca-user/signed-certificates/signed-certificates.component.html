@@ -18,8 +18,8 @@
         <mat-header-cell class="validUntil" *matHeaderCellDef>Valid until</mat-header-cell>
       </ng-container>
 
-      <ng-container matColumnDef="fingerprint">
-        <mat-header-cell class="fingerprint" *matHeaderCellDef>Fingerprint</mat-header-cell>
+      <ng-container matColumnDef="serialNumber">
+        <mat-header-cell class="serialNumber" *matHeaderCellDef>Serial Number</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -33,41 +33,41 @@
   <div class="table-width">
     <mat-table [dataSource]="signedCertificatesDataSource">
       <ng-container matColumnDef="issuedTo">
-        <mat-cell class="issuedTo" *matCellDef="let element">
-          {{ element.issuedTo }}
+        <mat-cell class="issuedTo" *matCellDef="let certificate">
+          {{ certificate.issuedTo }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="status">
-        <mat-cell class="status" *matCellDef="let element">
-          {{ element.status }}
+        <mat-cell class="status" *matCellDef="let certificate">
+          {{ certificate.status }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="validFrom">
-        <mat-cell class="validFrom" *matCellDef="let element">
-          {{ element.validFrom }}
+        <mat-cell class="validFrom" *matCellDef="let certificate">
+          {{ certificate.validFrom | date }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="validUntil">
-        <mat-cell class="validUntil" *matCellDef="let element">
-          {{ element.validUntil }}
+        <mat-cell class="validUntil" *matCellDef="let certificate">
+          {{ certificate.validUntil | date }}
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="fingerprint">
-        <mat-cell class="fingerprint" *matCellDef="let element">
-          <p class="fp">{{ element.fingerprint }}</p>
+      <ng-container matColumnDef="serialNumber">
+        <mat-cell class="serialNumber" *matCellDef="let certificate">
+          <p class="fp">{{ certificate.serialNumber }}</p>
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <mat-cell class="actions" *matCellDef="let element">
-          <button (click)="openRevokeCertificate()" mat-icon-button>
+        <mat-cell class="actions" *matCellDef="let certificate">
+          <button (click)="openRevokeCertificate(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">block</span>
           </button>
-          <button (click)="openCertificateDetails()" mat-icon-button>
+          <button (click)="openCertificateDetails(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
           </button>
           <button mat-icon-button>
