@@ -12,6 +12,7 @@ using SudoBox.UnifiedModule.Infrastructure;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,8 @@ builder.Services.AddAuthorization(opt =>
     opt.AddPolicy("Admin", p => p.RequireRole("Admin"));
     opt.AddPolicy("CaUser", p => p.RequireRole("CaUser"));
     opt.AddPolicy("EeUser", p => p.RequireRole("EeUser"));
+    opt.AddPolicy("AdminOrCa", p => p.RequireRole("Admin", "CaUser"));
+    opt.AddPolicy("CaOrEe", p => p.RequireRole("CaUser", "EeUser"));
 });
 
 
