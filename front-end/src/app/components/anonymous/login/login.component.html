@@ -1,24 +1,32 @@
 <div>
   <span class="sidebar-banner">
-    <img priority ngSrc="/banner.svg" alt="" fill>
+    <img priority ngSrc="/banner.svg" alt="" fill />
   </span>
 
   <div class="container">
     <p class="large-text">Login</p>
 
-    <form class="login-form">
+    <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
       <mat-form-field appearance="outline">
         <mat-label>E-mail</mat-label>
-        <input matInput/>
+        <input matInput formControlName="email" autocomplete="username" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput type="password"/>
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
       </mat-form-field>
+      <button class="blue-button button" type="submit" [disabled]="loading" style="margin-top: 32px;">
+        Login
+      </button>
+      <button class="blue-button button" type="button" (click)="goRegister()">
+        Register
+      </button>
     </form>
-
-    <button class="blue-button button">Login</button>
-    <button class="blue-button button">Register</button>
   </div>
 </div>

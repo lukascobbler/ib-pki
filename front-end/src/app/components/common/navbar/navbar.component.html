@@ -6,7 +6,7 @@
   <hr class="sidebar-line">
 
   <ng-container *ngFor="let item of sidebarItems">
-    <p *ngIf="item.roles.includes(currentUserRole)"
+    <p *ngIf="currentUserRole && item.roles.includes(currentUserRole)"
        (click)="item.action ? item.action() : null"
        routerLinkActive="active-link"
        [routerLink]="item.link"

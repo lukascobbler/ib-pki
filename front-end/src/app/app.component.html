@@ -1,5 +1,5 @@
 <div class="container">
-  <app-navbar *ngIf="true"></app-navbar> <!-- TODO zameni true sa pozivom auth servisa - da li je neko ulogovan -->
+  <app-navbar *ngIf="auth.isLoggedIn"></app-navbar>
   <div class="content">
     <router-outlet></router-outlet>
   </div>
