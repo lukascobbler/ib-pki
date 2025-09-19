@@ -17,7 +17,6 @@ import {Certificate} from '../../../models/Certificate';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {downloadFile} from '../download-file/download-file';
 import {AuthService} from '../../../services/auth/auth.service';
-import {RoleRedirectComponent} from '../role-redirect/role-redirect.component';
 import {ToastrService} from '../toastr/toastr.service';
 
 @Component({
@@ -261,7 +260,7 @@ export class MyCertificatesComponent {
   downloadCertificate(certificate: Certificate) {
     this.certificatesService.downloadCertificate(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);
@@ -272,7 +271,7 @@ export class MyCertificatesComponent {
   downloadCertificateChain(certificate: Certificate) {
     this.certificatesService.downloadCertificateChain(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_chain_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);

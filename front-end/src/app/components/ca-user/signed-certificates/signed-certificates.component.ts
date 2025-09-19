@@ -172,7 +172,7 @@ export class SignedCertificatesComponent {
   downloadCertificate(certificate: Certificate) {
     this.certificatesService.downloadCertificate(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);
@@ -183,7 +183,7 @@ export class SignedCertificatesComponent {
   downloadCertificateChain(certificate: Certificate) {
     this.certificatesService.downloadCertificateChain(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_chain_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);

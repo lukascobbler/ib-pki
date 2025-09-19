@@ -57,6 +57,7 @@ export class AllCertificatesComponent implements OnInit {
   ngOnInit() {
     this.certificatesService.getAllCertificates().subscribe({
       next: value => {
+        console.log(value);
         this.certificates = value;
         this.certificatesDataSource.data = this.certificates;
         this.loadingCertificates = false;
@@ -85,7 +86,7 @@ export class AllCertificatesComponent implements OnInit {
   downloadCertificate(certificate: Certificate) {
     this.certificatesService.downloadCertificate(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);
@@ -96,7 +97,7 @@ export class AllCertificatesComponent implements OnInit {
   downloadCertificateChain(certificate: Certificate) {
     this.certificatesService.downloadCertificateChain(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_chain_${certificate.serialNumber}.pfx`)
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
       error: (err) => {
         this.toast.error("Error", "Download failed: ", err);

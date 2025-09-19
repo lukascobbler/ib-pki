@@ -74,7 +74,7 @@ export class IssueCertificateComponent implements OnInit {
     this.certificatesService.getValidSigningCertificates().subscribe({
       next: value => {
         value.forEach((certificate) => {
-          this.signingCertificates.push({key: certificate.serialNumber, value: certificate.serialNumber})
+          this.signingCertificates.push({key: certificate.serialNumber, value: certificate.prettySerialNumber})
         })
       },
       error: err => {

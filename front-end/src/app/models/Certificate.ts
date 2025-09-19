@@ -1,5 +1,6 @@
 export interface Certificate {
   serialNumber: string;
+  prettySerialNumber: string;
   issuedBy: string;
   issuedTo: string;
   validFrom?: Date;
