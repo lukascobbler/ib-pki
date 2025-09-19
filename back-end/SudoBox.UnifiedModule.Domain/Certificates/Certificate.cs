@@ -5,6 +5,7 @@ namespace SudoBox.UnifiedModule.Domain.Certificates;
 
 public class Certificate {
     public required BigInteger SerialNumber { get; set; }
+    public required Certificate? SigningCertificate { get; set; }
     public required string IssuedBy { get; set; }
     public required string IssuedTo { get; set; }
     public required DateTime NotBefore { get; set; }

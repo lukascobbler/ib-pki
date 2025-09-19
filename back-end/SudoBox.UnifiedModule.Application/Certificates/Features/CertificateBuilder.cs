@@ -20,8 +20,8 @@ public static class CertificateBuilder {
         var subjectName = dto.GetX509Name();
         var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedBy) : subjectName;
 
-        var canSign = false;
-        var pathLen = 0;
+        var canSign = (dto.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (dto.BasicConstraints?.IsCa ?? false);
+        var pathLen = dto.BasicConstraints?.PathLen ?? 0;
 
         var certGen = new X509V3CertificateGenerator();
         certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
@@ -30,8 +30,13 @@ public static class CertificateBuilder {
 
         if (dto.NotBefore.HasValue)
             certGen.SetNotBefore(dto.NotBefore.Value);
+        else
+            certGen.SetNotBefore(DateTime.UtcNow);
+
         if (dto.NotAfter.HasValue)
             certGen.SetNotAfter(dto.NotAfter.Value);
+        else
+            certGen.SetNotAfter(DateTime.MaxValue);
 
         certGen.SetPublicKey(subjectKeyPair.Public);
 
@@ -87,8 +92,9 @@ public static class CertificateBuilder {
 
         return new Certificate {
             SerialNumber = serialNumber,
-            IssuedBy = issuerName.ToString(),
-            IssuedTo = subjectName.ToString(),
+            SigningCertificate = issuerCertificate,
+            IssuedBy = issuerName.ToString().Replace(",", ", "),
+            IssuedTo = subjectName.ToString().Replace(",", ", "),
             NotAfter = certificate.NotAfter.ToUniversalTime(),
             NotBefore = certificate.NotBefore.ToUniversalTime(),
             EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
