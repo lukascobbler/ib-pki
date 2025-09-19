@@ -68,8 +68,8 @@ public class RegistrationService(
         await db.VerificationTokens.AddAsync(vt, ct);
         await db.SaveChangesAsync(ct);
 
-        var publicBase = (cfg["Auth:EmailConfirmation:PublicBaseUrl"] ?? "https://localhost:8081").TrimEnd('/');
-        var confirmUrl = $"{publicBase}/api/users/confirm?token={tokenPlain}";
+        var publicBase = "http://localhost:4200"; // web server address
+        var confirmUrl = $"{publicBase}/confirm?token={tokenPlain}";
 
         var html = $@"
             <p>Hi {System.Net.WebUtility.HtmlEncode(user.Name ?? "there")},</p>

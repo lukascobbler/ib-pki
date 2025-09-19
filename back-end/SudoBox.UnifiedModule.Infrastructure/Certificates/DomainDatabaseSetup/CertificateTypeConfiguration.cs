@@ -4,10 +4,8 @@ using SudoBox.UnifiedModule.Domain.Certificates;
 
 namespace SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
 
-public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Certificate>
-{
-    public void Configure(EntityTypeBuilder<Certificate> b)
-    {
+public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Certificate> {
+    public void Configure(EntityTypeBuilder<Certificate> b) {
         b.ToTable("certificates");
         b.HasKey(x => x.SerialNumber);
 
@@ -24,6 +22,11 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
         b.Property(e => e.PrivateKey)
             .HasConversion(TypeConverters.KeyConverter)
             .HasColumnType("text")
+            .IsRequired(false);
+
+        b.HasOne(x => x.SigningCertificate)
+            .WithMany()
+            .HasForeignKey("SigningCertificateSerialNumber")
             .IsRequired(false);
     }
 }
