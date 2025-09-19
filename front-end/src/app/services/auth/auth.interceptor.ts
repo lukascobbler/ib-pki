@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
-} from '@angular/common/http';
+import {inject, Injectable, Injector} from '@angular/core';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { catchError, switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private auth: AuthService) {}
+  injector = inject(Injector)
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const auth = this.injector.get(AuthService);
+
     const isApi = req.url.startsWith('https://localhost:8081/');
     const isAuthEndpoint =
       req.url.includes('/api/users/login') ||
@@ -18,20 +18,17 @@ export class AuthInterceptor implements HttpInterceptor {
       req.url.includes('/api/users/confirm') ||
       req.url.includes('/api/users/refresh');
 
-    // Skip non-API and auth endpoints
     if (!isApi || isAuthEndpoint) {
       return next.handle(req);
     }
 
-    // Ensure token is fresh before the request
-    return this.auth.ensureValidAccessToken().pipe(
+    return auth.ensureValidAccessToken().pipe(
       switchMap(() => {
-        const token = this.auth.accessToken;
+        const token = auth.accessToken;
         const authReq = token
           ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
           : req;
 
-        // Send, and if its 401 still, try one refresh + retry once
         let retried = false;
         return next.handle(authReq).pipe(
           catchError((err: HttpErrorResponse) => {
@@ -39,9 +36,9 @@ export class AuthInterceptor implements HttpInterceptor {
             retried = true;
 
             if (shouldRetry) {
-              return this.auth.ensureValidAccessToken().pipe(
+              return auth.ensureValidAccessToken().pipe(
                 switchMap(() => {
-                  const token2 = this.auth.accessToken;
+                  const token2 = auth.accessToken;
                   const retryReq = token2
                     ? authReq.clone({ setHeaders: { Authorization: `Bearer ${token2}` } })
                     : authReq;

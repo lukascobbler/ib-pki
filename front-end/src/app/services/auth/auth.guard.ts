@@ -31,3 +31,18 @@ export const roleGuard: CanActivateFn = (route, state): boolean | UrlTree => {
 
   return router.createUrlTree(['/login']);
 };
+
+export const noAuthGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isLoggedIn) {
+    const role = auth.role as Role | null;
+    if (role === 'Admin') router.navigate(['/all-certificates']);
+    else if (role === 'CaUser') router.navigate(['/signed-certificates']);
+    else if (role === 'EeUser') router.navigate(['/my-certificates']);
+    return false;
+  }
+
+  return true;
+};

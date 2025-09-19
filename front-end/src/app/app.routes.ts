@@ -10,14 +10,16 @@ import {CertificateRequestsComponent} from './components/ca-user/certificate-req
 import {SignedCertificatesComponent} from './components/ca-user/signed-certificates/signed-certificates.component';
 import {CrlPageComponent} from './components/common/crl-page/crl-page.component';
 
-import { authGuard, roleGuard } from './services/auth/auth.guard';
+import {authGuard, noAuthGuard, roleGuard} from './services/auth/auth.guard';
 import type { Role } from './models/Role';
+import {RoleRedirectComponent} from './components/common/role-redirect/role-redirect.component';
+import {EmailConfirmationComponent} from './components/anonymous/email-confirmation/email-confirmation/email-confirmation.component';
 
 export const routes: Routes = [
   // Public
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegistrationComponent },
+  { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
+  { path: 'register', component: RegistrationComponent, canActivate: [noAuthGuard] },
   { path: 'crl', component: CrlPageComponent },
 
   // EeUser
@@ -67,6 +69,7 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Admin'] as Role[] },
   },
-  { path: '**', redirectTo: 'login' },
 
+  { path: 'confirm', component: EmailConfirmationComponent },
+  { path: '**', component: RoleRedirectComponent, canActivate: [authGuard] }
 ];

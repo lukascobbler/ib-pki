@@ -1,17 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {NgClass, NgFor, NgIf, NgOptimizedImage} from '@angular/common';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
-import { Role } from '../../../models/Role';
-import { AuthService } from '../../../services/auth/auth.service';
+import {Role} from '../../../models/Role';
+import {AuthService} from '../../../services/auth/auth.service';
 
-type NavItem = {
+interface NavItem {
   label: string;
   icon: string;
   link?: string;
   roles: Role[];
   class?: string;
   action?: () => void;
-};
+}
 
 @Component({
   selector: 'app-navbar',
@@ -27,27 +27,21 @@ type NavItem = {
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
   currentUserRole: Role | null = null;
   sidebarItems: NavItem[] = [
-    // EeUser
-    { label: 'My certificates', icon: 'library_books', link: '/my-certificates', roles: ['EeUser', 'CaUser'] },
-    { label: 'Request Certificate', icon: 'add_notes', link: '/request-certificate', roles: ['EeUser'] },
-
-    // CaUser
-    { label: 'Signed certificates', icon: 'library_books', link: '/signed-certificates', roles: ['CaUser'] },
-    { label: 'Certificate requests', icon: 'stacks', link: '/certificate-requests', roles: ['CaUser'] },
-    { label: 'Issue a certificate', icon: 'add_notes', link: '/issue-certificate', roles: ['CaUser', 'Admin'] },
-
-    // Admin
-    { label: 'All certificates', icon: 'library_books', link: '/all-certificates', roles: ['Admin'] },
-    { label: 'Manage CA users', icon: 'group', link: '/manage-ca-users', roles: ['Admin'] },
-
-    // Common
-    { label: 'Logout', icon: 'logout', roles: ['EeUser', 'CaUser', 'Admin'], class: 'logout', action: () => this.logout() },
+    {label: 'Signed certificates', icon: 'library_books', link: '/signed-certificates', roles: ['CaUser']},
+    {label: 'Certificate requests', icon: 'stacks', link: '/certificate-requests', roles: ['CaUser']},
+    {label: 'All certificates', icon: 'library_books', link: '/all-certificates', roles: ['Admin']},
+    {label: 'Issue a certificate', icon: 'add_notes', link: '/issue-certificate', roles: ['CaUser', 'Admin']},
+    {label: 'My certificates', icon: 'library_books', link: '/my-certificates', roles: ['CaUser', 'EeUser']},
+    {label: 'Request Certificate', icon: 'add_notes', link: '/request-certificate', roles: ['EeUser']},
+    {label: 'Manage CA users', icon: 'group', link: '/manage-ca-users', roles: ['Admin']},
+    {label: 'Logout', icon: 'logout', roles: ['EeUser', 'CaUser', 'Admin'], class: 'logout', action: () => this.logout()},
   ];
-
-  constructor(private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.currentUserRole = (this.auth.role as Role) ?? null;

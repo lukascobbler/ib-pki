@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -36,8 +36,7 @@ import {Certificate} from '../../../models/Certificate';
   styleUrl: './my-certificates.component.scss'
 })
 export class MyCertificatesComponent {
-  constructor(private dialog: MatDialog) {
-  }
+  dialog = inject(MatDialog);
 
   displayedColumns: string[] = [
     'issuedBy',
@@ -244,7 +243,7 @@ export class MyCertificatesComponent {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '700px',
+      width: '780px',
       maxWidth: '70vw',
       data: { decryptedCertificate: certificate.decryptedCertificate }
     });

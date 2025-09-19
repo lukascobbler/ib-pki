@@ -25,6 +25,31 @@
   border-color: $pale-text;
 }
 
+.gray-button {
+  font-family: Roboto, Arial, sans-serif;
+  background-color: $edge;
+  letter-spacing: 0.25px;
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 0;
+  border-radius: 8px;
+  border: none;
+  color: $whitish;
+  cursor: pointer;
+  height: 48px;
+}
+
+.gray-button:hover {
+  background-color: lighten($edge, 5.5%);
+}
+
+.gray-button:disabled {
+  background-color: $background;
+  color: $pale-text;
+  border-color: $pale-text;
+}
+
 .close-button {
   position: absolute;
   color: $pale-text;

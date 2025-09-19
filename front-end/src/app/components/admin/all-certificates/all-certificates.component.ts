@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -20,6 +20,7 @@ import {CertificatesService} from '../../../services/certificates/certificates.s
 import {Certificate} from '../../../models/Certificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DatePipe, NgIf} from '@angular/common';
+import {ToastrService} from '../../common/toastr/toastr.service';
 
 @Component({
   selector: 'app-all-certificates',
@@ -44,13 +45,13 @@ import {DatePipe, NgIf} from '@angular/common';
   styleUrl: './all-certificates.component.scss'
 })
 export class AllCertificatesComponent implements OnInit {
+  certificatesService = inject(CertificatesService);
+  toast = inject(ToastrService)
+  dialog = inject(MatDialog);
   displayedColumns: string[] = ['issuedBy', 'issuedTo', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
   certificatesDataSource = new MatTableDataSource<Certificate>();
   certificates: Certificate[] = [];
   loadingCertificates = true;
-
-  constructor(private dialog: MatDialog, private certificatesService: CertificatesService) {
-  }
 
   ngOnInit() {
     this.certificatesService.getAllCertificates().subscribe({
@@ -60,7 +61,8 @@ export class AllCertificatesComponent implements OnInit {
         this.loadingCertificates = false;
       },
       error: err => {
-        // todo error display
+        this.toast.error("Error", "Unable to load certificates");
+        console.log(err);
       }
     })
   }
@@ -73,7 +75,7 @@ export class AllCertificatesComponent implements OnInit {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '700px',
+      width: '780px',
       maxWidth: '70vw',
       data: { decryptedCertificate: certificate.decryptedCertificate }
     });

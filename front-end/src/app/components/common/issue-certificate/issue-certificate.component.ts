@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule, NgForm, ReactiveFormsModule} from '@angular/forms';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -14,6 +14,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {KeyUsageValue} from '../../../models/KeyUsageValue';
 import {ExtendedKeyUsageValue} from '../../../models/ExtendedKeyUsageValue';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
+import {ToastrService} from '../toastr/toastr.service';
 
 @Component({
   selector: 'app-issue-certificate',
@@ -38,9 +39,12 @@ import {CertificatesService} from '../../../services/certificates/certificates.s
   templateUrl: './issue-certificate.component.html',
   styleUrl: './issue-certificate.component.scss'
 })
-export class IssueCertificateComponent {
+export class IssueCertificateComponent implements OnInit {
+  certificatesService = inject(CertificatesService);
+  toast = inject(ToastrService)
   protected readonly ExtendedKeyUsageValue = ExtendedKeyUsageValue;
   protected readonly KeyUsageValue = KeyUsageValue;
+  signingCertificates: { key: string, value: string }[] = [{key: 'SelfSign', value: 'Self signing'}];
   extensions: { key: string, value: any }[] = [];
   dateNotBefore: Date | null = null;
   dateNotAfter: Date | null = null;
@@ -50,17 +54,6 @@ export class IssueCertificateComponent {
   organizationalUnit = ''
   email = ''
   country = ''
-
-  constructor(private certificateService: CertificatesService) {
-  }
-
-  onCountryInput(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const pos = input.selectionStart!;
-    this.country = input.value.replace(/[^A-Za-z]/g, '').toUpperCase();
-    input.value = this.country;
-    input.setSelectionRange(pos, pos);
-  }
 
   allExtensionKeys = [
     {value: 'keyUsage', label: 'Key Usage'},
@@ -72,7 +65,33 @@ export class IssueCertificateComponent {
     {value: 'certificatePolicies', label: 'Certificate Policies'}
   ];
 
-  getAvailableKeys(currentExt: any) {
+  ngOnInit() {
+    this.loadSigningCertificates()
+  }
+
+  loadSigningCertificates() {
+    this.signingCertificates = [{key: 'SelfSign', value: 'Self signing'}];
+    this.certificatesService.getValidSigningCertificates().subscribe({
+      next: value => {
+        value.forEach((certificate) => {
+          this.signingCertificates.push({key: certificate.serialNumber, value: certificate.serialNumber})
+        })
+      },
+      error: err => {
+        this.toast.error("Error", "Unable to get signing certificates");
+      }
+    })
+  }
+
+  onCountryInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const pos = input.selectionStart!;
+    this.country = input.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+    input.value = this.country;
+    input.setSelectionRange(pos, pos);
+  }
+
+  getAvailableKeys(currentExt: unknown) {
     return this.allExtensionKeys.filter(
       key => !this.extensions.some(ext => ext.key === key.value && ext !== currentExt)
     );
@@ -138,7 +157,7 @@ export class IssueCertificateComponent {
     if (!form.valid) return;
 
     const dto: CreateCertificate = {
-      signingCertificate: "0",
+      signingCertificate: this.signingCertificate,
       commonName: this.commonName,
       organization: this.organization,
       organizationalUnit: this.organizationalUnit,
@@ -171,14 +190,21 @@ export class IssueCertificateComponent {
         dto.certificatePolicy = extension.value;
     })
 
-    this.certificateService.issueCertificate(dto).subscribe({
+    this.certificatesService.issueCertificate(dto).subscribe({
       next: value => {
-        console.log(value)
-        // todo add response with toastr
+        this.toast.success("Success", "Certificate successfully created");
       },
       error: err => {
-        // todo add response with toastr
+        this.toast.error("Unable to issue the certificate", `Error: ${err}`);
       }
     });
+
+    this.loadSigningCertificates();
+    this.resetFields(form);
+  }
+
+  private resetFields(form: NgForm) {
+    this.extensions = [];
+    form.resetForm();
   }
 }

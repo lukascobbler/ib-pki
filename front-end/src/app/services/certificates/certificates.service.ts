@@ -1,6 +1,6 @@
 import {CreateCertificate} from '../../models/CreateCertificate';
 import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Certificate} from '../../models/Certificate';
 
@@ -8,9 +8,7 @@ import {Certificate} from '../../models/Certificate';
   providedIn: 'root'
 })
 export class CertificatesService {
-  constructor(private httpClient: HttpClient) {
-  }
-
+  httpClient = inject(HttpClient)
   urlCore = "https://localhost:8081/api/v1/certificates"
 
   issueCertificate(createCertificate: CreateCertificate): Observable<string> {
@@ -21,7 +19,7 @@ export class CertificatesService {
     return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-all`);
   }
 
-  getAllSigningCertificates(): Observable<Certificate[]> {
-    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-all-signing`);
+  getValidSigningCertificates(): Observable<Certificate[]> {
+    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-valid-signing`);
   }
 }
