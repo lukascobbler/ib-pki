@@ -163,9 +163,9 @@ export class SignedCertificatesComponent {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '780px',
+      width: '850px',
       maxWidth: '70vw',
-      data: { decryptedCertificate: certificate.decryptedCertificate }
+      data: { encodedCertificate: certificate.decryptedCertificate }
     });
   }
 

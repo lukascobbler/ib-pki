@@ -5,8 +5,8 @@
 
   <mat-form-field appearance="outline">
     <mat-label>Certificate</mat-label>
-    <textarea disabled [scrollTop]="0" rows="20" class="textarea" matInput [value]="decryptedCertificate"></textarea>
+    <textarea disabled [scrollTop]="0" rows="20" class="textarea" matInput [value]="encodedCertificate"></textarea>
   </mat-form-field>
 
-  <button class="blue-button" (click)="copyCertificate()">Copy</button>
+  <button class="blue-button" [cdkCopyToClipboard]="encodedCertificate">Copy</button>
 </div>
