@@ -93,8 +93,8 @@ public static class CertificateBuilder {
         return new Certificate {
             SerialNumber = serialNumber,
             SigningCertificate = issuerCertificate,
-            IssuedBy = issuerName.ToString().Replace(",", ", "),
-            IssuedTo = subjectName.ToString().Replace(",", ", "),
+            IssuedBy = issuerName.ToString(),
+            IssuedTo = subjectName.ToString(),
             NotAfter = certificate.NotAfter.ToUniversalTime(),
             NotBefore = certificate.NotBefore.ToUniversalTime(),
             EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
