@@ -4,15 +4,17 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.IO.Pem;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.Asn1.Nist;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using System.Numerics;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Pkcs;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 public class CertificateService(IUnifiedDbContext db) {
-    private readonly IUnifiedDbContext _db = db;
 
     public async Task CreateCertificate(CreateCertificateDto createCertificateDto, bool isAdmin) {
         var kpGen = new RsaKeyPairGenerator();
@@ -22,7 +24,7 @@ public class CertificateService(IUnifiedDbContext db) {
         Certificate? signingCertificate = null;
         if (createCertificateDto.SigningCertificate != "SelfSign") {
             var signingSerialNumber = BigInteger.Parse(createCertificateDto.SigningCertificate);
-            signingCertificate = await _db.Certificates.FindAsync(signingSerialNumber);
+            signingCertificate = await db.Certificates.FindAsync(signingSerialNumber);
             if (signingCertificate == null)
                 throw new Exception("Signing certificate not found!");
         }
@@ -36,12 +38,12 @@ public class CertificateService(IUnifiedDbContext db) {
 
         Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateDto, subjectKeyPair, signingCertificate);
 
-        await _db.Certificates.AddAsync(certificate);
-        await _db.SaveChangesAsync();
+        await db.Certificates.AddAsync(certificate);
+        await db.SaveChangesAsync();
     }
 
     public async Task<ICollection<CertificateDto>> GetAllCertificates() {
-        var allCertificatesModels = await _db.Certificates.ToListAsync();
+        var allCertificatesModels = await db.Certificates.ToListAsync();
 
         return allCertificatesModels.Select(c =>
             CertificateDto.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
@@ -49,7 +51,7 @@ public class CertificateService(IUnifiedDbContext db) {
     }
 
     public async Task<ICollection<CertificateDto>> GetValidSigningCertificates() {
-        var allSigningCertificates = await _db.Certificates.Where(c => c.CanSign).ToListAsync();
+        var allSigningCertificates = await db.Certificates.Where(c => c.CanSign).ToListAsync();
         var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
@@ -57,7 +59,100 @@ public class CertificateService(IUnifiedDbContext db) {
         ).ToList();
     }
 
-    // todo: revoking chekup
+    // todo prevent anyone from downloading any certificate only by id
+    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId)
+    {
+        var signingSerialNumber = BigInteger.Parse(certificateId);
+        var dbCertificate = await db.Certificates.FindAsync(signingSerialNumber);
+
+        if (dbCertificate == null)
+            throw new Exception("Signing certificate not found!");
+
+        if (dbCertificate.EncodedValue == null || dbCertificate.PrivateKey == null)
+            throw new Exception("Certificate does not have an encoded value!");
+
+        var certBytes = Convert.FromBase64String(dbCertificate.EncodedValue);
+        var certificate = new X509CertificateParser().ReadCertificate(certBytes);
+
+        var builder = new Pkcs12StoreBuilder()
+            .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
+        var store = builder.Build();
+        
+        var alias = certificate.SubjectDN.ToString();
+        var certEntry = new X509CertificateEntry(certificate);
+
+        store.SetKeyEntry(alias, new AsymmetricKeyEntry(dbCertificate.PrivateKey), [certEntry]);
+
+        await using var ms = new MemoryStream();
+        store.Save(ms, "".ToCharArray(), new SecureRandom());
+
+        return ms.ToArray();
+    }
+    
+    // todo prevent anyone from downloading any certificate only by id
+    public async Task<byte[]> GetCertificateChainAsPkcs12(string certificateId)
+    {
+        var firstSerialNumber = BigInteger.Parse(certificateId);
+        var dbCertificate = await db.Certificates
+            .Include(c => c.SigningCertificate)
+            .Where(c => c.SerialNumber == firstSerialNumber)
+            .FirstOrDefaultAsync();
+
+        if (dbCertificate == null)
+            throw new Exception("Signing certificate not found!");
+
+        if (dbCertificate.EncodedValue == null || dbCertificate.PrivateKey == null)
+            throw new Exception("Certificate does not have an encoded value!");
+
+        var certBytes = Convert.FromBase64String(dbCertificate.EncodedValue);
+        var certificate = new X509CertificateParser().ReadCertificate(certBytes);
+        var chain = new List<X509Certificate> { certificate };
+        
+        var current = await db.Certificates
+            .Include(c => c.SigningCertificate)
+            .Where(c => c == dbCertificate.SigningCertificate)
+            .FirstOrDefaultAsync();
+        
+        while (current != null)
+        {
+            if (string.IsNullOrWhiteSpace(current.EncodedValue))
+                throw new Exception($"Certificate {current.SerialNumber} in chain has no encoded value!");
+
+            var currentBytes = Convert.FromBase64String(current.EncodedValue);
+            var currentCert = new X509CertificateParser().ReadCertificate(currentBytes);
+            chain.Add(currentCert);
+
+            if (current.SigningCertificate == null)
+            {
+                current = null;
+            }
+            else
+            {
+                var nextCertificate = current.SigningCertificate;
+                current = await db.Certificates
+                    .Include(c => c.SigningCertificate)
+                    .Where(c => c == nextCertificate)
+                    .FirstOrDefaultAsync();
+            }
+        }
+
+        chain.Reverse();
+        var builder = new Pkcs12StoreBuilder()
+            .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
+        var store = builder.Build();
+        var alias = certificate.SubjectDN.ToString();
+
+        var chainEntries = chain.Select(c => new X509CertificateEntry(c)).ToArray();
+
+        store.SetKeyEntry(alias, new AsymmetricKeyEntry(dbCertificate.PrivateKey), chainEntries);
+
+        await using var ms = new MemoryStream();
+        store.Save(ms, "".ToCharArray(), new SecureRandom());
+
+        return ms.ToArray();
+    }
+
+    // todo: revoking checkup
     private static CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
         if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
             return CertificateStatus.Invalid;
@@ -72,7 +167,7 @@ public class CertificateService(IUnifiedDbContext db) {
         return GetStatus(certificate.SigningCertificate, original ?? certificate);
     }
 
-    public static bool IsCertificateSignedBy(string? certB64, string? issuerB64) {
+    private static bool IsCertificateSignedBy(string? certB64, string? issuerB64) {
         if (string.IsNullOrEmpty(certB64) || string.IsNullOrEmpty(issuerB64))
             return false;
         try {
@@ -90,7 +185,7 @@ public class CertificateService(IUnifiedDbContext db) {
         return ToPem(certificate.EncodedValue) ?? "Malformed certificate";
     }
 
-    public static string? ToPem(string base64) {
+    private static string? ToPem(string base64) {
         try {
             var bytes = Convert.FromBase64String(base64);
             using var sw = new StringWriter();

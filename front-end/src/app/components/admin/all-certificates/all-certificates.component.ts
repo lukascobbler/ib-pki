@@ -21,6 +21,8 @@ import {Certificate} from '../../../models/Certificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DatePipe, NgIf} from '@angular/common';
 import {ToastrService} from '../../common/toastr/toastr.service';
+import {downloadFile} from '../../common/blob/download-file';
+import {extractBlobError} from '../../common/blob/extract-blob-error';
 
 @Component({
   selector: 'app-all-certificates',
@@ -61,8 +63,7 @@ export class AllCertificatesComponent implements OnInit {
         this.loadingCertificates = false;
       },
       error: err => {
-        this.toast.error("Error", "Unable to load certificates");
-        console.log(err);
+        this.toast.error("Error", "Unable to load certificates: " + err);
       }
     })
   }
@@ -75,9 +76,33 @@ export class AllCertificatesComponent implements OnInit {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '780px',
+      width: '850px',
       maxWidth: '70vw',
-      data: { decryptedCertificate: certificate.decryptedCertificate }
+      data: { encodedCertificate: certificate.decryptedCertificate }
+    });
+  }
+
+  downloadCertificate(certificate: Certificate) {
+    this.certificatesService.downloadCertificate(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
+    });
+  }
+
+  downloadCertificateChain(certificate: Certificate) {
+    this.certificatesService.downloadCertificateChain(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
     });
   }
 }

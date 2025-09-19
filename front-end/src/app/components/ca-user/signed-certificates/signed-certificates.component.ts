@@ -18,6 +18,10 @@ import {
 } from '../../common/certificate-details-dialog/certificate-details-dialog.component';
 import {DatePipe} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
+import {downloadFile} from '../../common/blob/download-file';
+import {CertificatesService} from '../../../services/certificates/certificates.service';
+import {ToastrService} from '../../common/toastr/toastr.service';
+import {extractBlobError} from '../../common/blob/extract-blob-error';
 
 @Component({
   selector: 'app-signed-certificates',
@@ -40,6 +44,8 @@ import {Certificate} from '../../../models/Certificate';
   styleUrl: './signed-certificates.component.scss'
 })
 export class SignedCertificatesComponent {
+  certificatesService = inject(CertificatesService);
+  toast = inject(ToastrService)
   dialog = inject(MatDialog);
 
   displayedColumns: string[] = [
@@ -158,9 +164,33 @@ export class SignedCertificatesComponent {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '780px',
+      width: '850px',
       maxWidth: '70vw',
-      data: { decryptedCertificate: certificate.decryptedCertificate }
+      data: { encodedCertificate: certificate.decryptedCertificate }
+    });
+  }
+
+  downloadCertificate(certificate: Certificate) {
+    this.certificatesService.downloadCertificate(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
+    });
+  }
+
+  downloadCertificateChain(certificate: Certificate) {
+    this.certificatesService.downloadCertificateChain(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
     });
   }
 }

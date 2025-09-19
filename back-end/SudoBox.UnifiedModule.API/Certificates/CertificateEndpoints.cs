@@ -10,11 +10,14 @@ namespace SudoBox.UnifiedModule.API.Certificates;
 public static class CertificateEndpoints {
     public static void MapCertificateEndpoints(this WebApplication app) {
         app.MapPost("api/v1/certificates/issue", async (CreateCertificateDto createCertificateDto, CertificateService certificateService, HttpContext httpContext) => {
-            try {
-                var role = httpContext.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+            try
+            {
+                var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                 await certificateService.CreateCertificate(createCertificateDto, role == "Admin");
                 return Results.Ok();
-            } catch (Exception e) {
+            } 
+            catch (Exception e) 
+            {
                 return Results.BadRequest(e.Message);
             }
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser" });
@@ -28,5 +31,41 @@ public static class CertificateEndpoints {
             var response = await certificateService.GetValidSigningCertificates();
             return Results.Ok(response);
         }).AllowAnonymous();
+        
+        app.MapGet("api/v1/certificates/download/{id}", async (string id, CertificateService certificateService) =>
+        {
+            try
+            {
+                var pfxBytes = await certificateService.GetCertificateAsPkcs12(id);
+
+                return Results.File(
+                    fileContents: pfxBytes,
+                    contentType: "application/x-pkcs12",
+                    fileDownloadName: $"certificate_{id}.pfx"
+                );
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser,EeUser" });
+        
+        app.MapGet("api/v1/certificates/download-chain/{id}", async (string id, CertificateService certificateService) =>
+        {
+            try
+            {
+                var pfxBytes = await certificateService.GetCertificateChainAsPkcs12(id);
+
+                return Results.File(
+                    fileContents: pfxBytes,
+                    contentType: "application/x-pkcs12",
+                    fileDownloadName: $"certificate_chain_{id}.pfx"
+                );
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser,EeUser" });
     }
 }

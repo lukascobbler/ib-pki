@@ -24,14 +24,23 @@ public static class TypeConverters
         var pw = new PemWriter(sw);
         pw.WriteObject(key);
         pw.Writer.Flush();
-        return sw.ToString().Split("\n")[1];
+        return sw.ToString();
     }
 
     private static AsymmetricKeyParameter? FromPem(string? pem)
     {
-        if (string.IsNullOrWhiteSpace(pem)) return null;
+        if (string.IsNullOrWhiteSpace(pem))
+            return null;
+
         using var sr = new StringReader(pem);
         var pr = new PemReader(sr);
-        return (AsymmetricKeyParameter)pr.ReadObject();
+        var obj = pr.ReadObject();
+
+        if (obj is AsymmetricCipherKeyPair keyPair)
+        {
+            return keyPair.Private;
+        }
+        
+        throw new InvalidOperationException("Private key not stored correctly: " + obj?.GetType().Name);
     }
 }

@@ -12,8 +12,13 @@ import {MatIconButton} from '@angular/material/button';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {RevokeCertificateDialogComponent} from '../revoke-certificate-dialog/revoke-certificate-dialog.component';
 import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
+import {CertificatesService} from '../../../services/certificates/certificates.service';
+import {downloadFile} from '../blob/download-file';
+import {AuthService} from '../../../services/auth/auth.service';
+import {ToastrService} from '../toastr/toastr.service';
+import {extractBlobError} from '../blob/extract-blob-error';
 
 @Component({
   selector: 'app-my-certificates',
@@ -30,13 +35,17 @@ import {Certificate} from '../../../models/Certificate';
     MatRowDef,
     MatTable,
     MatHeaderCellDef,
-    DatePipe
+    DatePipe,
+    NgIf
   ],
   templateUrl: './my-certificates.component.html',
   styleUrl: './my-certificates.component.scss'
 })
 export class MyCertificatesComponent {
+  certificatesService = inject(CertificatesService);
+  toast = inject(ToastrService);
   dialog = inject(MatDialog);
+  auth = inject(AuthService);
 
   displayedColumns: string[] = [
     'issuedBy',
@@ -243,9 +252,33 @@ export class MyCertificatesComponent {
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
-      width: '780px',
+      width: '850px',
       maxWidth: '70vw',
-      data: { decryptedCertificate: certificate.decryptedCertificate }
+      data: { encodedCertificate: certificate.decryptedCertificate }
+    });
+  }
+
+  downloadCertificate(certificate: Certificate) {
+    this.certificatesService.downloadCertificate(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
+    });
+  }
+
+  downloadCertificateChain(certificate: Certificate) {
+    this.certificatesService.downloadCertificateChain(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
     });
   }
 }
