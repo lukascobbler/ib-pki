@@ -18,9 +18,10 @@ import {
 } from '../../common/certificate-details-dialog/certificate-details-dialog.component';
 import {DatePipe} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
-import {downloadFile} from '../../common/download-file/download-file';
+import {downloadFile} from '../../common/blob/download-file';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {ToastrService} from '../../common/toastr/toastr.service';
+import {extractBlobError} from '../../common/blob/extract-blob-error';
 
 @Component({
   selector: 'app-signed-certificates',
@@ -174,8 +175,9 @@ export class SignedCertificatesComponent {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }
@@ -185,8 +187,9 @@ export class SignedCertificatesComponent {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }

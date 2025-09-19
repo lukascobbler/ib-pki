@@ -15,9 +15,10 @@ import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/c
 import {DatePipe, NgIf} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
-import {downloadFile} from '../download-file/download-file';
+import {downloadFile} from '../blob/download-file';
 import {AuthService} from '../../../services/auth/auth.service';
 import {ToastrService} from '../toastr/toastr.service';
+import {extractBlobError} from '../blob/extract-blob-error';
 
 @Component({
   selector: 'app-my-certificates',
@@ -262,8 +263,9 @@ export class MyCertificatesComponent {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }
@@ -273,8 +275,9 @@ export class MyCertificatesComponent {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }

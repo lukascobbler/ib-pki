@@ -21,7 +21,8 @@ import {Certificate} from '../../../models/Certificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DatePipe, NgIf} from '@angular/common';
 import {ToastrService} from '../../common/toastr/toastr.service';
-import {downloadFile} from '../../common/download-file/download-file';
+import {downloadFile} from '../../common/blob/download-file';
+import {extractBlobError} from '../../common/blob/extract-blob-error';
 
 @Component({
   selector: 'app-all-certificates',
@@ -57,14 +58,12 @@ export class AllCertificatesComponent implements OnInit {
   ngOnInit() {
     this.certificatesService.getAllCertificates().subscribe({
       next: value => {
-        console.log(value);
         this.certificates = value;
         this.certificatesDataSource.data = this.certificates;
         this.loadingCertificates = false;
       },
       error: err => {
-        this.toast.error("Error", "Unable to load certificates");
-        console.log(err);
+        this.toast.error("Error", "Unable to load certificates: " + err);
       }
     })
   }
@@ -88,8 +87,9 @@ export class AllCertificatesComponent implements OnInit {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }
@@ -99,8 +99,9 @@ export class AllCertificatesComponent implements OnInit {
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
       },
-      error: (err) => {
-        this.toast.error("Error", "Download failed: ", err);
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
       }
     });
   }
