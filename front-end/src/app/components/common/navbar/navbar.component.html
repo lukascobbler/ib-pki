@@ -6,12 +6,12 @@
   <hr class="sidebar-line">
 
   <ng-container *ngFor="let item of sidebarItems">
-    <p *ngIf="currentUserRole && item.roles.includes(currentUserRole)"
+    <a *ngIf="currentUserRole && item.roles.includes(currentUserRole)"
        (click)="item.action ? item.action() : null"
        routerLinkActive="active-link"
        [routerLink]="item.link"
        [ngClass]="item.class">
       <span class="material-symbols-rounded">{{ item.icon }}</span> {{ item.label }}
-    </p>
+    </a>
   </ng-container>
 </div>

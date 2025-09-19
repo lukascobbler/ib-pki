@@ -46,7 +46,7 @@ mat-form-field {
   width: 360px;
 }
 
-.password-strength-wrapper{
+.password-strength-wrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -96,5 +96,20 @@ mat-form-field {
   width: 25%;
   height: 6px;
 }
-.hints { margin: 8px 0 16px; padding-left: 1.2rem; }
-.hints li { list-style: disc; opacity: .9; color: $whitish; }
+
+.hints {
+  margin: 0;
+  padding-left: 1.2rem;
+  text-align: left;
+  align-self: flex-start;
+}
+
+.hints li {
+  list-style: disc;
+  opacity: .9;
+  color: $whitish;
+}
+
+.blue-button {
+  margin-top: 16px;
+}

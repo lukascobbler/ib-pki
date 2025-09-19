@@ -1,17 +1,20 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { AuthState } from '../../models/AuthState';
-import { BasicUser } from '../../models/BasicUser';
-import { LoginRequestDTO } from '../../models/LoginRequestDTO';
-import { LoginResponseDTO } from '../../models/LoginResponseDTO';
-import { RegisterRequestDTO } from '../../models/RegisterRequestDTO';
-import { RefreshRequestDTO } from '../../models/RefreshRequestDTO';
-import { RefreshResponseDTO } from '../../models/RefreshResponseDTO';
-import { BehaviorSubject, Observable, map, tap, throwError, of } from 'rxjs';
-import { finalize, shareReplay, catchError } from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {AuthState} from '../../models/AuthState';
+import {BasicUser} from '../../models/BasicUser';
+import {LoginRequestDTO} from '../../models/LoginRequestDTO';
+import {LoginResponseDTO} from '../../models/LoginResponseDTO';
+import {RegisterRequestDTO} from '../../models/RegisterRequestDTO';
+import {RefreshRequestDTO} from '../../models/RefreshRequestDTO';
+import {RefreshResponseDTO} from '../../models/RefreshResponseDTO';
+import {BehaviorSubject, Observable, map, tap, throwError, of} from 'rxjs';
+import {finalize, shareReplay, catchError} from 'rxjs/operators';
+import {Role} from '../../models/Role';
+import {ConfirmEmailResponse} from '../../models/ConfirmEmailResponse';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthService {
+  httpClient = inject(HttpClient)
   urlCore = 'https://localhost:8081/api/users';
 
   private static STORAGE_KEY = 'auth.state.v1';
@@ -32,25 +35,28 @@ export class AuthService {
   role$ = this.state$.pipe(map((s) => s.user?.role ?? null));
   user$ = this.state$;
 
-  constructor(private httpClient: HttpClient) {
+  constructor() {
     this.hydrateFromStorage();
   }
 
   get isLoggedIn(): boolean {
     return !!this._state$.value.accessToken && !!this._state$.value.user;
   }
+
   get userId(): string | null {
     return this._state$.value.user?.id ?? null;
   }
-  get role(): string | null {
+
+  get role(): Role | null {
     return this._state$.value.user?.role ?? null;
   }
+
   get accessToken(): string | null {
     return this._state$.value.accessToken;
   }
 
-  register(body: RegisterRequestDTO): Observable<any> {
-    return this.httpClient.post<any>(`${this.urlCore}/register`, body);
+  register(body: RegisterRequestDTO): Observable<never> {
+    return this.httpClient.post<never>(`${this.urlCore}/register`, body);
   }
 
   login(body: LoginRequestDTO): Observable<BasicUser> {
@@ -58,7 +64,7 @@ export class AuthService {
       .post<LoginResponseDTO>(`${this.urlCore}/login`, body)
       .pipe(
         tap((res) => this.applyLoginResponse(res)),
-        map((res) => this._state$.value.user!)
+        map(() => this._state$.value.user!)
       );
   }
 
@@ -66,7 +72,7 @@ export class AuthService {
     const rt = this._state$.value.refreshToken;
     if (!rt) return throwError(() => new Error('Missing refresh token'));
 
-    const body: RefreshRequestDTO = { refreshToken: rt };
+    const body: RefreshRequestDTO = {refreshToken: rt};
     return this.httpClient
       .post<RefreshResponseDTO>(`${this.urlCore}/refresh`, body)
       .pipe(
@@ -95,7 +101,7 @@ export class AuthService {
       refreshExpiresAt: res.refreshExpiresAt,
       user: {
         id: res.userId,
-        role: res.role,
+        role: res.role as Role,
         name: res.name ?? null,
         surname: res.surname ?? null,
       },
@@ -110,7 +116,7 @@ export class AuthService {
     const roleFromJwt = (claims['role'] ||
       claims[
         'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      ]) as string | undefined;
+        ]) as string | undefined;
 
     const prevUser = this._state$.value.user;
     const state: AuthState = {
@@ -120,7 +126,7 @@ export class AuthService {
       refreshExpiresAt: res.refreshExpiresAt,
       user: {
         id: res.userId,
-        role: roleFromJwt ?? prevUser?.role ?? '',
+        role: (roleFromJwt ?? prevUser?.role ?? '') as Role,
         name: prevUser?.name ?? null,
         surname: prevUser?.surname ?? null,
       },
@@ -164,7 +170,7 @@ export class AuthService {
           // Try refresh immediately if rheres still a refresh token
           this._state$.next(saved);
           if (saved.refreshToken)
-            this.refresh().subscribe({ error: () => this.clearState() });
+            this.refresh().subscribe({error: () => this.clearState()});
           else this.clearState();
         }
       }
@@ -185,12 +191,12 @@ export class AuthService {
 
     if (dueIn <= 0) {
       // already due – kick off refresh now
-      this.refresh().subscribe({ error: () => this.clearState() });
+      this.refresh().subscribe({error: () => this.clearState()});
       return;
     }
 
     this.refreshTimer = setTimeout(() => {
-      this.refresh().subscribe({ error: () => this.clearState() });
+      this.refresh().subscribe({error: () => this.clearState()});
     }, Math.min(dueIn, 2_147_000_000)); // clamp to 24 days
   }
 
@@ -237,8 +243,12 @@ export class AuthService {
       finalize(() => {
         this.refreshInFlight$ = undefined;
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
     return this.refreshInFlight$;
+  }
+
+  confirmEmail(token: string): Observable<ConfirmEmailResponse> {
+    return this.httpClient.get<ConfirmEmailResponse>(`${this.urlCore}/confirm`, {params: {token}});
   }
 }

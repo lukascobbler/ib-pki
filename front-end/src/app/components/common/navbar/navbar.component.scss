@@ -1,4 +1,4 @@
-@import "../../../../global-styles/colors";
+@import "colors";
 
 .sidebar {
   background-color: $background3;
@@ -33,7 +33,7 @@
   font-size: 2.2rem;
 }
 
-p {
+a {
   display: flex;
   align-items: center;
   margin: 0.66rem 0;
@@ -41,10 +41,12 @@ p {
   font-weight: 500;
   padding-left: 1rem;
   transition: color 0.3s ease;
-  cursor: pointer
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
 }
 
-p:hover {
+a:hover {
   color: $text;
 }
 

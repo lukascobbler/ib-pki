@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
-import { NgOptimizedImage, NgIf } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
@@ -16,15 +16,12 @@ import {ToastrService} from "../../common/toastr/toastr.service";
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
+  toast = inject(ToastrService);
+  auth = inject(AuthService);
+  fb = inject(FormBuilder);
+  router = inject(Router);
   loading = false;
   form!: FormGroup;
-
-  constructor(
-    private fb: FormBuilder,
-    private auth: AuthService,
-    private router: Router,
-    private toast: ToastrService
-  ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -34,7 +31,6 @@ export class LoginComponent implements OnInit {
   }
 
   submit() {
-    console.log('hello')
     if (this.form.invalid) {
       this.toast.info('Check fields', 'Please enter a valid email and password.');
       return;

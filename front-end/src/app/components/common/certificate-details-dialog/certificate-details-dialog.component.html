@@ -4,7 +4,9 @@
   </button>
 
   <mat-form-field appearance="outline">
-    <mat-label>Certificate details</mat-label>
-    <textarea disabled [scrollTop]="0" rows="24" class="textarea" matInput [value]="decryptedCertificate"></textarea>
+    <mat-label>Certificate</mat-label>
+    <textarea disabled [scrollTop]="0" rows="20" class="textarea" matInput [value]="decryptedCertificate"></textarea>
   </mat-form-field>
+
+  <button class="blue-button" (click)="copyCertificate()">Copy</button>
 </div>

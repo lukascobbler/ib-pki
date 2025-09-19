@@ -29,7 +29,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 32px;
   gap: 12px;
 }
 
@@ -41,7 +40,11 @@ mat-form-field {
   display: none !important;
 }
 
+.button:first-of-type {
+  margin-top: 20px;
+}
+
 .button {
-  margin: 0 0 20px 0;
+  margin-top: 8px;
   width: 360px;
 }

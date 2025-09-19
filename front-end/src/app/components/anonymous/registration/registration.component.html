@@ -55,16 +55,15 @@
         <input matInput type="password" formControlName="repeatPassword" autocomplete="new-password" />
       </mat-form-field>
 
-      <ul class="hints">
+      <ul class="hints" *ngIf="submitted && (badPasswordLength || passwordsDontMatch || invalidEmailFormat || someRequiredMissing)">
         <li *ngIf="badPasswordLength">Password must be between 8 and 64 characters</li>
         <li *ngIf="passwordsDontMatch">Passwords don’t match</li>
         <li *ngIf="invalidEmailFormat">E-mail must be in a valid format</li>
         <li *ngIf="someRequiredMissing">All fields must be filled</li>
       </ul>
 
-      <button class="blue-button button" type="submit" [disabled]="loading" style="margin-bottom: 32px;">Register</button>
-
+      <button class="blue-button button" type="submit" [disabled]="loading">Register</button>
+      <button class="gray-button button" type="button" [disabled]="loading" [routerLink]="['/login']">Back to login</button>
     </form>
-
   </div>
 </div>
