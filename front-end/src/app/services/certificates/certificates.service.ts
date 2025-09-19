@@ -22,4 +22,12 @@ export class CertificatesService {
   getValidSigningCertificates(): Observable<Certificate[]> {
     return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-valid-signing`);
   }
+
+  downloadCertificate(certificate: Certificate): Observable<Blob> {
+    return this.httpClient.get(`${this.urlCore}/download/${certificate.serialNumber}`, { responseType: 'blob' });
+  }
+
+  downloadCertificateChain(certificate: Certificate): Observable<Blob> {
+    return this.httpClient.get(`${this.urlCore}/download-chain/${certificate.serialNumber}`, { responseType: 'blob' });
+  }
 }

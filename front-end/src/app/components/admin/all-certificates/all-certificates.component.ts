@@ -21,6 +21,7 @@ import {Certificate} from '../../../models/Certificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DatePipe, NgIf} from '@angular/common';
 import {ToastrService} from '../../common/toastr/toastr.service';
+import {downloadFile} from '../../common/download-file/download-file';
 
 @Component({
   selector: 'app-all-certificates',
@@ -78,6 +79,28 @@ export class AllCertificatesComponent implements OnInit {
       width: '780px',
       maxWidth: '70vw',
       data: { decryptedCertificate: certificate.decryptedCertificate }
+    });
+  }
+
+  downloadCertificate(certificate: Certificate) {
+    this.certificatesService.downloadCertificate(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_${certificate.serialNumber}.pfx`)
+      },
+      error: (err) => {
+        this.toast.error("Error", "Download failed: ", err);
+      }
+    });
+  }
+
+  downloadCertificateChain(certificate: Certificate) {
+    this.certificatesService.downloadCertificateChain(certificate).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_chain_${certificate.serialNumber}.pfx`)
+      },
+      error: (err) => {
+        this.toast.error("Error", "Download failed: ", err);
+      }
     });
   }
 }
