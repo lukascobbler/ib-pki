@@ -4,7 +4,7 @@ export function downloadFile(blob: Blob, fileName: string) {
 
   const a = document.createElement('a');
   a.href = fileURL;
-  a.download = `fileName`;
+  a.download = fileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

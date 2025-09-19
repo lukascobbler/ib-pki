@@ -28,15 +28,9 @@ public static class CertificateBuilder {
         certGen.SetSubjectDN(subjectName);
         certGen.SetIssuerDN(issuerName);
 
-        if (dto.NotBefore.HasValue)
-            certGen.SetNotBefore(dto.NotBefore.Value);
-        else
-            certGen.SetNotBefore(DateTime.UtcNow);
+        certGen.SetNotBefore(dto.NotBefore ?? DateTime.UtcNow);
 
-        if (dto.NotAfter.HasValue)
-            certGen.SetNotAfter(dto.NotAfter.Value);
-        else
-            certGen.SetNotAfter(DateTime.MaxValue);
+        certGen.SetNotAfter(dto.NotAfter ?? DateTime.MaxValue);
 
         certGen.SetPublicKey(subjectKeyPair.Public);
 
