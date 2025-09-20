@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Application.Certificates.Features;
 using System.Security.Claims;
+using System.Text;
 
 namespace SudoBox.UnifiedModule.API.Certificates;
 
@@ -54,12 +55,12 @@ public static class CertificateEndpoints {
         {
             try
             {
-                var pfxBytes = await certificateService.GetCertificateChainAsPkcs12(id);
+                var pem = await certificateService.GetCertificateChainAsPEM(id);
 
                 return Results.File(
-                    fileContents: pfxBytes,
-                    contentType: "application/x-pkcs12",
-                    fileDownloadName: $"certificate_chain_{id}.pfx"
+                    fileContents: Encoding.UTF8.GetBytes(pem),
+                    contentType: "application/x-pem-file",
+                    fileDownloadName: $"certificate_chain_{id}.pem"
                 );
             }
             catch (Exception e)

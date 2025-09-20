@@ -97,7 +97,7 @@ export class AllCertificatesComponent implements OnInit {
   downloadCertificateChain(certificate: Certificate) {
     this.certificatesService.downloadCertificateChain(certificate).subscribe({
       next: (blob: Blob) => {
-        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pfx`)
+        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pem`)
       },
       error: async (err) => {
         const errorMessage = await extractBlobError(err);
