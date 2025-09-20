@@ -8,5 +8,5 @@
     <textarea disabled [scrollTop]="0" rows="20" class="textarea" matInput [value]="encodedCertificate"></textarea>
   </mat-form-field>
 
-  <button class="blue-button" [cdkCopyToClipboard]="encodedCertificate">Copy</button>
+  <button class="blue-button" [cdkCopyToClipboard]="encodedCertificate" (cdkCopyToClipboardCopied)="onCopied()">Copy</button>
 </div>

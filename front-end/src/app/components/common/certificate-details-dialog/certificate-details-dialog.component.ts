@@ -28,4 +28,8 @@ export class CertificateDetailsDialogComponent {
   onNoClick() {
     this.dialogRef.close(undefined);
   }
+
+  onCopied() {
+    this.toastr.success('Success', 'Certificate copied to clipboard');
+  }
 }

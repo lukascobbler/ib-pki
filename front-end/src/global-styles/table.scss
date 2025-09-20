@@ -15,4 +15,7 @@ mat-header-row {
 mat-cell {
   font-size: small;
   border-bottom: 1px solid $edge;
+  white-space: pre-line;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
