@@ -34,7 +34,13 @@ public class CertificateService(IUnifiedDbContext db) {
             throw new Exception("Selected certificate can't be used for signing!");
         CertificateStatus? status = signingCertificate != null ? GetStatus(signingCertificate) : null;
         if (status != null && status != CertificateStatus.Active)
-            throw new Exception($"Selected certificate is {status?.ToString().ToLower()}!");
+            throw new Exception($"Selected certificate is {status.ToString()!.ToLower()}!");
+        if (signingCertificate != null && createCertificateDto.NotBefore < signingCertificate.NotBefore)
+            throw new Exception("NotBefore cannot be earlier than the signing certificate's NotBefore!");
+        if (signingCertificate != null && createCertificateDto.NotAfter > signingCertificate.NotAfter)
+            throw new Exception("NotAfter cannot be later than the signing certificate's NotAfter!");
+        if (createCertificateDto.NotBefore > createCertificateDto.NotAfter)
+            throw new Exception("NotBefore cannot be later than the NotAfter!");
 
         Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateDto, subjectKeyPair, signingCertificate);
 
@@ -60,8 +66,7 @@ public class CertificateService(IUnifiedDbContext db) {
     }
 
     // todo prevent anyone from downloading any certificate only by id
-    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId)
-    {
+    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId) {
         var signingSerialNumber = BigInteger.Parse(certificateId);
         var dbCertificate = await db.Certificates.FindAsync(signingSerialNumber);
 
@@ -77,7 +82,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var builder = new Pkcs12StoreBuilder()
             .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
         var store = builder.Build();
-        
+
         var alias = certificate.SubjectDN.ToString();
         var certEntry = new X509CertificateEntry(certificate);
 
@@ -88,10 +93,9 @@ public class CertificateService(IUnifiedDbContext db) {
 
         return ms.ToArray();
     }
-    
+
     // todo prevent anyone from downloading any certificate only by id
-    public async Task<byte[]> GetCertificateChainAsPkcs12(string certificateId)
-    {
+    public async Task<byte[]> GetCertificateChainAsPkcs12(string certificateId) {
         var firstSerialNumber = BigInteger.Parse(certificateId);
         var dbCertificate = await db.Certificates
             .Include(c => c.SigningCertificate)
@@ -107,14 +111,13 @@ public class CertificateService(IUnifiedDbContext db) {
         var certBytes = Convert.FromBase64String(dbCertificate.EncodedValue);
         var certificate = new X509CertificateParser().ReadCertificate(certBytes);
         var chain = new List<X509Certificate> { certificate };
-        
+
         var current = await db.Certificates
             .Include(c => c.SigningCertificate)
             .Where(c => c == dbCertificate.SigningCertificate)
             .FirstOrDefaultAsync();
-        
-        while (current != null)
-        {
+
+        while (current != null) {
             if (string.IsNullOrWhiteSpace(current.EncodedValue))
                 throw new Exception($"Certificate {current.SerialNumber} in chain has no encoded value!");
 
@@ -122,12 +125,9 @@ public class CertificateService(IUnifiedDbContext db) {
             var currentCert = new X509CertificateParser().ReadCertificate(currentBytes);
             chain.Add(currentCert);
 
-            if (current.SigningCertificate == null)
-            {
+            if (current.SigningCertificate == null) {
                 current = null;
-            }
-            else
-            {
+            } else {
                 var nextCertificate = current.SigningCertificate;
                 current = await db.Certificates
                     .Include(c => c.SigningCertificate)

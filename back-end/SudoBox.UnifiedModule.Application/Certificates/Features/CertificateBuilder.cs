@@ -18,7 +18,7 @@ public static class CertificateBuilder {
         var guidBytes = Guid.NewGuid().ToByteArray();
         var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
         var subjectName = dto.GetX509Name();
-        var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedBy) : subjectName;
+        var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedTo) : subjectName;
 
         var canSign = (dto.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (dto.BasicConstraints?.IsCa ?? false);
         var pathLen = dto.BasicConstraints?.PathLen ?? 0;
@@ -28,9 +28,8 @@ public static class CertificateBuilder {
         certGen.SetSubjectDN(subjectName);
         certGen.SetIssuerDN(issuerName);
 
-        certGen.SetNotBefore(dto.NotBefore ?? DateTime.UtcNow);
-
-        certGen.SetNotAfter(dto.NotAfter ?? DateTime.MaxValue);
+        certGen.SetNotBefore(dto.NotBefore ?? issuerCertificate?.NotBefore ?? DateTime.UtcNow);
+        certGen.SetNotAfter(dto.NotAfter ?? issuerCertificate?.NotAfter ?? DateTime.MaxValue);
 
         certGen.SetPublicKey(subjectKeyPair.Public);
 
