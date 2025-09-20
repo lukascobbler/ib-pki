@@ -50,7 +50,7 @@ export class AllCertificatesComponent implements OnInit {
   certificatesService = inject(CertificatesService);
   toast = inject(ToastrService)
   dialog = inject(MatDialog);
-  displayedColumns: string[] = ['issuedBy', 'issuedTo', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
+  displayedColumns: string[] = ['issuedTo', 'issuedBy', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
   certificatesDataSource = new MatTableDataSource<Certificate>();
   certificates: Certificate[] = [];
   loadingCertificates = true;
@@ -78,7 +78,7 @@ export class AllCertificatesComponent implements OnInit {
     this.dialog.open(CertificateDetailsDialogComponent, {
       width: '850px',
       maxWidth: '70vw',
-      data: { encodedCertificate: certificate.decryptedCertificate }
+      data: {encodedCertificate: certificate.decryptedCertificate}
     });
   }
 
