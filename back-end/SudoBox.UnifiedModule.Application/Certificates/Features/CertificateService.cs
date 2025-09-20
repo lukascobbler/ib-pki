@@ -94,62 +94,36 @@ public class CertificateService(IUnifiedDbContext db) {
         return ms.ToArray();
     }
 
+    private async Task<Certificate?> GetCertificate(BigInteger serialNumber) {
+        return await db.Certificates.Include(c => c.SigningCertificate).FirstOrDefaultAsync(c => c.SerialNumber == serialNumber);
+    }
+
     // todo prevent anyone from downloading any certificate only by id
-    public async Task<byte[]> GetCertificateChainAsPkcs12(string certificateId) {
-        var firstSerialNumber = BigInteger.Parse(certificateId);
-        var dbCertificate = await db.Certificates
-            .Include(c => c.SigningCertificate)
-            .Where(c => c.SerialNumber == firstSerialNumber)
-            .FirstOrDefaultAsync();
-
-        if (dbCertificate == null)
-            throw new Exception("Signing certificate not found!");
-
-        if (dbCertificate.EncodedValue == null || dbCertificate.PrivateKey == null)
-            throw new Exception("Certificate does not have an encoded value!");
-
-        var certBytes = Convert.FromBase64String(dbCertificate.EncodedValue);
-        var certificate = new X509CertificateParser().ReadCertificate(certBytes);
-        var chain = new List<X509Certificate> { certificate };
-
-        var current = await db.Certificates
-            .Include(c => c.SigningCertificate)
-            .Where(c => c == dbCertificate.SigningCertificate)
-            .FirstOrDefaultAsync();
+    public async Task<string> GetCertificateChainAsPEM(string certificateId) {
+        var chain = new List<X509Certificate>();
+        var parser = new X509CertificateParser();
+        var serialNumber = BigInteger.Parse(certificateId);
+        var current = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
 
         while (current != null) {
             if (string.IsNullOrWhiteSpace(current.EncodedValue))
-                throw new Exception($"Certificate {current.SerialNumber} in chain has no encoded value!");
+                throw new Exception($"Certificate {current.SerialNumber} has no encoded value!");
 
-            var currentBytes = Convert.FromBase64String(current.EncodedValue);
-            var currentCert = new X509CertificateParser().ReadCertificate(currentBytes);
-            chain.Add(currentCert);
+            var bytes = Convert.FromBase64String(current.EncodedValue);
+            chain.Add(parser.ReadCertificate(bytes));
 
-            if (current.SigningCertificate == null) {
+            if (current.SigningCertificate != null)
+                current = await GetCertificate(current.SigningCertificate.SerialNumber);
+            else
                 current = null;
-            } else {
-                var nextCertificate = current.SigningCertificate;
-                current = await db.Certificates
-                    .Include(c => c.SigningCertificate)
-                    .Where(c => c == nextCertificate)
-                    .FirstOrDefaultAsync();
-            }
         }
 
         chain.Reverse();
-        var builder = new Pkcs12StoreBuilder()
-            .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
-        var store = builder.Build();
-        var alias = certificate.SubjectDN.ToString();
-
-        var chainEntries = chain.Select(c => new X509CertificateEntry(c)).ToArray();
-
-        store.SetKeyEntry(alias, new AsymmetricKeyEntry(dbCertificate.PrivateKey), chainEntries);
-
-        await using var ms = new MemoryStream();
-        store.Save(ms, "".ToCharArray(), new SecureRandom());
-
-        return ms.ToArray();
+        using var sw = new StringWriter();
+        var pemWriter = new PemWriter(sw);
+        chain.ForEach(c => pemWriter.WriteObject(new PemObject("CERTIFICATE", c.GetEncoded())));
+        pemWriter.Writer.Flush();
+        return sw.ToString();
     }
 
     // todo: revoking checkup
