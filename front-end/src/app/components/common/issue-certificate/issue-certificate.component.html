@@ -3,7 +3,7 @@
     <div class="row">
       <mat-form-field appearance="outline">
         <mat-label>Signing certificate</mat-label>
-        <mat-select [(ngModel)]="signingCertificate" name="signingCertificate" required>
+        <mat-select [(ngModel)]="signingCertificate" name="signingCertificate" required (selectionChange)="revalidateDates()">
           <mat-option *ngFor="let cert of signingCertificates" [value]="cert.key">
             {{ cert.value }}
           </mat-option>
@@ -42,19 +42,22 @@
 
     <div class="row">
       <mat-form-field appearance="outline">
-        <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
         <mat-label>Not Before</mat-label>
-        <input matInput [matDatepicker]="pickerNotBefore" [(ngModel)]="dateNotBefore" name="notBefore">
+        <input matInput [matDatepicker]="pickerNotBefore" [(ngModel)]="dateNotBefore" name="notBefore"
+               #notBeforeModel="ngModel" (ngModelChange)="revalidateDates()">
         <mat-datepicker-toggle matSuffix [for]="pickerNotBefore"></mat-datepicker-toggle>
         <mat-datepicker #pickerNotBefore></mat-datepicker>
       </mat-form-field>
+
       <mat-form-field appearance="outline">
         <mat-label>Not After</mat-label>
-        <input matInput [matDatepicker]="pickerNotAfter" [(ngModel)]="dateNotAfter" name="notAfter">
+        <input matInput [matDatepicker]="pickerNotAfter" [(ngModel)]="dateNotAfter" name="notAfter"
+               #notAfterModel="ngModel" (ngModelChange)="revalidateDates()">
         <mat-datepicker-toggle matSuffix [for]="pickerNotAfter"></mat-datepicker-toggle>
         <mat-datepicker #pickerNotAfter></mat-datepicker>
       </mat-form-field>
     </div>
+
 
     <div class="extensions-container" *ngIf="extensions.length > 0">
       <div class="row extension-row" *ngFor="let ext of extensions; let i = index">

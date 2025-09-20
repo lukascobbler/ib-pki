@@ -1,5 +1,5 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {FormsModule, NgForm, ReactiveFormsModule} from '@angular/forms';
+import {Component, inject, OnInit, ViewChild} from '@angular/core';
+import {FormsModule, NgForm, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
@@ -15,6 +15,7 @@ import {KeyUsageValue} from '../../../models/KeyUsageValue';
 import {ExtendedKeyUsageValue} from '../../../models/ExtendedKeyUsageValue';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {ToastrService} from '../toastr/toastr.service';
+import {Certificate} from '../../../models/Certificate';
 
 @Component({
   selector: 'app-issue-certificate',
@@ -40,15 +41,19 @@ import {ToastrService} from '../toastr/toastr.service';
   styleUrl: './issue-certificate.component.scss'
 })
 export class IssueCertificateComponent implements OnInit {
+  @ViewChild('notBeforeModel') dateNotBeforeModel!: NgModel;
+  @ViewChild('notAfterModel') dateNotAfterModel!: NgModel;
+
   certificatesService = inject(CertificatesService);
   toast = inject(ToastrService)
+
   protected readonly ExtendedKeyUsageValue = ExtendedKeyUsageValue;
   protected readonly KeyUsageValue = KeyUsageValue;
-  signingCertificates: { key: string, value: string }[] = [{key: 'SelfSign', value: 'Self signing'}];
+  signingCertificates: { key: string | Certificate, value: string }[] = [{key: 'SelfSign', value: 'Self signing'}];
   extensions: { key: string, value: any }[] = [];
   dateNotBefore: Date | null = null;
   dateNotAfter: Date | null = null;
-  signingCertificate = ''
+  signingCertificate: string | Certificate = '';
   commonName = ''
   organization = ''
   organizationalUnit = ''
@@ -73,8 +78,9 @@ export class IssueCertificateComponent implements OnInit {
     this.signingCertificates = [{key: 'SelfSign', value: 'Self signing'}];
     this.certificatesService.getValidSigningCertificates().subscribe({
       next: value => {
+        value.sort((a, b) => a.prettySerialNumber.localeCompare(b.prettySerialNumber));
         value.forEach((certificate) => {
-          this.signingCertificates.push({key: certificate.serialNumber, value: certificate.prettySerialNumber})
+          this.signingCertificates.push({key: certificate, value: certificate.prettySerialNumber})
         })
       },
       error: err => {
@@ -147,17 +153,57 @@ export class IssueCertificateComponent implements OnInit {
     ext.value.pathLen = input.value ? +input.value : null;
   }
 
-  generalNamesToString(list: [{ prefix: string, value: string }]) {
-    let result = '';
-    list.forEach(item => result += `${item.prefix}:${item.value},`)
-    return result.slice(0, -1);
+  public revalidateDates() {
+    if (this.dateNotBeforeModel) this.validateDateField(this.dateNotBefore, this.dateNotBeforeModel, 'notBefore');
+    if (this.dateNotAfterModel) this.validateDateField(this.dateNotAfter, this.dateNotAfterModel, 'notAfter');
+  }
+
+  validateDateField(date: Date | null, control: NgModel, type: 'notBefore' | 'notAfter') {
+    if (!date) {
+      control.control.setErrors(null);
+      return;
+    }
+
+    const key = `invalid${type[0].toUpperCase() + type.slice(1)}`;
+
+    if (type === 'notBefore' && this.dateNotAfter && date >= this.dateNotAfter) {
+      this.toast.error('Invalid Date', 'Not Before must be before Not After');
+      control.control.setErrors({[key]: true});
+      return;
+    }
+
+    if (type === 'notAfter' && this.dateNotBefore && date <= this.dateNotBefore) {
+      this.toast.error('Invalid Date', 'Not After must be after Not Before');
+      control.control.setErrors({[key]: true});
+      return;
+    }
+
+    const cert = this.signingCertificate as Certificate;
+    const certDate = type === 'notBefore' ? cert.validFrom : cert.validUntil;
+    const label: string = type === 'notBefore' ? 'Not Before' : 'Not After';
+    const direction: string = type === 'notBefore' ? 'after' : 'before';
+    const isSelfSign = this.signingCertificate === 'SelfSign';
+
+    if (!isSelfSign && certDate && ((type === 'notBefore' && date < new Date(certDate)) || (type === 'notAfter' && date > new Date(certDate)))) {
+      this.toast.error('Invalid Date', `${label} must be ${direction} signing certificate's ${label}`);
+      control.control.setErrors({[key]: true});
+      return;
+    }
+
+    control.control.setErrors(null);
+  }
+
+  generalNamesToString(list: { prefix: string, value: string }[]) {
+    return list.map(item => `${item.prefix}:${item.value}`).join(',');
   }
 
   onSubmit(form: NgForm) {
     if (!form.valid) return;
 
+    const signCert = typeof this.signingCertificate === 'string' ? this.signingCertificate : this.signingCertificate.serialNumber;
+
     const dto: CreateCertificate = {
-      signingCertificate: this.signingCertificate,
+      signingCertificate: signCert,
       commonName: this.commonName,
       organization: this.organization,
       organizationalUnit: this.organizationalUnit,
@@ -191,7 +237,7 @@ export class IssueCertificateComponent implements OnInit {
     })
 
     this.certificatesService.issueCertificate(dto).subscribe({
-      next: value => {
+      next: () => {
         this.toast.success("Success", "Certificate successfully created");
       },
       error: err => {
