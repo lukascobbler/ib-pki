@@ -18,7 +18,6 @@ export class AuthService {
   urlCore = 'https://localhost:8081/api/users';
 
   private static STORAGE_KEY = 'auth.state.v1';
-  private refreshTimer: any = null;
 
   private readonly _state$ = new BehaviorSubject<AuthState>({
     accessToken: null,
@@ -107,7 +106,6 @@ export class AuthService {
       },
     };
     this.setState(state);
-    this.scheduleRefresh();
   }
 
   private applyRefreshResponse(res: RefreshResponseDTO) {
@@ -132,7 +130,6 @@ export class AuthService {
       },
     };
     this.setState(state);
-    this.scheduleRefresh();
   }
 
   private setState(state: AuthState) {
@@ -149,10 +146,6 @@ export class AuthService {
       user: null,
     });
     localStorage.removeItem(AuthService.STORAGE_KEY);
-    if (this.refreshTimer) {
-      clearTimeout(this.refreshTimer);
-      this.refreshTimer = null;
-    }
   }
 
   private hydrateFromStorage() {
@@ -165,7 +158,6 @@ export class AuthService {
         const msLeft = new Date(saved.accessExpiresAt).getTime() - Date.now();
         if (msLeft > 0) {
           this._state$.next(saved);
-          this.scheduleRefresh();
         } else {
           // Try refresh immediately if rheres still a refresh token
           this._state$.next(saved);
@@ -177,27 +169,6 @@ export class AuthService {
     } catch {
       this.clearState();
     }
-  }
-
-  private scheduleRefresh() {
-    if (this.refreshTimer) clearTimeout(this.refreshTimer);
-
-    const expIso = this._state$.value.accessExpiresAt;
-    if (!expIso) return;
-
-    // refresh a little before expiry
-    const SKEW_MS = 30_000; // 30s
-    const dueIn = new Date(expIso).getTime() - Date.now() - SKEW_MS;
-
-    if (dueIn <= 0) {
-      // already due – kick off refresh now
-      this.refresh().subscribe({error: () => this.clearState()});
-      return;
-    }
-
-    this.refreshTimer = setTimeout(() => {
-      this.refresh().subscribe({error: () => this.clearState()});
-    }, Math.min(dueIn, 2_147_000_000)); // clamp to 24 days
   }
 
   private decodeJwt(token: string): Record<string, unknown> {
