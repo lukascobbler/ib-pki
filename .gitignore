@@ -1,6 +1,0 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/back-end/SudoBox.API/DevelopmentSQL/certificates
-/back-end/SudoBox.API/DevelopmentSQL/certificates.sql

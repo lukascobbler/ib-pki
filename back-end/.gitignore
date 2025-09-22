@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+/SudoBox.API/DevelopmentSQL/certificates
+/SudoBox.API/DevelopmentSQL/certificates.sql
+
 # dotenv files
 .env
 
