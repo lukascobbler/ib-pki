@@ -1,20 +1,20 @@
-import {HttpClient} from '@angular/common/http';
-import {inject, Injectable} from '@angular/core';
-import {AuthState} from '../../models/AuthState';
-import {BasicUser} from '../../models/BasicUser';
-import {LoginRequestDTO} from '../../models/LoginRequestDTO';
-import {LoginResponseDTO} from '../../models/LoginResponseDTO';
-import {RegisterRequestDTO} from '../../models/RegisterRequestDTO';
-import {RefreshRequestDTO} from '../../models/RefreshRequestDTO';
-import {RefreshResponseDTO} from '../../models/RefreshResponseDTO';
-import {BehaviorSubject, Observable, map, tap, throwError, of} from 'rxjs';
-import {finalize, shareReplay, catchError} from 'rxjs/operators';
-import {Role} from '../../models/Role';
-import {ConfirmEmailResponse} from '../../models/ConfirmEmailResponse';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { AuthState } from '../../models/AuthState';
+import { BasicUser } from '../../models/BasicUser';
+import { LoginRequestDTO } from '../../models/LoginRequestDTO';
+import { LoginResponseDTO } from '../../models/LoginResponseDTO';
+import { RegisterRequestDTO } from '../../models/RegisterRequestDTO';
+import { RefreshRequestDTO } from '../../models/RefreshRequestDTO';
+import { RefreshResponseDTO } from '../../models/RefreshResponseDTO';
+import { BehaviorSubject, Observable, map, tap, throwError, of, from } from 'rxjs';
+import { finalize, shareReplay, catchError } from 'rxjs/operators';
+import { Role } from '../../models/Role';
+import { ConfirmEmailResponse } from '../../models/ConfirmEmailResponse';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  httpClient = inject(HttpClient)
+  httpClient = inject(HttpClient);
   urlCore = 'https://localhost:8081/api/users';
 
   private static STORAGE_KEY = 'auth.state.v1';
@@ -34,8 +34,55 @@ export class AuthService {
   role$ = this.state$.pipe(map((s) => s.user?.role ?? null));
   user$ = this.state$;
 
+  private bc?: BroadcastChannel;
+  private tabId = (crypto as any)?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+
   constructor() {
     this.hydrateFromStorage();
+    this.initCrossTabSync();
+  }
+
+  private initCrossTabSync() {
+    window.addEventListener('storage', (e) => {
+      if (e.key !== AuthService.STORAGE_KEY) return;
+
+      if (e.newValue) {
+        try {
+          const next: AuthState = JSON.parse(e.newValue);
+          this._state$.next(next);
+        } catch {
+          /* ignore */
+        }
+      } else {
+        this._state$.next({
+          accessToken: null,
+          accessExpiresAt: null,
+          refreshToken: null,
+          refreshExpiresAt: null,
+          user: null,
+        });
+      }
+    });
+
+    if ('BroadcastChannel' in window) {
+      this.bc = new BroadcastChannel('auth');
+      this.bc.onmessage = (ev) => {
+        const msg = ev.data;
+        if (!msg || msg.origin === this.tabId) return;
+
+        if (msg.type === 'auth-state' && msg.state) {
+          this._state$.next(msg.state as AuthState);
+        } else if (msg.type === 'auth-logout') {
+          this._state$.next({
+            accessToken: null,
+            accessExpiresAt: null,
+            refreshToken: null,
+            refreshExpiresAt: null,
+            user: null,
+          });
+        }
+      };
+    }
   }
 
   get isLoggedIn(): boolean {
@@ -71,25 +118,27 @@ export class AuthService {
     const rt = this._state$.value.refreshToken;
     if (!rt) return throwError(() => new Error('Missing refresh token'));
 
-    const body: RefreshRequestDTO = {refreshToken: rt};
-    return this.httpClient
-      .post<RefreshResponseDTO>(`${this.urlCore}/refresh`, body)
-      .pipe(
-        tap((res) => this.applyRefreshResponse(res)),
-        map(() => void 0)
-      );
+    const body: RefreshRequestDTO = { refreshToken: rt };
+    return this.httpClient.post<RefreshResponseDTO>(`${this.urlCore}/refresh`, body).pipe(
+      tap((res) => this.applyRefreshResponse(res)),
+      map(() => void 0)
+    );
   }
 
   logout(): Observable<void> {
     return this.httpClient
       .post<void>(`${this.urlCore}/logout`, {}, {})
-      .pipe(finalize(() => this.clearState()));
+      .pipe(
+        finalize(() => this.clearState(/* broadcast */ true))
+      );
   }
 
   logoutAll(): Observable<void> {
     return this.httpClient
       .post<void>(`${this.urlCore}/logout-all`, {}, {})
-      .pipe(finalize(() => this.clearState()));
+      .pipe(
+        finalize(() => this.clearState(/* broadcast */ true))
+      );
   }
 
   private applyLoginResponse(res: LoginResponseDTO) {
@@ -105,16 +154,13 @@ export class AuthService {
         surname: res.surname ?? null,
       },
     };
-    this.setState(state);
+    this.setState(state, /* broadcast */ true);
   }
 
   private applyRefreshResponse(res: RefreshResponseDTO) {
-    // Role can be read from JWT
     const claims = this.decodeJwt(res.accessToken);
     const roleFromJwt = (claims['role'] ||
-      claims[
-        'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-        ]) as string | undefined;
+      claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) as string | undefined;
 
     const prevUser = this._state$.value.user;
     const state: AuthState = {
@@ -129,15 +175,18 @@ export class AuthService {
         surname: prevUser?.surname ?? null,
       },
     };
-    this.setState(state);
+    this.setState(state, /* broadcast */ true);
   }
 
-  private setState(state: AuthState) {
+  private setState(state: AuthState, broadcast = false) {
     this._state$.next(state);
     localStorage.setItem(AuthService.STORAGE_KEY, JSON.stringify(state));
+    if (broadcast) {
+      this.bc?.postMessage({ type: 'auth-state', state, origin: this.tabId });
+    }
   }
 
-  private clearState() {
+  private clearState(broadcast = false) {
     this._state$.next({
       accessToken: null,
       accessExpiresAt: null,
@@ -146,6 +195,9 @@ export class AuthService {
       user: null,
     });
     localStorage.removeItem(AuthService.STORAGE_KEY);
+    if (broadcast) {
+      this.bc?.postMessage({ type: 'auth-logout', origin: this.tabId });
+    }
   }
 
   private hydrateFromStorage() {
@@ -154,20 +206,35 @@ export class AuthService {
       if (!raw) return;
       const saved: AuthState = JSON.parse(raw);
       if (saved?.accessToken && saved?.accessExpiresAt) {
-        // If already expired, don’t restore
         const msLeft = new Date(saved.accessExpiresAt).getTime() - Date.now();
-        if (msLeft > 0) {
-          this._state$.next(saved);
-        } else {
-          // Try refresh immediately if rheres still a refresh token
-          this._state$.next(saved);
-          if (saved.refreshToken)
-            this.refresh().subscribe({error: () => this.clearState()});
-          else this.clearState();
+        this._state$.next(saved);
+        if (msLeft <= 0 && saved.refreshToken) {
+          this.refresh().subscribe({ error: () => this.clearState(true) });
+        } else if (msLeft <= 0) {
+          this.clearState(false);
         }
       }
     } catch {
-      this.clearState();
+      this.clearState(false);
+    }
+  }
+
+  // Pull the newest tokens from localStorage (used before refresh to avoid stale RT)
+  private rehydrateLatestFromStorage() {
+    try {
+      const raw = localStorage.getItem(AuthService.STORAGE_KEY);
+      if (!raw) return;
+      const saved: AuthState = JSON.parse(raw);
+      const cur = this._state$.value;
+      if (
+        saved.accessToken !== cur.accessToken ||
+        saved.refreshToken !== cur.refreshToken ||
+        saved.accessExpiresAt !== cur.accessExpiresAt ||
+        saved.refreshExpiresAt !== cur.refreshExpiresAt
+      ) {
+        this._state$.next(saved);
+      }
+    } catch {
     }
   }
 
@@ -201,25 +268,62 @@ export class AuthService {
     return this.msUntilAccessExpiry() > skewMs;
   }
 
-  // ensure theres a fresh access token, refreshing if needed
+  // Ensure there's a fresh access token, refreshing if needed 
   ensureValidAccessToken(skewMs = 30_000): Observable<void> {
+    // 1) Always pull the latest state first
+    this.rehydrateLatestFromStorage();
+
+    // 2) Skip if still fresh
     if (this.isAccessTokenFresh(skewMs)) return of(void 0);
+
     if (this.refreshInFlight$) return this.refreshInFlight$;
 
-    this.refreshInFlight$ = this.refresh().pipe(
+    // 3) Prepare the actual refresh call 
+    const doRefresh$ = this.refresh().pipe(
       catchError((err) => {
-        this.clearState();
+        this.clearState(true);
         return throwError(() => err);
       }),
       finalize(() => {
         this.refreshInFlight$ = undefined;
       }),
-      shareReplay({bufferSize: 1, refCount: true})
+      shareReplay({ bufferSize: 1, refCount: true })
     );
+
+    // 4) Cross-tab mutual exclusion: Web Locks API if available
+    const locks = (navigator as any)?.locks;
+    const hasWebLocks = !!(locks && typeof locks.request === 'function');
+
+    if (hasWebLocks) {
+      const p: Promise<void> = locks
+        .request('auth-refresh', async () => {
+          // rehydrate again
+          this.rehydrateLatestFromStorage();
+          if (this.isAccessTokenFresh(skewMs)) return;
+
+          // Run the refresh and wait for it to complete
+          await new Promise<void>((resolve, reject) => {
+            const sub = doRefresh$.subscribe({
+              complete: () => resolve(),
+              error: (e) => reject(e),
+            });
+          });
+        })
+        .catch((e: unknown) => {
+          this.clearState(true);
+          throw e;
+        });
+
+      this.refreshInFlight$ = from(p);
+      return this.refreshInFlight$;
+    }
+
+
+    this.refreshInFlight$ = doRefresh$;
     return this.refreshInFlight$;
   }
 
   confirmEmail(token: string): Observable<ConfirmEmailResponse> {
-    return this.httpClient.get<ConfirmEmailResponse>(`${this.urlCore}/confirm`, {params: {token}});
+    return this.httpClient.get<ConfirmEmailResponse>(`${this.urlCore}/confirm`, { params: { token } });
   }
 }
