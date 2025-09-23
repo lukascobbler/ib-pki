@@ -21,8 +21,8 @@ import {Certificate} from '../../../models/Certificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {DatePipe, NgIf} from '@angular/common';
 import {ToastrService} from '../../common/toastr/toastr.service';
-import {downloadFile} from '../../common/blob/download-file';
-import {extractBlobError} from '../../common/blob/extract-blob-error';
+import {downloadFile} from '../../common/custom-components/blob/download-file';
+import {extractBlobError} from '../../common/custom-components/blob/extract-blob-error';
 
 @Component({
   selector: 'app-all-certificates',

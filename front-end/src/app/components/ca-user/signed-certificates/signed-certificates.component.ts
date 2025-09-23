@@ -18,10 +18,10 @@ import {
 } from '../../common/certificate-details-dialog/certificate-details-dialog.component';
 import {DatePipe} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
-import {downloadFile} from '../../common/blob/download-file';
+import {downloadFile} from '../../common/custom-components/blob/download-file';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {ToastrService} from '../../common/toastr/toastr.service';
-import {extractBlobError} from '../../common/blob/extract-blob-error';
+import {extractBlobError} from '../../common/custom-components/blob/extract-blob-error';
 
 @Component({
   selector: 'app-signed-certificates',

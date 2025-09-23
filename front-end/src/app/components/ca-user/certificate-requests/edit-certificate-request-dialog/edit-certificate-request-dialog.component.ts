@@ -9,8 +9,8 @@ import {MatInputModule} from '@angular/material/input';
 import {DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule} from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import {MatIconModule} from '@angular/material/icon';
-import {CUSTOM_DATE_FORMATS} from '../../../common/custom-components/custom-date-formats';
-import {CustomDateAdapter} from '../../../common/custom-components/custom-date-adapter';
+import {CUSTOM_DATE_FORMATS} from '../../../common/custom-components/custom-date/custom-date-formats';
+import {CustomDateAdapter} from '../../../common/custom-components/custom-date/custom-date-adapter';
 
 @Component({
   selector: 'app-edit-certificate-request-dialog',

@@ -11,8 +11,8 @@ import {MatTab, MatTabContent, MatTabGroup} from '@angular/material/tabs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {KeysDialogComponent} from './keys-dialog/keys-dialog.component';
 import {MatIconModule} from '@angular/material/icon';
-import {CustomDateAdapter} from '../../common/custom-components/custom-date-adapter';
-import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date-formats';
+import {CustomDateAdapter} from '../../common/custom-components/custom-date/custom-date-adapter';
+import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date/custom-date-formats';
 
 @Component({
   selector: 'app-request-certificate',

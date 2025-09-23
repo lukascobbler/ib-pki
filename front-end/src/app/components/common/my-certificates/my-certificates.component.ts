@@ -15,10 +15,10 @@ import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/c
 import {DatePipe, NgIf} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
-import {downloadFile} from '../blob/download-file';
+import {downloadFile} from '../custom-components/blob/download-file';
 import {AuthService} from '../../../services/auth/auth.service';
 import {ToastrService} from '../toastr/toastr.service';
-import {extractBlobError} from '../blob/extract-blob-error';
+import {extractBlobError} from '../custom-components/blob/extract-blob-error';
 
 @Component({
   selector: 'app-my-certificates',
