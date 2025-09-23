@@ -70,11 +70,8 @@
           <button (click)="openCertificateDetails(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
           </button>
-          <button *ngIf="auth.role !== 'EeUser'" (click)="downloadCertificate(certificate)" mat-icon-button>
+          <button (click)="downloadCertificate(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">download</span>
-          </button>
-          <button (click)="downloadCertificateChain(certificate)" mat-icon-button>
-            <span class="material-symbols-rounded">link</span>
           </button>
         </mat-cell>
       </ng-container>

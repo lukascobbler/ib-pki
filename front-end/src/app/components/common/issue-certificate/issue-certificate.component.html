@@ -181,7 +181,7 @@
         <div *ngIf="ext.key === 'basicConstraints'" class="extension-value-row">
           <mat-form-field appearance="outline">
             <mat-label>Is CA</mat-label>
-            <mat-select [(ngModel)]="ext.value.isCA" name="extValue{{i}}isCA" required>
+            <mat-select [(ngModel)]="ext.value.isCa" name="extValue{{i}}isCa" required>
               <mat-option [value]="true">Yes</mat-option>
               <mat-option [value]="false">No</mat-option>
             </mat-select>

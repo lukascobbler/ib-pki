@@ -146,9 +146,10 @@ export class IssueCertificateComponent implements OnInit {
   sanitizePathLen(event: Event, ext: { key: string; value: any }) {
     const input = event.target as HTMLInputElement;
     input.value = input.value.replace(/[^0-9]/g, '');
-    if (input.value.startsWith('0')) {
+    if (input.value.length > 1 && input.value.startsWith('0')) {
+      const move = input.value.length > 2;
       input.value = input.value.replace(/^0+/, '');
-      input.setSelectionRange(0, 0);
+      if (move) input.setSelectionRange(0, 0);
     }
     ext.value.pathLen = input.value ? +input.value : null;
   }
@@ -231,22 +232,28 @@ export class IssueCertificateComponent implements OnInit {
           excluded: {value: this.generalNamesToString(extension.value[1])}
         };
       else if (extension.key === 'basicConstraints')
-        dto.basicConstraints = extension.value;
+        dto.basicConstraints = {
+          isCa: extension.value.isCa ?? false,
+          pathLen: extension.value.pathLen
+        };
       else if (extension.key === 'certificatePolicy')
-        dto.certificatePolicy = extension.value;
+        dto.certificatePolicy = {
+          policyIdentifier: extension.value.policyIdentifier,
+          cpsUri: extension.value.cpsUri,
+          userNotice: extension.value.userNotice
+        };
     })
 
     this.certificatesService.issueCertificate(dto).subscribe({
       next: () => {
         this.toast.success("Success", "Certificate successfully created");
+        this.loadSigningCertificates();
+        this.resetFields(form);
       },
       error: err => {
         this.toast.error("Unable to issue the certificate", `Error: ${err}`);
       }
     });
-
-    this.loadSigningCertificates();
-    this.resetFields(form);
   }
 
   private resetFields(form: NgForm) {
