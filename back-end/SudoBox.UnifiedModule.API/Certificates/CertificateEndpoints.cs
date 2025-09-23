@@ -11,14 +11,11 @@ namespace SudoBox.UnifiedModule.API.Certificates;
 public static class CertificateEndpoints {
     public static void MapCertificateEndpoints(this WebApplication app) {
         app.MapPost("api/v1/certificates/issue", async (CreateCertificateDto createCertificateDto, CertificateService certificateService, HttpContext httpContext) => {
-            try
-            {
+            try {
                 var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                 await certificateService.CreateCertificate(createCertificateDto, role == "Admin");
                 return Results.Ok();
-            } 
-            catch (Exception e) 
-            {
+            } catch (Exception e) {
                 return Results.BadRequest(e.Message);
             }
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser" });
@@ -32,11 +29,9 @@ public static class CertificateEndpoints {
             var response = await certificateService.GetValidSigningCertificates();
             return Results.Ok(response);
         }).AllowAnonymous();
-        
-        app.MapGet("api/v1/certificates/download/{id}", async (string id, CertificateService certificateService) =>
-        {
-            try
-            {
+
+        app.MapGet("api/v1/certificates/download/{id}", async (string id, CertificateService certificateService) => {
+            try {
                 var pfxBytes = await certificateService.GetCertificateAsPkcs12(id);
 
                 return Results.File(
@@ -44,27 +39,7 @@ public static class CertificateEndpoints {
                     contentType: "application/x-pkcs12",
                     fileDownloadName: $"certificate_{id}.pfx"
                 );
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest(e.Message);
-            }
-        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser,EeUser" });
-        
-        app.MapGet("api/v1/certificates/download-chain/{id}", async (string id, CertificateService certificateService) =>
-        {
-            try
-            {
-                var pem = await certificateService.GetCertificateChainAsPEM(id);
-
-                return Results.File(
-                    fileContents: Encoding.UTF8.GetBytes(pem),
-                    contentType: "application/x-pem-file",
-                    fileDownloadName: $"certificate_chain_{id}.pem"
-                );
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 return Results.BadRequest(e.Message);
             }
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser,EeUser" });

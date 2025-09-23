@@ -65,45 +65,17 @@ public class CertificateService(IUnifiedDbContext db) {
         ).ToList();
     }
 
-    // todo prevent anyone from downloading any certificate only by id
-    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId) {
-        var signingSerialNumber = BigInteger.Parse(certificateId);
-        var dbCertificate = await db.Certificates.FindAsync(signingSerialNumber);
-
-        if (dbCertificate == null)
-            throw new Exception("Signing certificate not found!");
-
-        if (dbCertificate.EncodedValue == null || dbCertificate.PrivateKey == null)
-            throw new Exception("Certificate does not have an encoded value!");
-
-        var certBytes = Convert.FromBase64String(dbCertificate.EncodedValue);
-        var certificate = new X509CertificateParser().ReadCertificate(certBytes);
-
-        var builder = new Pkcs12StoreBuilder()
-            .SetKeyAlgorithm(NistObjectIdentifiers.IdAes256Cbc, PkcsObjectIdentifiers.IdHmacWithSha256);
-        var store = builder.Build();
-
-        var alias = certificate.SubjectDN.ToString();
-        var certEntry = new X509CertificateEntry(certificate);
-
-        store.SetKeyEntry(alias, new AsymmetricKeyEntry(dbCertificate.PrivateKey), [certEntry]);
-
-        await using var ms = new MemoryStream();
-        store.Save(ms, "".ToCharArray(), new SecureRandom());
-
-        return ms.ToArray();
-    }
-
     private async Task<Certificate?> GetCertificate(BigInteger serialNumber) {
         return await db.Certificates.Include(c => c.SigningCertificate).FirstOrDefaultAsync(c => c.SerialNumber == serialNumber);
     }
 
-    // todo prevent anyone from downloading any certificate only by id
-    public async Task<string> GetCertificateChainAsPEM(string certificateId) {
+    // todo prevent someone from downloading any certificate
+    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId) {
         var chain = new List<X509Certificate>();
         var parser = new X509CertificateParser();
         var serialNumber = BigInteger.Parse(certificateId);
-        var current = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
+        var eeCertificate = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
+        var current = eeCertificate;
 
         while (current != null) {
             if (string.IsNullOrWhiteSpace(current.EncodedValue))
@@ -118,12 +90,23 @@ public class CertificateService(IUnifiedDbContext db) {
                 current = null;
         }
 
-        chain.Reverse();
-        using var sw = new StringWriter();
-        var pemWriter = new PemWriter(sw);
-        chain.ForEach(c => pemWriter.WriteObject(new PemObject("CERTIFICATE", c.GetEncoded())));
-        pemWriter.Writer.Flush();
-        return sw.ToString();
+        var alias = chain[0].SubjectDN.ToString();
+        var store = new Pkcs12StoreBuilder().Build();
+        var eeCertEntry = new X509CertificateEntry(chain[0]);
+        var intermediateEntries = chain.Skip(1).Select(c => new X509CertificateEntry(c)).ToArray();
+
+        if (eeCertificate.PrivateKey != null) {
+            store.SetKeyEntry(alias, new AsymmetricKeyEntry(eeCertificate.PrivateKey), [eeCertEntry, .. intermediateEntries]);
+        } else {
+            store.SetCertificateEntry(alias, eeCertEntry);
+            for (var i = 0; i < intermediateEntries.Length; i++)
+                store.SetCertificateEntry($"{alias}-chain-{i}", intermediateEntries[i]);
+        }
+
+        var password = "change-me"; // TODO
+        await using var ms = new MemoryStream();
+        store.Save(ms, password.ToCharArray(), new SecureRandom());
+        return ms.ToArray();
     }
 
     // todo: revoking checkup

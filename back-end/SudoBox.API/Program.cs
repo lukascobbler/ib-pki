@@ -19,9 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 // HTTPS
 builder.WebHost.ConfigureKestrel((ctx, kestrel) =>
 {
-    var pfxRel = "secrets/dev-tls.pfx";
+    var pfxRel = "secrets/sudobox_ee.pfx";
     var pfxAbs = Path.Combine(builder.Environment.ContentRootPath, pfxRel);
-    var pass = "change-me";
+    var pass = "change-me"; // TODO
 
     if (File.Exists(pfxAbs))
     {
