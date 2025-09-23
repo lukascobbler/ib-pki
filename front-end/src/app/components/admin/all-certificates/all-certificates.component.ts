@@ -93,16 +93,4 @@ export class AllCertificatesComponent implements OnInit {
       }
     });
   }
-
-  downloadCertificateChain(certificate: Certificate) {
-    this.certificatesService.downloadCertificateChain(certificate).subscribe({
-      next: (blob: Blob) => {
-        downloadFile(blob, `certificate_chain_${certificate.prettySerialNumber}.pem`)
-      },
-      error: async (err) => {
-        const errorMessage = await extractBlobError(err);
-        this.toast.error("Error", "Download failed: " + errorMessage);
-      }
-    });
-  }
 }

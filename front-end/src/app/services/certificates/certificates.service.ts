@@ -26,8 +26,4 @@ export class CertificatesService {
   downloadCertificate(certificate: Certificate): Observable<Blob> {
     return this.httpClient.get(`${this.urlCore}/download/${certificate.serialNumber}`, { responseType: 'blob' });
   }
-
-  downloadCertificateChain(certificate: Certificate): Observable<Blob> {
-    return this.httpClient.get(`${this.urlCore}/download-chain/${certificate.serialNumber}`, { responseType: 'blob' });
-  }
 }
