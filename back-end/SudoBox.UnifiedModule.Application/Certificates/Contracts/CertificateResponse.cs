@@ -5,7 +5,7 @@ using System.Numerics;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Contracts;
 
-public record CertificateDto {
+public record CertificateResponse {
     public required string SerialNumber { get; set; }
     public required string PrettySerialNumber { get; set; }
     public required string IssuedBy { get; set; }
@@ -17,8 +17,8 @@ public record CertificateDto {
     public required bool CanSign { get; set; }
     public required int PathLen { get; set; }
 
-    public static CertificateDto CreateDto(Certificate c, string status, string decryptedCertificate) {
-        return new CertificateDto {
+    public static CertificateResponse CreateDto(Certificate c, string status, string decryptedCertificate) {
+        return new CertificateResponse {
             SerialNumber = c.SerialNumber.ToString(),
             PrettySerialNumber = ConvertToHexDisplay(c.SerialNumber),
             IssuedBy = ExtractX509Values(c.IssuedBy),

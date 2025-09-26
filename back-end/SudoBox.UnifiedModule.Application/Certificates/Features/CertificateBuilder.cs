@@ -1,3 +1,5 @@
+using SudoBox.UnifiedModule.Domain.Users;
+
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 using Contracts;
@@ -14,69 +16,71 @@ using System.Collections.Generic;
 using System.Linq;
 
 public static class CertificateBuilder {
-    public static Certificate CreateCertificate(CreateCertificateDto dto, AsymmetricCipherKeyPair subjectKeyPair, Certificate? issuerCertificate) {
+    public static Certificate CreateCertificate(
+        CreateCertificateRequest request, AsymmetricCipherKeyPair subjectKeyPair, Certificate? issuerCertificate, User user
+        ) {
         var guidBytes = Guid.NewGuid().ToByteArray();
         var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
-        var subjectName = dto.GetX509Name();
+        var subjectName = request.GetX509Name();
         var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedTo) : subjectName;
 
-        var canSign = (dto.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (dto.BasicConstraints?.IsCa ?? false);
-        var pathLen = dto.BasicConstraints?.PathLen ?? 0;
+        var canSign = (request.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (request.BasicConstraints?.IsCa ?? false);
+        var pathLen = request.BasicConstraints?.PathLen ?? 0;
 
         var certGen = new X509V3CertificateGenerator();
         certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
         certGen.SetSubjectDN(subjectName);
         certGen.SetIssuerDN(issuerName);
 
-        certGen.SetNotBefore(dto.NotBefore ?? issuerCertificate?.NotBefore ?? DateTime.UtcNow);
-        certGen.SetNotAfter(dto.NotAfter ?? issuerCertificate?.NotAfter ?? DateTime.MaxValue);
+        certGen.SetNotBefore(request.NotBefore ?? issuerCertificate?.NotBefore ?? DateTime.UtcNow);
+        certGen.SetNotAfter(request.NotAfter ?? issuerCertificate?.NotAfter ?? DateTime.MaxValue);
 
         certGen.SetPublicKey(subjectKeyPair.Public);
 
-        if (dto.BasicConstraints != null) {
-            var basicConstraintsValue = dto.BasicConstraints.PathLen >= 0
-                ? new BasicConstraints(dto.BasicConstraints.PathLen)
-                : new BasicConstraints(dto.BasicConstraints.IsCa);
+        if (request.BasicConstraints != null) {
+            var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
+                ? new BasicConstraints(request.BasicConstraints.PathLen)
+                : new BasicConstraints(request.BasicConstraints.IsCa);
             certGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
         }
 
-        if (dto.KeyUsage != null && dto.KeyUsage.Count != 0) {
+        if (request.KeyUsage != null && request.KeyUsage.Count != 0) {
             var usageBits = 0;
-            foreach (var ku in dto.KeyUsage)
+            foreach (var ku in request.KeyUsage)
                 if (KeyUsageMap.TryGetValue(ku, out int value))
                     usageBits |= value;
 
             certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
         }
 
-        if (dto.ExtendedKeyUsage != null && dto.ExtendedKeyUsage.Any()) {
+        if (request.ExtendedKeyUsage != null && request.ExtendedKeyUsage.Any()) {
             var ekuOids = new List<DerObjectIdentifier>();
-            foreach (var eku in dto.ExtendedKeyUsage)
+            foreach (var eku in request.ExtendedKeyUsage)
                 if (ExtendedKeyUsageMap.TryGetValue(eku, out var oid))
                     ekuOids.Add(oid);
 
             certGen.AddExtension(X509Extensions.ExtendedKeyUsage, false, new ExtendedKeyUsage(ekuOids.ToArray()));
         }
 
-        if (dto.SubjectAlternativeNames != null) {
-            var san = new GeneralNames(dto.SubjectAlternativeNames.ToGeneralNames());
+        if (request.SubjectAlternativeNames != null) {
+            var san = new GeneralNames(request.SubjectAlternativeNames.ToGeneralNames());
             certGen.AddExtension(X509Extensions.SubjectAlternativeName, false, san);
         }
 
-        if (dto.IssuerAlternativeNames != null) {
-            var ian = new GeneralNames(dto.IssuerAlternativeNames.ToGeneralNames());
+        if (request.IssuerAlternativeNames != null) {
+            var ian = new GeneralNames(request.IssuerAlternativeNames.ToGeneralNames());
             certGen.AddExtension(X509Extensions.IssuerAlternativeName, false, ian);
         }
 
-        if (dto.NameConstraints != null) {
-            var permitted = dto.NameConstraints.Permitted.ToGeneralSubtrees();
-            var excluded = dto.NameConstraints.Excluded.ToGeneralSubtrees();
+        if (request.NameConstraints != null) {
+            var permitted = request.NameConstraints.Permitted.ToGeneralSubtrees();
+            var excluded = request.NameConstraints.Excluded.ToGeneralSubtrees();
             var nameConstraints = new NameConstraints(permitted.Count > 0 ? permitted : null, excluded.Count > 0 ? excluded : null);
             certGen.AddExtension(X509Extensions.NameConstraints, true, nameConstraints);
         }
 
-        if (dto.CertificatePolicy != null) {
-            PolicyInformation policyInfo = dto.CertificatePolicy.ToPolicyInformation();
+        if (request.CertificatePolicy != null) {
+            PolicyInformation policyInfo = request.CertificatePolicy.ToPolicyInformation();
             certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
         }
 
@@ -94,7 +98,8 @@ public static class CertificateBuilder {
             PrivateKey = subjectKeyPair.Private,
             IsApproved = true,
             CanSign = canSign,
-            PathLen = pathLen
+            PathLen = pathLen,
+            SignedBy = user
         };
     }
 

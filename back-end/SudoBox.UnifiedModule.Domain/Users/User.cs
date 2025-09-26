@@ -1,4 +1,5 @@
 using SudoBox.BuildingBlocks.Domain;
+using SudoBox.UnifiedModule.Domain.Certificates;
 
 namespace SudoBox.UnifiedModule.Domain.Users;
 
@@ -13,4 +14,5 @@ public class User: Entity
     public required string HashedPassword { get; set; }
     public required string RefreshToken { get; set; }
     public DateTimeOffset? RefreshTokenExpiresAt { get; set; }
+    public required List<Certificate> MyCertificates { get; init; }
 }
