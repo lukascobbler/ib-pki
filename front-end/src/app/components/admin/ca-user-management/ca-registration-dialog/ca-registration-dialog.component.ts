@@ -1,11 +1,19 @@
-import {Component, Inject} from '@angular/core';
+import {Component, inject, Inject, OnInit} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MAT_DIALOG_DATA, MatDialogClose, MatDialogRef} from '@angular/material/dialog';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
-import {NgIf} from '@angular/common';
+import {NgForOf, NgIf} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
+import {Certificate} from '../../../../models/Certificate';
+import {CertificatesService} from '../../../../services/certificates/certificates.service';
+import {ToastrService} from '../../../common/toastr/toastr.service';
+import {CreateCertificate} from '../../../../models/CreateCertificate';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {CreateCaUser} from '../../../../models/CreateCaUser';
+import {AuthService} from '../../../../services/auth/auth.service';
+import {CaUser} from '../../../../models/CaUser';
 
 @Component({
   selector: 'app-ca-registration-dialog',
@@ -14,27 +22,68 @@ import {MatIconButton} from '@angular/material/button';
     MatFormField,
     MatSelect,
     MatOption,
-    MatDialogClose,
     FormsModule,
     MatInput,
     MatLabel,
-    NgIf,
-    MatIconButton
+    MatIconButton,
+    NgForOf,
+    MatProgressSpinner,
+    NgIf
   ],
   templateUrl: './ca-registration-dialog.component.html',
   styleUrl: './ca-registration-dialog.component.scss'
 })
 export class CaRegistrationDialogComponent {
+  auth = inject(AuthService);
+  data = inject(MAT_DIALOG_DATA) as { allSigningCertificates: Certificate[] };
+
+  toast = inject(ToastrService);
+
+  loading = false;
+
+  signingCertificate: Certificate | null = null;
+  name = ''
+  surname = ''
+  organization = ''
+  email = ''
+  password = ''
 
   constructor(
-    public dialogRef: MatDialogRef<CaRegistrationDialogComponent, null>) {
-  }
-
-  closeDialog() {
-    this.dialogRef.close(null);
+    public dialogRef: MatDialogRef<CaRegistrationDialogComponent, CaUser | null | undefined>) {
   }
 
   onNoClick() {
     this.dialogRef.close(undefined);
+  }
+
+  onSubmit() {
+    this.loading = true;
+
+    if (this.signingCertificate === null) {
+      return;
+    }
+
+    let createCaUser: CreateCaUser = {
+      email: this.email,
+      initialSigningCertificateId: this.signingCertificate.serialNumber,
+      name: this.name,
+      organization: this.organization,
+      password: this.password,
+      surname: this.surname
+    }
+
+    this.auth.registerCaUser(createCaUser).subscribe({
+      next: value => {
+        this.toast.success('Registered', 'A new CA user has been registered.');
+        this.loading = false;
+        this.dialogRef.close({ name: value.name, id: value.id, email: value.email, surname: value.surname, organization: value.organization });
+      },
+      error: (err) => {
+        const msg = err?.error?.error || err?.error?.message || err?.message || 'Unexpected error.';
+        this.toast.error('Registration failed: ', msg);
+        this.loading = false;
+      },
+      complete: () => this.loading = false
+    });
   }
 }

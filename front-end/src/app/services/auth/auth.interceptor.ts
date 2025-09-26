@@ -13,10 +13,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
     const isApi = req.url.startsWith('https://localhost:8081/');
     const isAuthEndpoint =
-      req.url.includes('/api/users/login') ||
-      req.url.includes('/api/users/register') ||
-      req.url.includes('/api/users/confirm') ||
-      req.url.includes('/api/users/refresh');
+      req.url.includes('/api/v1/users/login') ||
+      req.url.includes('/api/v1/users/register') ||
+      req.url.includes('/api/v1/users/confirm') ||
+      req.url.includes('/api/v1/users/refresh');
 
     if (!isApi || isAuthEndpoint) {
       return next.handle(req);

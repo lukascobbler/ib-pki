@@ -1,5 +1,5 @@
 
-export interface RefreshResponseDTO {
+export interface RefreshResponse {
   accessToken: string;
   accessExpiresAt: string;
   refreshToken: string;
