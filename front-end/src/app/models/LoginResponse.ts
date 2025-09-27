@@ -1,4 +1,4 @@
-export interface LoginResponseDTO {
+export interface LoginResponse {
   accessToken: string;
   accessExpiresAt: string;   // ISO string
   refreshToken: string;

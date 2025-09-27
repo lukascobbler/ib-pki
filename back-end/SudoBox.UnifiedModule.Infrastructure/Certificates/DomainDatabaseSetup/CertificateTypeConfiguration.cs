@@ -28,5 +28,8 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
             .WithMany()
             .HasForeignKey("SigningCertificateSerialNumber")
             .IsRequired(false);
+
+        b.HasOne(x => x.SignedBy)
+            .WithMany();
     }
 }

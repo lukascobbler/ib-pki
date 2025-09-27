@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -8,11 +8,15 @@ import {DateAdapter, MAT_DATE_FORMATS, MatNativeDateModule} from '@angular/mater
 import {MatSelectModule} from '@angular/material/select';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatTab, MatTabContent, MatTabGroup} from '@angular/material/tabs';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {KeysDialogComponent} from './keys-dialog/keys-dialog.component';
 import {MatIconModule} from '@angular/material/icon';
 import {CustomDateAdapter} from '../../common/custom-components/custom-date/custom-date-adapter';
 import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date/custom-date-formats';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {UsersService} from '../../../services/users/users.service';
+import {CaUser} from '../../../models/CaUser';
+import {ToastrService} from '../../common/toastr/toastr.service';
 
 @Component({
   selector: 'app-request-certificate',
@@ -30,7 +34,8 @@ import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date/cu
     NgIf,
     MatTabGroup,
     MatTab,
-    MatTabContent
+    MatTabContent,
+    MatProgressSpinner
   ],
   providers: [
     {provide: DateAdapter, useClass: CustomDateAdapter},
@@ -39,7 +44,14 @@ import {CUSTOM_DATE_FORMATS} from '../../common/custom-components/custom-date/cu
   templateUrl: './request-certificate.component.html',
   styleUrl: './request-certificate.component.scss'
 })
-export class RequestCertificateComponent {
+export class RequestCertificateComponent implements OnInit {
+  dialog = inject(MatDialog);
+  usersService = inject(UsersService);
+  toast = inject(ToastrService);
+
+  loading = true;
+  caUsers: CaUser[] = [];
+
   extensions: { key: string, value: string, type: number }[] = [];
   isDragging = false;
   fileName: string | null = null;
@@ -47,7 +59,16 @@ export class RequestCertificateComponent {
   dateNotBefore: Date | null = null;
   dateNotAfter: Date | null = null;
 
-  constructor(private dialog: MatDialog) {
+  ngOnInit() {
+    this.usersService.getAllCaUsers().subscribe({
+      next: value => {
+        this.caUsers = value;
+        this.loading = false;
+      },
+      error: err => {
+        this.toast.error("Error", "Unable to load CA users: " + err);
+      }
+    });
   }
 
   addExtension() {
@@ -92,7 +113,7 @@ export class RequestCertificateComponent {
   }
 
   openCopyKeysDialog() {
-    const dialogRef: MatDialogRef<KeysDialogComponent, null> = this.dialog.open(KeysDialogComponent, {
+    this.dialog.open(KeysDialogComponent, {
       width: '500px'
     });
   }

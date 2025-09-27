@@ -2,20 +2,22 @@ import {HttpClient} from '@angular/common/http';
 import {inject, Injectable} from '@angular/core';
 import {AuthState} from '../../models/AuthState';
 import {BasicUser} from '../../models/BasicUser';
-import {LoginRequestDTO} from '../../models/LoginRequestDTO';
-import {LoginResponseDTO} from '../../models/LoginResponseDTO';
-import {RegisterRequestDTO} from '../../models/RegisterRequestDTO';
-import {RefreshRequestDTO} from '../../models/RefreshRequestDTO';
-import {RefreshResponseDTO} from '../../models/RefreshResponseDTO';
+import {LoginRequest} from '../../models/LoginRequest';
+import {LoginResponse} from '../../models/LoginResponse';
+import {RegisterRequest} from '../../models/RegisterRequest';
+import {RefreshRequest} from '../../models/RefreshRequest';
+import {RefreshResponse} from '../../models/RefreshResponse';
 import {BehaviorSubject, Observable, map, tap, throwError, of} from 'rxjs';
 import {finalize, shareReplay, catchError} from 'rxjs/operators';
 import {Role} from '../../models/Role';
 import {ConfirmEmailResponse} from '../../models/ConfirmEmailResponse';
+import {CreateCaUser} from '../../models/CreateCaUser';
+import {RegisterResponse} from '../../models/RegisterResponse';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
   httpClient = inject(HttpClient)
-  urlCore = 'https://localhost:8081/api/users';
+  urlCore = 'https://localhost:8081/api/v1/users';
 
   private static STORAGE_KEY = 'auth.state.v1';
 
@@ -54,13 +56,17 @@ export class AuthService {
     return this._state$.value.accessToken;
   }
 
-  register(body: RegisterRequestDTO): Observable<never> {
-    return this.httpClient.post<never>(`${this.urlCore}/register`, body);
+  register(body: RegisterRequest): Observable<RegisterResponse> {
+    return this.httpClient.post<RegisterResponse>(`${this.urlCore}/register`, body);
   }
 
-  login(body: LoginRequestDTO): Observable<BasicUser> {
+  registerCaUser(body: CreateCaUser): Observable<RegisterResponse> {
+    return this.httpClient.post<RegisterResponse>(`${this.urlCore}/register-ca`, body);
+  }
+
+  login(body: LoginRequest): Observable<BasicUser> {
     return this.httpClient
-      .post<LoginResponseDTO>(`${this.urlCore}/login`, body)
+      .post<LoginResponse>(`${this.urlCore}/login`, body)
       .pipe(
         tap((res) => this.applyLoginResponse(res)),
         map(() => this._state$.value.user!)
@@ -71,9 +77,9 @@ export class AuthService {
     const rt = this._state$.value.refreshToken;
     if (!rt) return throwError(() => new Error('Missing refresh token'));
 
-    const body: RefreshRequestDTO = {refreshToken: rt};
+    const body: RefreshRequest = {refreshToken: rt};
     return this.httpClient
-      .post<RefreshResponseDTO>(`${this.urlCore}/refresh`, body)
+      .post<RefreshResponse>(`${this.urlCore}/refresh`, body)
       .pipe(
         tap((res) => this.applyRefreshResponse(res)),
         map(() => void 0)
@@ -86,13 +92,7 @@ export class AuthService {
       .pipe(finalize(() => this.clearState()));
   }
 
-  logoutAll(): Observable<void> {
-    return this.httpClient
-      .post<void>(`${this.urlCore}/logout-all`, {}, {})
-      .pipe(finalize(() => this.clearState()));
-  }
-
-  private applyLoginResponse(res: LoginResponseDTO) {
+  private applyLoginResponse(res: LoginResponse) {
     const state: AuthState = {
       accessToken: res.accessToken,
       accessExpiresAt: res.accessExpiresAt,
@@ -108,7 +108,7 @@ export class AuthService {
     this.setState(state);
   }
 
-  private applyRefreshResponse(res: RefreshResponseDTO) {
+  private applyRefreshResponse(res: RefreshResponse) {
     // Role can be read from JWT
     const claims = this.decodeJwt(res.accessToken);
     const roleFromJwt = (claims['role'] ||
@@ -201,7 +201,7 @@ export class AuthService {
     return this.msUntilAccessExpiry() > skewMs;
   }
 
-  // ensure theres a fresh access token, refreshing if needed
+  // ensure there's a fresh access token, refreshing if needed
   ensureValidAccessToken(skewMs = 30_000): Observable<void> {
     if (this.isAccessTokenFresh(skewMs)) return of(void 0);
     if (this.refreshInFlight$) return this.refreshInFlight$;

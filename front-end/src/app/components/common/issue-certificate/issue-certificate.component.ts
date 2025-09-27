@@ -16,6 +16,8 @@ import {ExtendedKeyUsageValue} from '../../../models/ExtendedKeyUsageValue';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {ToastrService} from '../toastr/toastr.service';
 import {Certificate} from '../../../models/Certificate';
+import {AuthService} from '../../../services/auth/auth.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-issue-certificate',
@@ -31,7 +33,8 @@ import {Certificate} from '../../../models/Certificate';
     NgForOf,
     NgIf,
     MatChipsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatProgressSpinner
   ],
   providers: [
     {provide: DateAdapter, useClass: CustomDateAdapter},
@@ -43,13 +46,17 @@ import {Certificate} from '../../../models/Certificate';
 export class IssueCertificateComponent implements OnInit {
   @ViewChild('notBeforeModel') dateNotBeforeModel!: NgModel;
   @ViewChild('notAfterModel') dateNotAfterModel!: NgModel;
+  @ViewChild('certForm') certForm!: NgForm;
 
   certificatesService = inject(CertificatesService);
+  auth = inject(AuthService);
   toast = inject(ToastrService)
 
   protected readonly ExtendedKeyUsageValue = ExtendedKeyUsageValue;
   protected readonly KeyUsageValue = KeyUsageValue;
-  signingCertificates: { key: string | Certificate, value: string }[] = [{key: 'SelfSign', value: 'Self signing'}];
+  loading = true;
+  noSigningCertificates = false;
+  signingCertificates: { key: string | Certificate, value: string }[] = [];
   extensions: { key: string, value: any }[] = [];
   dateNotBefore: Date | null = null;
   dateNotAfter: Date | null = null;
@@ -71,17 +78,41 @@ export class IssueCertificateComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.loadSigningCertificates()
+    if (this.auth.role === 'CaUser') {
+      this.loadCaSigningCertificates();
+    } else if (this.auth.role === 'Admin') {
+      this.loadAdminSigningCertificates();
+    }
   }
 
-  loadSigningCertificates() {
+  loadCaSigningCertificates() {
+    this.certificatesService.getMyCertificates().subscribe({
+      next: value => {
+        if (value.length === 0) {
+          this.noSigningCertificates = true;
+        }
+
+        value.sort((a, b) => a.prettySerialNumber.localeCompare(b.prettySerialNumber));
+        value.forEach((certificate) => {
+          this.signingCertificates.push({key: certificate, value: certificate.prettySerialNumber})
+        })
+        this.loading = false;
+      },
+      error: err => {
+        this.toast.error("Error", "Unable to get signing certificates");
+      }
+    })
+  }
+
+  loadAdminSigningCertificates() {
     this.signingCertificates = [{key: 'SelfSign', value: 'Self signing'}];
     this.certificatesService.getValidSigningCertificates().subscribe({
       next: value => {
         value.sort((a, b) => a.prettySerialNumber.localeCompare(b.prettySerialNumber));
         value.forEach((certificate) => {
           this.signingCertificates.push({key: certificate, value: certificate.prettySerialNumber})
-        })
+        });
+        this.loading = false;
       },
       error: err => {
         this.toast.error("Error", "Unable to get signing certificates");
@@ -201,6 +232,8 @@ export class IssueCertificateComponent implements OnInit {
   onSubmit(form: NgForm) {
     if (!form.valid) return;
 
+    this.loading = true;
+
     const signCert = typeof this.signingCertificate === 'string' ? this.signingCertificate : this.signingCertificate.serialNumber;
 
     const dto: CreateCertificate = {
@@ -246,9 +279,14 @@ export class IssueCertificateComponent implements OnInit {
 
     this.certificatesService.issueCertificate(dto).subscribe({
       next: () => {
+        this.loading = false;
         this.toast.success("Success", "Certificate successfully created");
-        this.loadSigningCertificates();
-        this.resetFields(form);
+        if (this.auth.role === 'CaUser') {
+          this.loadCaSigningCertificates();
+        } else if (this.auth.role === 'Admin') {
+          this.loadAdminSigningCertificates();
+        }
+        this.resetFields();
       },
       error: err => {
         this.toast.error("Unable to issue the certificate", `Error: ${err}`);
@@ -256,8 +294,8 @@ export class IssueCertificateComponent implements OnInit {
     });
   }
 
-  private resetFields(form: NgForm) {
+  private resetFields() {
     this.extensions = [];
-    form.resetForm();
+    this.certForm.resetForm();
   }
 }

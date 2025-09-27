@@ -9,6 +9,8 @@ using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using System.Numerics;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Pkcs;
 
@@ -16,14 +18,20 @@ namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 public class CertificateService(IUnifiedDbContext db) {
 
-    public async Task CreateCertificate(CreateCertificateDto createCertificateDto, bool isAdmin) {
+    public async Task CreateCertificate(CreateCertificateRequest createCertificateRequest, bool isAdmin, string? userId) {
+        if (userId == null) 
+            throw new Exception("User must be logged in!");
+        var user = await db.Users.FindAsync(Guid.Parse(userId));
+        if (user == null)
+            throw new Exception("User not found!");
+        
         var kpGen = new RsaKeyPairGenerator();
         kpGen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
         var subjectKeyPair = kpGen.GenerateKeyPair();
 
         Certificate? signingCertificate = null;
-        if (createCertificateDto.SigningCertificate != "SelfSign") {
-            var signingSerialNumber = BigInteger.Parse(createCertificateDto.SigningCertificate);
+        if (createCertificateRequest.SigningCertificate != "SelfSign") {
+            var signingSerialNumber = BigInteger.Parse(createCertificateRequest.SigningCertificate);
             signingCertificate = await db.Certificates.FindAsync(signingSerialNumber);
             if (signingCertificate == null)
                 throw new Exception("Signing certificate not found!");
@@ -35,34 +43,104 @@ public class CertificateService(IUnifiedDbContext db) {
         CertificateStatus? status = signingCertificate != null ? GetStatus(signingCertificate) : null;
         if (status != null && status != CertificateStatus.Active)
             throw new Exception($"Selected certificate is {status.ToString()!.ToLower()}!");
-        if (signingCertificate != null && createCertificateDto.NotBefore < signingCertificate.NotBefore)
+        if (signingCertificate != null && createCertificateRequest.NotBefore < signingCertificate.NotBefore)
             throw new Exception("NotBefore cannot be earlier than the signing certificate's NotBefore!");
-        if (signingCertificate != null && createCertificateDto.NotAfter > signingCertificate.NotAfter)
+        if (signingCertificate != null && createCertificateRequest.NotAfter > signingCertificate.NotAfter)
             throw new Exception("NotAfter cannot be later than the signing certificate's NotAfter!");
-        if (createCertificateDto.NotBefore > createCertificateDto.NotAfter)
+        if (createCertificateRequest.NotBefore > createCertificateRequest.NotAfter)
             throw new Exception("NotBefore cannot be later than the NotAfter!");
-
-        Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateDto, subjectKeyPair, signingCertificate);
+        
+        Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectKeyPair, signingCertificate, user);
 
         await db.Certificates.AddAsync(certificate);
         await db.SaveChangesAsync();
     }
 
-    public async Task<ICollection<CertificateDto>> GetAllCertificates() {
+    public async Task<ICollection<CertificateResponse>> GetAllCertificates() {
         var allCertificatesModels = await db.Certificates.ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateDto.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
         ).ToList();
     }
 
-    public async Task<ICollection<CertificateDto>> GetValidSigningCertificates() {
-        var allSigningCertificates = await db.Certificates.Where(c => c.CanSign).ToListAsync();
+    public async Task<ICollection<CertificateResponse>> GetAllValidSigningCertificates()
+    {
+        var allSigningCertificates = await db.Certificates
+            .Where(c => c.CanSign)
+            .ToListAsync();
         var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateDto.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
         ).ToList();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetValidSigningCertificatesCaUserDoesntHave(string caUserId)
+    {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(caUserId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var allSigningCertificates = await db.Certificates
+            .Include(c => c.SignedBy)
+            .Where(c => c.CanSign)
+            .ToListAsync();
+
+        var allSigningAndNotByUser = allSigningCertificates.Where(c => !user.MyCertificates.Contains(c));
+        
+        var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
+
+        return allValidCertificates.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+        ).ToList();
+    }
+    
+    public async Task<ICollection<CertificateResponse>> GetMyCertificates(string userId) {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(userId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var allCertificatesModels = user.MyCertificates;
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+        ).ToList();
+    }
+    
+    public async Task<ICollection<CertificateResponse>> GetCertificatesSignedByMe(string userId) {
+        var allCertificatesModels = await db.Certificates
+            .Include(c => c.SignedBy)
+            .Where(c => c.SignedBy.Id == Guid.Parse(userId))
+            .ToListAsync();
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+        ).ToList();
+    }
+
+    public async Task AddCertificateToCaUser(AddCertificateToCaUserRequest addCertificateToCaUserRequest)
+    {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(addCertificateToCaUserRequest.CaUserId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var certificate = await db.Certificates
+            .FindAsync(BigInteger.Parse(addCertificateToCaUserRequest.NewCertificateSerialNumber));
+        if (certificate == null)
+            throw new Exception("Certificate not found!");
+        
+        user.MyCertificates.Add(certificate);
+        await db.SaveChangesAsync();
     }
 
     private async Task<Certificate?> GetCertificate(BigInteger serialNumber) {

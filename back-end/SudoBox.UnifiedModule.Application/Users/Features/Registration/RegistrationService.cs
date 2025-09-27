@@ -21,40 +21,46 @@ public class RegistrationService(
 {
     private static readonly EmailAddressAttribute EmailAttr = new();
 
-    public async Task<RegistrationResult> RegisterAsync(RegisterRequest req, CancellationToken ct)
+    public async Task<RegistrationResult> RegisterAsync(RegisterRequest req, CancellationToken ct, bool creatingCaUser)
     {
-        var emailNorm = (req.Email ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(emailNorm))
-            return new(false, 400, new { error = "Email is required." });
+        var emailNorm = (req.Email).Trim();
         if (!EmailAttr.IsValid(emailNorm))
-            return new(false, 400, new { error = "Invalid email format." });
-        if (req.Password != req.ConfirmPassword)
-            return new(false, 400, new { error = "Passwords do not match." });
-
+            return new(false, 400, new RegisterResponse { Message = "Invalid email format."} );
         if (await db.Users.AnyAsync(u => u.Email == emailNorm, ct))
-            return new(false, 409, new { error = "An account with this email already exists." });
+            return new(false, 409, new RegisterResponse { Message = "An account with this email already exists."} );
+        if (string.IsNullOrWhiteSpace(emailNorm))
+            return new(false, 400, new RegisterResponse { Message = "Email is required." } );
 
-        var policy = Evaluate(req.Password, emailNorm, req.Name, req.Surname, commonStore);
-        if (!policy.Ok) return new(false, 400, new { error = "Weak password.", details = policy.Errors });
+        if (!creatingCaUser)
+        {
+            if (req.Password != req.ConfirmPassword)
+                return new(false, 400, new RegisterResponse { Message = "Passwords do not match." } );
+            var policy = Evaluate(req.Password, emailNorm, req.Name, req.Surname, commonStore);
+            if (!policy.Ok) 
+                return new RegistrationResult(
+                    false,
+                    400, 
+                    new RegisterResponse() { Message = "Weak password. " + string.Join(" ", policy.Errors) } );   
+        }
 
         var pwdHash = BCrypt.Net.BCrypt.HashPassword(req.Password, workFactor: 12);
 
         var user = new User
         {
-            Role = Role.EeUser,
+            Role = creatingCaUser ? Role.CaUser: Role.EeUser,
             Name = string.IsNullOrWhiteSpace(req.Name) ? null : req.Name.Trim(),
             Surname = string.IsNullOrWhiteSpace(req.Surname) ? null : req.Surname.Trim(),
             Organization = string.IsNullOrWhiteSpace(req.Organization) ? null : req.Organization.Trim(),
             Email = emailNorm,
-            EmailConfirmed = false,
+            EmailConfirmed = creatingCaUser,
             HashedPassword = pwdHash,
-            RefreshToken = ""
+            RefreshToken = "",
+            MyCertificates = []
         };
         await db.Users.AddAsync(user, ct);
 
         var tokenPlain = Convert.ToHexString(RandomNumberGenerator.GetBytes(32)); // 64 hex chars
         var tokenHashHex = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(tokenPlain)));
-
 
         var ttlMinutes = int.TryParse(cfg["Auth:EmailConfirmation:TokenTtlMinutes"], out var m) ? m : 60;
         var vt = new VerificationToken
@@ -68,6 +74,19 @@ public class RegistrationService(
         await db.VerificationTokens.AddAsync(vt, ct);
         await db.SaveChangesAsync(ct);
 
+        if (creatingCaUser)
+            return new(true, 
+                202, 
+                new RegisterResponse
+                {
+                    Message = "Registration received",
+                    Email = user.Email,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    Id = user.Id.ToString(),
+                    Organization = user.Organization
+                });
+        
         var publicBase = "http://localhost:4200"; // web server address
         var confirmUrl = $"{publicBase}/confirm?token={tokenPlain}";
 
@@ -79,6 +98,17 @@ public class RegistrationService(
 
         await email.SendAsync(user.Email, "Confirm your SudoBox account", html, ct);
 
-        return new(true, 202, new RegisterResponse("Registration received. Check your email to confirm."));
+        return new(
+            true, 
+            202, 
+            new RegisterResponse
+            {
+                Message = "Registration received. Check your email to confirm.",
+                Email = user.Email,
+                Name = user.Name,
+                Surname = user.Surname,
+                Id = user.Id.ToString(),
+                Organization = user.Organization
+            });
     }
 }

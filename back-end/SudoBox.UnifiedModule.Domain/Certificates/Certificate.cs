@@ -1,5 +1,6 @@
 using Org.BouncyCastle.Crypto;
 using System.Numerics;
+using SudoBox.UnifiedModule.Domain.Users;
 
 namespace SudoBox.UnifiedModule.Domain.Certificates;
 
@@ -15,4 +16,5 @@ public class Certificate {
     public required bool CanSign { get; set; }
     public required int PathLen { get; set; }
     public AsymmetricKeyParameter? PrivateKey { get; set; }
+    public required User SignedBy { get; set; }
 }

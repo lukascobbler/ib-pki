@@ -34,6 +34,9 @@ internal sealed class UserEntityTypeConfiguration : IEntityTypeConfiguration<Use
         b.Property(x => x.Surname).HasMaxLength(100);
         b.Property(x => x.Organization).HasMaxLength(150);
         b.Property(x => x.RefreshTokenExpiresAt);
+        
+        b.HasMany(x => x.MyCertificates)
+            .WithMany();
 
         // Store Role as string for readability
         b.Property(x => x.Role)

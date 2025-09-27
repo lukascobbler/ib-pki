@@ -54,7 +54,7 @@
 
       <ng-container matColumnDef="actions">
         <mat-cell class="actions" *matCellDef="let caUser">
-          <button (click)="openAssignNewCertificate()" mat-icon-button>
+          <button (click)="openAssignNewCertificate(caUser)" mat-icon-button>
             <span class="material-symbols-rounded">autorenew</span>
           </button>
         </mat-cell>

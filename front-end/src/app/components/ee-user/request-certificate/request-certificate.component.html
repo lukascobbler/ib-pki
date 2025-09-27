@@ -1,4 +1,7 @@
-<div class="certificate-container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="certificate-container">
   <mat-tab-group dynamicHeight="true" fitInkBarToContent>
     <mat-tab label="Upload CSR">
       <div class="tab-content">
@@ -7,9 +10,7 @@
             <mat-form-field appearance="outline">
               <mat-label>CA Issuer</mat-label>
               <mat-select>
-                <mat-option value="issuer1">CA Issuer 1</mat-option>
-                <mat-option value="issuer2">CA Issuer 2</mat-option>
-                <mat-option value="issuer3">CA Issuer 3</mat-option>
+                <mat-option *ngFor="let ca of caUsers" [value]="ca.id">{{ ca.organization }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -43,7 +44,6 @@
 
           <div class="row">
             <mat-form-field appearance="outline">
-              <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
               <mat-label>Not Before</mat-label>
               <input matInput [matDatepicker]="pickerNotBeforeCSR" [(ngModel)]="dateNotBeforeCSR" name="notBeforeCSR">
               <mat-datepicker-toggle matSuffix [for]="pickerNotBeforeCSR"></mat-datepicker-toggle>
@@ -67,8 +67,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>CA Issuer</mat-label>
                 <mat-select>
-                  <mat-option value="ca1">CA1</mat-option>
-                  <mat-option value="ca2">CA2</mat-option>
+                  <mat-option *ngFor="let ca of caUsers" [value]="ca.id">{{ ca.organization }}</mat-option>
                 </mat-select>
               </mat-form-field>
 
@@ -104,7 +103,6 @@
 
             <div class="row">
               <mat-form-field appearance="outline">
-                <!-- TODO popravi datume kad forma bude kompletna sa bekom -->
                 <mat-label>Not Before</mat-label>
                 <input matInput [matDatepicker]="pickerNotBefore" [(ngModel)]="dateNotBefore" name="notBefore">
                 <mat-datepicker-toggle matSuffix [for]="pickerNotBefore"></mat-datepicker-toggle>

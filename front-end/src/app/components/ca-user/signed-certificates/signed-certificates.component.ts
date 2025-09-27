@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -6,7 +6,7 @@ import {
   MatHeaderCell, MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
+  MatRow, MatRowDef, MatTable, MatTableDataSource
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -16,12 +16,14 @@ import {
 import {
   CertificateDetailsDialogComponent
 } from '../../common/certificate-details-dialog/certificate-details-dialog.component';
-import {DatePipe} from '@angular/common';
+import {DatePipe, NgIf} from '@angular/common';
 import {Certificate} from '../../../models/Certificate';
 import {downloadFile} from '../../common/custom-components/blob/download-file';
 import {CertificatesService} from '../../../services/certificates/certificates.service';
 import {ToastrService} from '../../common/toastr/toastr.service';
 import {extractBlobError} from '../../common/custom-components/blob/extract-blob-error';
+import {AuthService} from '../../../services/auth/auth.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-signed-certificates',
@@ -38,15 +40,22 @@ import {extractBlobError} from '../../common/custom-components/blob/extract-blob
     MatRowDef,
     MatTable,
     MatHeaderCellDef,
-    DatePipe
+    DatePipe,
+    MatProgressSpinner,
+    NgIf
   ],
   templateUrl: './signed-certificates.component.html',
   styleUrl: './signed-certificates.component.scss'
 })
-export class SignedCertificatesComponent {
+export class SignedCertificatesComponent implements OnInit {
   certificatesService = inject(CertificatesService);
-  toast = inject(ToastrService)
+  toast = inject(ToastrService);
   dialog = inject(MatDialog);
+  auth = inject(AuthService);
+
+  signedByMeCertificates: Certificate[] = [];
+  loading = true;
+  signedCertificatesDataSource = new MatTableDataSource();
 
   displayedColumns: string[] = [
     'issuedTo',
@@ -57,104 +66,18 @@ export class SignedCertificatesComponent {
     'actions'
   ];
 
-  signedCertificatesDataSource: {issuedTo: string, status: string, validFrom: string, validUntil: string, serialNumber: string}[] = [
-    {
-      issuedTo: 'John',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    }
-  ];
+  ngOnInit() {
+    this.certificatesService.getCertificatesSignedByMe().subscribe({
+      next: value => {
+        this.signedByMeCertificates = value;
+        this.signedCertificatesDataSource.data = this.signedByMeCertificates;
+        this.loading = false;
+      },
+      error: err => {
+        this.toast.error("Error", "Error loading certificates signed by me: ", err);
+      }
+    })
+  }
 
   openRevokeCertificate(certificate: Certificate) {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {

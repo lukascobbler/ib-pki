@@ -4,15 +4,15 @@
   </button>
 
   <mat-form-field appearance="outline">
-    <mat-select placeholder="New CA signing certificate">
-      <mat-option [value]="'test1'">test1</mat-option>
-      <mat-option [value]="'test2'">test2</mat-option>
-      <mat-option [value]="'test3'">test3</mat-option>
-      <mat-option [value]="'test4'">test4</mat-option>
+    <mat-label>Signing certificate</mat-label>
+    <mat-select [(ngModel)]="chosenCertificate" name="signingCertificate">
+      <mat-option *ngFor="let cert of data.availableCertificates" [value]="cert">
+        {{ cert.prettySerialNumber }}
+      </mat-option>
     </mat-select>
   </mat-form-field>
 
-  <button (click)="closeDialog()" [disabled]="false" class="blue-button finish">
+  <button (click)="closeDialog()" [disabled]="!chosenCertificate" class="blue-button finish">
     Assign
   </button>
 </div>
