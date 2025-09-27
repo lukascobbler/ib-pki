@@ -4,15 +4,17 @@
   </button>
 
   <mat-form-field appearance="outline">
-    <mat-select placeholder="Reason for revoking" tabindex="-1">
-      <mat-option [value]="'test1'">test1</mat-option>
-      <mat-option [value]="'test2'">test2</mat-option>
-      <mat-option [value]="'test3'">test3</mat-option>
-      <mat-option [value]="'test4'">test4</mat-option>
+    <mat-select placeholder="Reason for revoking" tabindex="-1" [(ngModel)]="reason">
+      <mat-option [value]="RevocationReason.AffiliationChanged">Affiliation Changed</mat-option>
+      <mat-option [value]="RevocationReason.CessationOfOperation">Cessation of operation</mat-option>
+      <mat-option [value]="RevocationReason.KeyCompromise">Key compromise</mat-option>
+      <mat-option [value]="RevocationReason.PrivilegeWithdrawn">Privilege withdrawn</mat-option>
+      <mat-option [value]="RevocationReason.Superseded">Superseded</mat-option>
+      <mat-option [value]="RevocationReason.Unspecified">Unspecified</mat-option>
     </mat-select>
   </mat-form-field>
 
-  <button (click)="closeDialog()" [disabled]="false" class="blue-button finish">
+  <button (click)="closeDialog()" [disabled]="!reason" class="blue-button finish">
     Revoke
   </button>
 </div>

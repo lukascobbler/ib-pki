@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -6,12 +6,21 @@ import {
   MatHeaderCell, MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
+  MatRow, MatRowDef, MatTable, MatTableDataSource
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
 import {MatDialog} from '@angular/material/dialog';
 import {CertificateDetailsDialogComponent} from '../certificate-details-dialog/certificate-details-dialog.component';
 import {Certificate} from '../../../models/Certificate';
+import {RevokedCertificate} from '../../../models/RevokedCertificate';
+import {CrlService} from '../../../services/crl/crl.service';
+import {ToastrService} from '../toastr/toastr.service';
+import {downloadFile} from '../custom-components/blob/download-file';
+import {extractBlobError} from '../custom-components/blob/extract-blob-error';
+import {CertificatesService} from '../../../services/certificates/certificates.service';
+import {NgIf, NgSwitchCase} from '@angular/common';
+import {RevocationReason} from '../../../models/RevocationReason';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-crl-page',
@@ -27,13 +36,19 @@ import {Certificate} from '../../../models/Certificate';
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    NgSwitchCase,
+    NgIf,
+    MatProgressSpinner
   ],
   templateUrl: './crl-page.component.html',
   styleUrl: './crl-page.component.scss'
 })
-export class CrlPageComponent {
+export class CrlPageComponent implements OnInit {
   dialog = inject(MatDialog);
+  crlService = inject(CrlService);
+  certificatesService = inject(CertificatesService);
+  toast = inject(ToastrService);
 
   displayedColumns: string[] = [
     'issuedBy',
@@ -43,105 +58,34 @@ export class CrlPageComponent {
     'actions'
   ];
 
-  certificatesDataSource: {issuedBy: string, issuedTo: string, revocationReason: string, serialNumber: string}[] = [
+  loading = true;
+  revokedCertificates: RevokedCertificate[] = [];
+  revokedCertificatesDataSource = new MatTableDataSource();
 
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'keyCompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'affiliationChanged',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'privilegeWithdrawn',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'cACompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'keyCompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'affiliationChanged',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'privilegeWithdrawn',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'cACompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'keyCompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'affiliationChanged',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'privilegeWithdrawn',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'cACompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'keyCompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'affiliationChanged',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'privilegeWithdrawn',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      issuedTo: 'John Doe, IT, Example Corp, US',
-      revocationReason: 'cACompromise',
-      serialNumber: '9A:BC:1B:7C:43:64:G6:51:G2:BC:1B:7C:43:64:G6:51:G2'
-    },
-  ];
+  ngOnInit(): void {
+    this.crlService.getAllRevokedCertificates().subscribe({
+      next: value => {
+        this.revokedCertificates = value;
+        this.revokedCertificatesDataSource.data = this.revokedCertificates;
+        this.loading = false;
+      },
+      error: err => {
+        this.toast.error("Error", "Unable to load revoked certificates: " + err);
+      }
+    })
+  }
+
+  downloadCertificate(revokedCertificate: RevokedCertificate) {
+    this.certificatesService.downloadCertificate(revokedCertificate.serialNumber).subscribe({
+      next: (blob: Blob) => {
+        downloadFile(blob, `certificate_${revokedCertificate.prettySerialNumber}.pfx`)
+      },
+      error: async (err) => {
+        const errorMessage = await extractBlobError(err);
+        this.toast.error("Error", "Download failed: " + errorMessage);
+      }
+    });
+  }
 
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {

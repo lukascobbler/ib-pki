@@ -8,9 +8,11 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using SudoBox.UnifiedModule.API.Certificates;
+using SudoBox.UnifiedModule.API.CRL;
 using SudoBox.UnifiedModule.API.Users;
 using SudoBox.UnifiedModule.Infrastructure;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
+using SudoBox.UnifiedModule.Infrastructure.Crl.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
 
@@ -86,6 +88,7 @@ builder.Services.ConfigureHttpJsonOptions(options => {
 // Module dependency injection
 builder.Services.AddUserFeatures(commonPath);
 builder.Services.ConfigureCertificates();
+builder.Services.AddCrlFeatures();
 
 // Swagger/CORS
 builder.Services.AddEndpointsApiExplorer();
@@ -145,6 +148,7 @@ using (var scope = app.Services.CreateScope())
 // Minimal API endpoints
 app.MapUserEndpoints();
 app.MapCertificateEndpoints();
+app.MapCrlEndpoints();
 
 // who am i test
 var api = app.MapGroup("/api");

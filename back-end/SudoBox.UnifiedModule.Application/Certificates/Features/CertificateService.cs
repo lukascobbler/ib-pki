@@ -60,7 +60,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = await db.Certificates.ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -72,7 +72,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -95,7 +95,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -110,7 +110,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = user.MyCertificates;
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -121,7 +121,7 @@ public class CertificateService(IUnifiedDbContext db) {
             .ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -212,20 +212,5 @@ public class CertificateService(IUnifiedDbContext db) {
             cert.Verify(issuer.GetPublicKey());
             return true;
         } catch { return false; }
-    }
-
-    private static string GetDecryptedCertificate(Certificate certificate) {
-        if (certificate.EncodedValue == null)
-            return "Certificate is empty!";
-        return ToPem(certificate.EncodedValue) ?? "Malformed certificate";
-    }
-
-    private static string? ToPem(string base64) {
-        try {
-            var bytes = Convert.FromBase64String(base64);
-            using var sw = new StringWriter();
-            new PemWriter(sw).WriteObject(new PemObject("CERTIFICATE", bytes));
-            return sw.ToString();
-        } catch { return null; }
     }
 }

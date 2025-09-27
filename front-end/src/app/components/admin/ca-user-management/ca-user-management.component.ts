@@ -133,7 +133,7 @@ export class CaUserManagementComponent implements OnInit {
     };
 
     this.certificateService.addNewCertificateToCaUser(newCertToCa).subscribe({
-      next: _ => {
+      next: () => {
         this.toast.success("Successful", "You successfully added a new certificate to a user");
         this.loading = false;
       },

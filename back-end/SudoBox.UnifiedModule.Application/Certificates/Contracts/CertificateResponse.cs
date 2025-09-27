@@ -17,7 +17,7 @@ public record CertificateResponse {
     public required bool CanSign { get; set; }
     public required int PathLen { get; set; }
 
-    public static CertificateResponse CreateDto(Certificate c, string status, string decryptedCertificate) {
+    public static CertificateResponse CreateDto(Certificate c, string status) {
         return new CertificateResponse {
             SerialNumber = c.SerialNumber.ToString(),
             PrettySerialNumber = ConvertToHexDisplay(c.SerialNumber),
@@ -26,13 +26,13 @@ public record CertificateResponse {
             ValidFrom = c.NotBefore,
             ValidUntil = c.NotAfter,
             Status = status,
-            DecryptedCertificate = decryptedCertificate,
+            DecryptedCertificate = c.GetPem(),
             CanSign = c.CanSign,
             PathLen = c.PathLen
         };
     }
 
-    private static string ConvertToHexDisplay(BigInteger number) {
+    public static string ConvertToHexDisplay(BigInteger number) {
         byte[] bytes = number.ToByteArray();
 
         if (bytes.Length > 1 && bytes[^1] == 0) {
