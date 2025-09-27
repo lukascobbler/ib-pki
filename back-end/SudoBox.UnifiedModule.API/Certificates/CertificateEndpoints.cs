@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Application.Certificates.Features;
 using System.Security.Claims;
-using System.Text;
 
 namespace SudoBox.UnifiedModule.API.Certificates;
 
@@ -39,9 +38,9 @@ public static class CertificateEndpoints {
             }
         }).AllowAnonymous();
         
-        grp.MapGet("/{caUserId}/get-valid-signing", async (string caUserId, CertificateService certificateService) => {
+        grp.MapGet("/get-signing-ca-doesnt-have/{caUserId}", async (string caUserId, CertificateService certificateService) => {
             try {
-                var response = await certificateService.GetValidSigningCertificatesForCaUser(caUserId);
+                var response = await certificateService.GetValidSigningCertificatesCaUserDoesntHave(caUserId);
                 return Results.Ok(response);
             } catch (Exception e) {
                 return Results.BadRequest(e.Message);
@@ -56,6 +55,26 @@ public static class CertificateEndpoints {
                 return Results.BadRequest(e.Message);
             }
         }).RequireAuthorization("Admin");
+        
+        grp.MapGet("/get-my-certificates", async (CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var response = await certificateService.GetMyCertificates(userId!);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization();
+        
+        grp.MapGet("/get-certificates-signed-by-me", async (CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var response = await certificateService.GetCertificatesSignedByMe(userId!);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization("CaUser");
 
         grp.MapGet("/download/{id}", async (string id, CertificateService certificateService) => {
             try {

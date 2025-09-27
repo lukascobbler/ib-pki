@@ -42,6 +42,7 @@ export class CaUserManagementComponent implements OnInit {
   usersService = inject(UsersService);
   certificateService = inject(CertificatesService);
   toast = inject(ToastrService);
+  dialog = inject(MatDialog);
 
   loading = true;
   caUsers: CaUser[] = [];
@@ -55,9 +56,6 @@ export class CaUserManagementComponent implements OnInit {
     'email',
     'actions'
   ];
-
-  constructor(private dialog: MatDialog) {
-  }
 
   ngOnInit() {
     this.usersService.getAllCaUsers().subscribe({
@@ -100,7 +98,7 @@ export class CaUserManagementComponent implements OnInit {
   openAssignNewCertificate(caUser: CaUser) {
     this.loading = true;
 
-    this.certificateService.getValidSigningCertificatesForCa(caUser.id).subscribe({
+    this.certificateService.getSigningCertificatesThatCaDoesntHave(caUser.id).subscribe({
       next: value => {
         this.requestNewCaCertificateFromPool(value, caUser);
         this.loading = false;
@@ -129,7 +127,7 @@ export class CaUserManagementComponent implements OnInit {
   assignNewCaCertificate(certificate: Certificate, caUser: CaUser) {
     this.loading = true;
 
-    let newCertToCa: AddCertificateToCaUser = {
+    const newCertToCa: AddCertificateToCaUser = {
       caUserId: caUser.id,
       newCertificateSerialNumber: certificate.serialNumber
     };

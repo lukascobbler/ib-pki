@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -6,7 +6,7 @@ import {
   MatHeaderCell, MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
+  MatRow, MatRowDef, MatTable, MatTableDataSource
 } from '@angular/material/table';
 import {MatIconButton} from '@angular/material/button';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
@@ -19,6 +19,7 @@ import {downloadFile} from '../custom-components/blob/download-file';
 import {AuthService} from '../../../services/auth/auth.service';
 import {ToastrService} from '../toastr/toastr.service';
 import {extractBlobError} from '../custom-components/blob/extract-blob-error';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-my-certificates',
@@ -36,16 +37,21 @@ import {extractBlobError} from '../custom-components/blob/extract-blob-error';
     MatTable,
     MatHeaderCellDef,
     DatePipe,
+    MatProgressSpinner,
     NgIf
   ],
   templateUrl: './my-certificates.component.html',
   styleUrl: './my-certificates.component.scss'
 })
-export class MyCertificatesComponent {
+export class MyCertificatesComponent implements OnInit {
   certificatesService = inject(CertificatesService);
   toast = inject(ToastrService);
   dialog = inject(MatDialog);
   auth = inject(AuthService);
+
+  myCertificates: Certificate[] = [];
+  loading = true;
+  certificatesDataSource = new MatTableDataSource();
 
   displayedColumns: string[] = [
     'issuedBy',
@@ -56,193 +62,18 @@ export class MyCertificatesComponent {
     'actions'
   ];
 
-  certificatesDataSource: {issuedBy: string, status: string, validFrom: string, validUntil: string, serialNumber: string}[] = [
-    {
-      issuedBy: 'John',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },{
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-    {
-      issuedBy: 'John Doe, IT, Example Corp, US',
-      status: 'Active',
-      validFrom: '2024-01-01',
-      validUntil: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:9A:BC:DE:F1:23:45:67:89'
-    },
-  ];
+  ngOnInit() {
+    this.certificatesService.getMyCertificates().subscribe({
+      next: value => {
+        this.myCertificates = value;
+        this.certificatesDataSource.data = this.myCertificates;
+        this.loading = false;
+      },
+      error: err => {
+        this.toast.error("Error", "Error loading my certificates: ", err);
+      }
+    })
+  }
 
   openRevokeCertificate(certificate: Certificate) {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {

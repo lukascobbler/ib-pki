@@ -10,6 +10,7 @@
 }
 
 .certificate-container {
+  position: relative;
   background-color: $background2;
   border-radius: 20px;
   padding: 86px;
@@ -152,4 +153,13 @@
 
 .remove-icon {
   color: $edge3 !important;
+}
+
+.no-signing-certificates {
+  color: $text;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: xxx-large;
 }

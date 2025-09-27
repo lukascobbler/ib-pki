@@ -76,7 +76,7 @@ public class CertificateService(IUnifiedDbContext db) {
         ).ToList();
     }
 
-    public async Task<ICollection<CertificateResponse>> GetValidSigningCertificatesForCaUser(string caUserId)
+    public async Task<ICollection<CertificateResponse>> GetValidSigningCertificatesCaUserDoesntHave(string caUserId)
     {
         var user = await db.Users
             .Where(u => u.Id == Guid.Parse(caUserId))
@@ -95,6 +95,32 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+        ).ToList();
+    }
+    
+    public async Task<ICollection<CertificateResponse>> GetMyCertificates(string userId) {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(userId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var allCertificatesModels = user.MyCertificates;
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+        ).ToList();
+    }
+    
+    public async Task<ICollection<CertificateResponse>> GetCertificatesSignedByMe(string userId) {
+        var allCertificatesModels = await db.Certificates
+            .Include(c => c.SignedBy)
+            .Where(c => c.SignedBy.Id == Guid.Parse(userId))
+            .ToListAsync();
+
+        return allCertificatesModels.Select(c =>
             CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
         ).ToList();
     }

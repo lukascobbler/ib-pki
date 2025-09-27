@@ -24,8 +24,16 @@ export class CertificatesService {
     return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-all-valid-signing`);
   }
 
-  getValidSigningCertificatesForCa(caUserId: string): Observable<Certificate[]> {
-    return this.httpClient.get<Certificate[]>(`${this.urlCore}/${caUserId}/get-valid-signing`);
+  getSigningCertificatesThatCaDoesntHave(caUserId: string): Observable<Certificate[]> {
+    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-signing-ca-doesnt-have/${caUserId}`);
+  }
+
+  getMyCertificates(): Observable<Certificate[]> {
+    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-my-certificates`);
+  }
+
+  getCertificatesSignedByMe(): Observable<Certificate[]> {
+    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-certificates-signed-by-me`);
   }
 
   addNewCertificateToCaUser(addCertificateToCaUser: AddCertificateToCaUser): Observable<void> {

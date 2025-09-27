@@ -55,7 +55,8 @@ public static class UserEndpoints
             return Results.StatusCode(status);
         }).RequireAuthorization();
 
-        grp.MapGet("/get-all-ca-users", async (UserManagementService userManagementService) => Results.Ok((object?)await userManagementService.GetAllCaUsers())).RequireAuthorization("Admin");
+        grp.MapGet("/get-all-ca-users", async (UserManagementService userManagementService) => Results.Ok((object?)await userManagementService.GetAllCaUsers()))
+            .RequireAuthorization();
         
         grp.MapPost("/register-ca", async (CaRegisterRequest req, IRegistrationService svc, CertificateService certificateService, CancellationToken ct) =>
         {
