@@ -34,5 +34,20 @@ public static class CrlEndpoints
                 return Results.BadRequest(e.Message);
             }
         }).RequireAuthorization();
+
+        grp.MapGet("/get-crl", async (CrlService crlService) =>
+        {
+            try {
+                var revocationFileBytes = await crlService.GetRevocationFile();
+
+                return Results.File(
+                    fileContents: revocationFileBytes,
+                    contentType: "application/pkix-crl",
+                    fileDownloadName: "revoked_certs.pfx"
+                );
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).AllowAnonymous();
     }
 }

@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Security.Cryptography.Xml;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Operators;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.CRL.Contracts;
 using SudoBox.UnifiedModule.Domain.CRL;
@@ -65,5 +68,46 @@ public class CrlService(IUnifiedDbContext db)
 
         db.RevokedCertificates.Add(newRevokedCertificate);
         await db.SaveChangesAsync();
+    }
+
+    public async Task<byte[]> GetRevocationFile()
+    {
+        // hardcoded main certificate that should sign the CRL
+        var singingCertificate =
+            await db.Certificates.FindAsync(BigInteger.Parse("325237371638983214349629308374620880901"));
+        
+        var issuerDn = new Org.BouncyCastle.Asn1.X509.X509Name(singingCertificate!.IssuedBy);
+        var now = DateTime.UtcNow;
+        
+        var crlGen = new Org.BouncyCastle.X509.X509V2CrlGenerator();
+        crlGen.SetIssuerDN(issuerDn);
+        crlGen.SetThisUpdate(now);
+        crlGen.SetNextUpdate(now.AddDays(7));
+
+        var revokedCerts = await db.RevokedCertificates
+            .Include(rc => rc.Certificate)
+            .ToListAsync();
+
+        foreach (var revokedCertificate in revokedCerts)
+        {
+            var serialNumber = new Org.BouncyCastle.Math.BigInteger(revokedCertificate.Certificate.SerialNumber.ToString(), 10);
+            var reason = revokedCertificate.RevocationReason switch
+            {
+                RevocationReason.Unspecified => Org.BouncyCastle.Asn1.X509.CrlReason.Unspecified,
+                RevocationReason.KeyCompromise => Org.BouncyCastle.Asn1.X509.CrlReason.KeyCompromise,
+                RevocationReason.AffiliationChanged => Org.BouncyCastle.Asn1.X509.CrlReason.AffiliationChanged,
+                RevocationReason.Superseded => Org.BouncyCastle.Asn1.X509.CrlReason.Superseded,
+                RevocationReason.CessationOfOperation => Org.BouncyCastle.Asn1.X509.CrlReason.CessationOfOperation,
+                RevocationReason.PrivilegeWithdrawn => Org.BouncyCastle.Asn1.X509.CrlReason.PrivilegeWithdrawn,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            crlGen.AddCrlEntry(serialNumber, now, reason);
+        }
+
+        var sig = new Asn1SignatureFactory("SHA256WithRSA", singingCertificate.PrivateKey);
+        var crl = crlGen.Generate(sig);
+
+        return crl.GetEncoded();
     }
 }
