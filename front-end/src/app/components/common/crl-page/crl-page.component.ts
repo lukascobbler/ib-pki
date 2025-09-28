@@ -75,18 +75,6 @@ export class CrlPageComponent implements OnInit {
     })
   }
 
-  downloadCertificate(revokedCertificate: RevokedCertificate) {
-    this.certificatesService.downloadCertificate(revokedCertificate.serialNumber).subscribe({
-      next: (blob: Blob) => {
-        downloadFile(blob, `certificate_${revokedCertificate.prettySerialNumber}.pfx`)
-      },
-      error: async (err) => {
-        const errorMessage = await extractBlobError(err);
-        this.toast.error("Error", "Download failed: " + errorMessage);
-      }
-    });
-  }
-
   openCertificateDetails(certificate: Certificate) {
     this.dialog.open(CertificateDetailsDialogComponent, {
       width: '850px',

@@ -1,6 +1,6 @@
 using SudoBox.UnifiedModule.Domain.Users;
 
-namespace SudoBox.UnifiedModule.Application.Certificates.Features;
+namespace SudoBox.UnifiedModule.Application.Certificates.Utils;
 
 using Contracts;
 using Org.BouncyCastle.Asn1;

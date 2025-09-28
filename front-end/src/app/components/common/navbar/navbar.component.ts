@@ -40,7 +40,7 @@ export class NavbarComponent implements OnInit {
     {label: 'My certificates', icon: 'library_books', link: '/my-certificates', roles: ['CaUser', 'EeUser']},
     {label: 'Request Certificate', icon: 'add_notes', link: '/request-certificate', roles: ['EeUser']},
     {label: 'Manage CA users', icon: 'group', link: '/manage-ca-users', roles: ['Admin']},
-    {label: 'CRL', icon: 'contract_delete', link: '/crl', roles: ['Admin']},
+    {label: 'CRL', icon: 'contract_delete', link: '/crl', roles: ['Admin', 'CaUser', 'EeUser']},
     {label: 'Logout', icon: 'logout', roles: ['EeUser', 'CaUser', 'Admin'], class: 'logout', action: () => this.logout()},
   ];
 

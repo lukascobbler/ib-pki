@@ -20,6 +20,8 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'register', component: RegistrationComponent, canActivate: [noAuthGuard] },
+  { path: 'crl', component: CrlPageComponent, canActivate: [authGuard] },
+
 
   // EeUser
   {
@@ -68,13 +70,6 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Admin'] as Role[] },
   },
-  {
-    path: 'crl',
-    component: CrlPageComponent,
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Admin'] as Role[] }
-  },
-
 
   { path: 'confirm', component: EmailConfirmationComponent },
   { path: '**', component: RoleRedirectComponent, canActivate: [authGuard] }

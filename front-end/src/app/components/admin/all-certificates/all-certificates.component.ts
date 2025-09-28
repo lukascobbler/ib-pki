@@ -91,8 +91,17 @@ export class AllCertificatesComponent implements OnInit {
 
       this.crlService.revokeCertificate(revokeCertificate).subscribe({
         next: () => {
-          this.loading = false;
-          this.toast.success("Success", "Successfully revoked the certificate");
+          this.certificatesService.getAllCertificates().subscribe({
+            next: value => {
+              this.toast.success("Success", "Successfully revoked the certificate");
+              this.certificates = value;
+              this.certificatesDataSource.data = this.certificates;
+              this.loading = false;
+            },
+            error: err => {
+              this.toast.error("Error", "Unable to load certificates: " + err);
+            }
+          })
         },
         error: err => {
           this.loading = false;

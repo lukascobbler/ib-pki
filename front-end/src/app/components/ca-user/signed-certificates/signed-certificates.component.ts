@@ -101,8 +101,17 @@ export class SignedCertificatesComponent implements OnInit {
 
       this.crlService.revokeCertificate(revokeCertificate).subscribe({
         next: () => {
-          this.loading = false;
-          this.toast.success("Success", "Successfully revoked the certificate");
+          this.certificatesService.getCertificatesSignedByMe().subscribe({
+            next: value => {
+              this.toast.success("Success", "Successfully revoked the certificate");
+              this.signedByMeCertificates = value;
+              this.signedCertificatesDataSource.data = this.signedByMeCertificates;
+              this.loading = false;
+            },
+            error: err => {
+              this.toast.error("Error", "Error loading certificates signed by me: ", err);
+            }
+          })
         },
         error: err => {
           this.loading = false;

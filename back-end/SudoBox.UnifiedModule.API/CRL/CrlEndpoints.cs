@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using SudoBox.UnifiedModule.Application.CRL.Contracts;
 using SudoBox.UnifiedModule.Application.CRL.Features;
+using SudoBox.UnifiedModule.Domain.Users;
+using static System.Enum;
 
 namespace SudoBox.UnifiedModule.API.CRL;
 
@@ -16,11 +19,16 @@ public static class CrlEndpoints
             .AllowAnonymous();
 
         grp.MapPost("/revoke", 
-            async (RevokeCertificateRequest revokeCertificateRequest, CrlService crlService) =>
+            async (RevokeCertificateRequest revokeCertificateRequest, CrlService crlService, HttpContext httpContext) =>
         {
             try
             {
-                await crlService.RevokeCertificate(revokeCertificateRequest);
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                TryParse(role, out Role parsedRole);
+
+                await crlService.RevokeCertificate(revokeCertificateRequest, Guid.Parse(userId!), parsedRole);
                 return Results.NoContent();
             } catch (Exception e) {
                 return Results.BadRequest(e.Message);

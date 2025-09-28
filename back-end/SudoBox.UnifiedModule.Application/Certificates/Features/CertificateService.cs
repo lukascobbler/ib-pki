@@ -2,17 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities.IO.Pem;
 using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Asn1.Nist;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using System.Numerics;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Pkcs;
+using SudoBox.UnifiedModule.Application.Certificates.Utils;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
@@ -187,8 +183,7 @@ public class CertificateService(IUnifiedDbContext db) {
         return ms.ToArray();
     }
 
-    // todo: revoking checkup
-    private static CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
+    public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
         if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
             return CertificateStatus.Invalid;
         if (certificate.SerialNumber == original?.SerialNumber)
@@ -197,6 +192,8 @@ public class CertificateService(IUnifiedDbContext db) {
             return CertificateStatus.Dormant;
         if (DateTime.UtcNow > certificate.NotAfter)
             return CertificateStatus.Expired;
+        if (IsRevoked(certificate))
+            return CertificateStatus.Revoked;
         if (certificate.SigningCertificate == null)
             return CertificateStatus.Active;
         return GetStatus(certificate.SigningCertificate, original ?? certificate);
@@ -212,5 +209,12 @@ public class CertificateService(IUnifiedDbContext db) {
             cert.Verify(issuer.GetPublicKey());
             return true;
         } catch { return false; }
+    }
+
+    private bool IsRevoked(Certificate certificate)
+    {
+        return db.RevokedCertificates
+            .Include(rc => rc.Certificate)
+            .FirstOrDefault(rc => rc.Certificate.SerialNumber == certificate.SerialNumber) != null;
     }
 }
