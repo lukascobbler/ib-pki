@@ -20,7 +20,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'register', component: RegistrationComponent, canActivate: [noAuthGuard] },
-  { path: 'crl', component: CrlPageComponent, canActivate: [authGuard] },
+  { path: 'crl', component: CrlPageComponent },
 
 
   // EeUser

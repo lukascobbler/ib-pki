@@ -12,7 +12,7 @@ export class  CrlService {
   urlCore = "https://localhost:8081/api/v1/crl"
 
   getAllRevokedCertificates(): Observable<RevokedCertificate[]> {
-    return this.httpClient.get<RevokedCertificate[]>(`${this.urlCore}/get-all`);
+    return this.httpClient.get<RevokedCertificate[]>(`${this.urlCore}/web`);
   }
 
   revokeCertificate(revokeCertificate: RevokeCertificate): Observable<void> {
