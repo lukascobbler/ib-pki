@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
@@ -11,9 +12,11 @@ using SudoBox.UnifiedModule.Infrastructure.DbContext;
 namespace SudoBox.UnifiedModule.Infrastructure.Migrations
 {
     [DbContext(typeof(UnifiedDbContext))]
-    partial class UnifiedDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250928104847_AddCertificateRequests")]
+    partial class AddCertificateRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,52 +44,6 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .HasDatabaseName("ix_certificate_user_user_id");
 
                     b.ToTable("certificate_user", "unified");
-                });
-
-            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CertificateRequests.CertificateRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("EncodedCSR")
-                        .IsRequired()
-                        .HasMaxLength(65536)
-                        .HasColumnType("character varying(65536)")
-                        .HasColumnName("encoded_csr");
-
-                    b.Property<DateTime?>("NotAfter")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("not_after");
-
-                    b.Property<DateTime?>("NotBefore")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("not_before");
-
-                    b.Property<Guid>("RequestedForId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("requested_for_id");
-
-                    b.Property<Guid>("RequestedFromId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("requested_from_id");
-
-                    b.Property<DateTime>("SubmittedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("submitted_on");
-
-                    b.HasKey("Id")
-                        .HasName("pk_certificate_requests");
-
-                    b.HasIndex("RequestedForId")
-                        .HasDatabaseName("ix_certificate_requests_requested_for_id");
-
-                    b.HasIndex("RequestedFromId")
-                        .HasDatabaseName("ix_certificate_requests_requested_from_id");
-
-                    b.ToTable("certificate_requests", "unified");
                 });
 
             modelBuilder.Entity("SudoBox.UnifiedModule.Domain.Certificates.Certificate", b =>
@@ -344,27 +301,6 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_certificate_user_users_user_id");
-                });
-
-            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CertificateRequests.CertificateRequest", b =>
-                {
-                    b.HasOne("SudoBox.UnifiedModule.Domain.Users.User", "RequestedFor")
-                        .WithMany()
-                        .HasForeignKey("RequestedForId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_certificate_requests_users_requested_for_id");
-
-                    b.HasOne("SudoBox.UnifiedModule.Domain.Users.User", "RequestedFrom")
-                        .WithMany()
-                        .HasForeignKey("RequestedFromId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_certificate_requests_users_requested_from_id");
-
-                    b.Navigation("RequestedFor");
-
-                    b.Navigation("RequestedFrom");
                 });
 
             modelBuilder.Entity("SudoBox.UnifiedModule.Domain.Certificates.Certificate", b =>

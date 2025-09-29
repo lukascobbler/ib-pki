@@ -20,4 +20,27 @@ public class CertificatePolicy {
 
         return qualifiers.Count > 0 ? new PolicyInformation(policyId, new DerSequence(qualifiers)) : new PolicyInformation(policyId);
     }
+
+    public static CertificatePolicy FromPolicyInformation(PolicyInformation policyInfo) {
+        var cp = new CertificatePolicy {
+            PolicyIdentifier = policyInfo.PolicyIdentifier.Id,
+            CpsUri = string.Empty,
+            UserNotice = string.Empty
+        };
+
+        if (policyInfo.PolicyQualifiers != null) {
+            foreach (Asn1Encodable enc in policyInfo.PolicyQualifiers) {
+                var seq = Asn1Sequence.GetInstance(enc);
+                var qualifierId = DerObjectIdentifier.GetInstance(seq[0]);
+
+                if (qualifierId.Equals(PolicyQualifierID.IdQtCps) && seq.Count > 1)
+                    cp.CpsUri = DerIA5String.GetInstance(seq[1]).GetString();
+
+                if (qualifierId.Equals(PolicyQualifierID.IdQtUnotice) && seq.Count > 1)
+                    cp.UserNotice = DerUtf8String.GetInstance(seq[1]).GetString();
+            }
+        }
+
+        return cp;
+    }
 }

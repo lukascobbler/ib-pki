@@ -57,16 +57,20 @@ public static class UserEndpoints
 
         grp.MapGet("/get-all-ca-users", async (UserManagementService userManagementService) => Results.Ok((object?)await userManagementService.GetAllCaUsers()))
             .RequireAuthorization();
-        
-        grp.MapPost("/register-ca", async (CaRegisterRequest req, IRegistrationService svc, CertificateService certificateService, CancellationToken ct) =>
+
+        grp.MapGet("/get-valid-ca-users", async (UserManagementService userManagementService) => {
+            return Results.Ok((object?)await userManagementService.GetValidCaUsers());
+        }).RequireAuthorization();
+
+        grp.MapPost("/register-ca", async (CaRegisterRequest req, IRegistrationService svc, CertificateService certificateService, CancellationToken ct) => 
         {
             var caReq = new RegisterRequest(req.Email, req.Password, req.Password, req.Name, req.Surname,
                 req.Organization);
-            
+
             var res = await svc.RegisterAsync(caReq, ct, true);
 
             await certificateService.AddCertificateToCaUser(new AddCertificateToCaUserRequest(res.Response.Id!, req.InitialSigningCertificateId));
-            
+
             return Results.Json(res.Response, statusCode: res.StatusCode);
         }).AllowAnonymous();
     }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
@@ -11,9 +12,11 @@ using SudoBox.UnifiedModule.Infrastructure.DbContext;
 namespace SudoBox.UnifiedModule.Infrastructure.Migrations
 {
     [DbContext(typeof(UnifiedDbContext))]
-    partial class UnifiedDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250928152945_MovedCertificateRequests")]
+    partial class MovedCertificateRequests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,14 +60,6 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .HasColumnType("character varying(65536)")
                         .HasColumnName("encoded_csr");
 
-                    b.Property<DateTime?>("NotAfter")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("not_after");
-
-                    b.Property<DateTime?>("NotBefore")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("not_before");
-
                     b.Property<Guid>("RequestedForId")
                         .HasColumnType("uuid")
                         .HasColumnName("requested_for_id");
@@ -72,10 +67,6 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                     b.Property<Guid>("RequestedFromId")
                         .HasColumnType("uuid")
                         .HasColumnName("requested_from_id");
-
-                    b.Property<DateTime>("SubmittedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("submitted_on");
 
                     b.HasKey("Id")
                         .HasName("pk_certificate_requests");

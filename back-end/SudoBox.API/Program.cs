@@ -1,18 +1,20 @@
-using Microsoft.EntityFrameworkCore;
-using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Claims;
-using System.Text.Json.Serialization;
+using SudoBox.UnifiedModule.API.CertificateRequests;
 using SudoBox.UnifiedModule.API.Certificates;
 using SudoBox.UnifiedModule.API.Users;
+using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using SudoBox.UnifiedModule.Infrastructure;
+using SudoBox.UnifiedModule.Infrastructure.CertificateRequests.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +88,7 @@ builder.Services.ConfigureHttpJsonOptions(options => {
 // Module dependency injection
 builder.Services.AddUserFeatures(commonPath);
 builder.Services.ConfigureCertificates();
+builder.Services.ConfigureCertificateRequests();
 
 // Swagger/CORS
 builder.Services.AddEndpointsApiExplorer();
@@ -145,6 +148,7 @@ using (var scope = app.Services.CreateScope())
 // Minimal API endpoints
 app.MapUserEndpoints();
 app.MapCertificateEndpoints();
+app.MapCertificateRequestEndpoints();
 
 // who am i test
 var api = app.MapGroup("/api");

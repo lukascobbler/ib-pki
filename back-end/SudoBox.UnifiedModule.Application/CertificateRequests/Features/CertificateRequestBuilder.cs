@@ -1,52 +1,35 @@
-using Org.BouncyCastle.Asn1;
+using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
+using SudoBox.UnifiedModule.Domain.CertificateRequests;
+using SudoBox.UnifiedModule.Domain.Users;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Operators;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Math;
-using SudoBox.UnifiedModule.Domain.Users;
-using SudoBox.UnifiedModule.Domain.Certificates;
-using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Pkcs;
 
-namespace SudoBox.UnifiedModule.Application.Certificates.Features;
+namespace SudoBox.UnifiedModule.Application.CertificateRequests.Features;
 using Contracts;
 
-public static class CertificateBuilder {
-    public static Certificate CreateCertificate(IssueCertificateDTO request, AsymmetricKeyParameter subjectPublicKey,
-        AsymmetricKeyParameter? subjectPrivateKey, Certificate? issuerCertificate, User user) {
-        var guidBytes = Guid.NewGuid().ToByteArray();
-        var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
+public static class CertificateRequestBuilder {
+    public static CertificateRequest CreateCertificateRequest(CreateCertificateRequestDTO request, AsymmetricCipherKeyPair keyPair, User requestedFrom, User requestedFor) {
+        var extGen = new X509ExtensionsGenerator();
+
         var subjectName = request.GetX509Name();
-        var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedTo) : subjectName;
-
-        var canSign = (request.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (request.BasicConstraints?.IsCa ?? false);
-        var pathLen = request.BasicConstraints?.PathLen ?? 0;
-
-        var certGen = new X509V3CertificateGenerator();
-        certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
-        certGen.SetSubjectDN(subjectName);
-        certGen.SetIssuerDN(issuerName);
-
-        certGen.SetNotBefore(request.NotBefore ?? issuerCertificate?.NotBefore ?? DateTime.UtcNow);
-        certGen.SetNotAfter(request.NotAfter ?? issuerCertificate?.NotAfter ?? DateTime.MaxValue);
-
-        certGen.SetPublicKey(subjectPublicKey);
 
         if (request.BasicConstraints != null) {
             var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
                 ? new BasicConstraints(request.BasicConstraints.PathLen)
                 : new BasicConstraints(request.BasicConstraints.IsCa);
-            certGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
+            extGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
         }
 
-        if (request.KeyUsage != null && request.KeyUsage.Count != 0) {
-            var usageBits = 0;
+        if (request.KeyUsage != null && request.KeyUsage.Count > 0) {
+            int usageBits = 0;
             foreach (var ku in request.KeyUsage)
                 if (KeyUsageMap.TryGetValue(ku, out int value))
                     usageBits |= value;
 
-            certGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
+            extGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
         }
 
         if (request.ExtendedKeyUsage != null && request.ExtendedKeyUsage.Any()) {
@@ -55,47 +38,41 @@ public static class CertificateBuilder {
                 if (ExtendedKeyUsageMap.TryGetValue(eku, out var oid))
                     ekuOids.Add(oid);
 
-            certGen.AddExtension(X509Extensions.ExtendedKeyUsage, false, new ExtendedKeyUsage(ekuOids.ToArray()));
+            extGen.AddExtension(X509Extensions.ExtendedKeyUsage, false, new ExtendedKeyUsage(ekuOids.ToArray()));
         }
 
         if (request.SubjectAlternativeNames != null) {
             var san = new GeneralNames(request.SubjectAlternativeNames.ToGeneralNames());
-            certGen.AddExtension(X509Extensions.SubjectAlternativeName, false, san);
+            extGen.AddExtension(X509Extensions.SubjectAlternativeName, false, san);
         }
 
         if (request.IssuerAlternativeNames != null) {
             var ian = new GeneralNames(request.IssuerAlternativeNames.ToGeneralNames());
-            certGen.AddExtension(X509Extensions.IssuerAlternativeName, false, ian);
+            extGen.AddExtension(X509Extensions.IssuerAlternativeName, false, ian);
         }
 
         if (request.NameConstraints != null) {
             var permitted = request.NameConstraints.Permitted.ToGeneralSubtrees();
             var excluded = request.NameConstraints.Excluded.ToGeneralSubtrees();
             var nameConstraints = new NameConstraints(permitted.Count > 0 ? permitted : null, excluded.Count > 0 ? excluded : null);
-            certGen.AddExtension(X509Extensions.NameConstraints, true, nameConstraints);
+            extGen.AddExtension(X509Extensions.NameConstraints, true, nameConstraints);
         }
 
         if (request.CertificatePolicy != null) {
             PolicyInformation policyInfo = request.CertificatePolicy.ToPolicyInformation();
-            certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
+            extGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
         }
 
-        var signer = new Asn1SignatureFactory("SHA256WithRSA", issuerCertificate?.PrivateKey ?? subjectPrivateKey, new SecureRandom());
-        var certificate = certGen.Generate(signer);
+        var extAttr = new AttributePkcs(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(extGen.Generate()));
+        var csr = new Pkcs10CertificationRequest("SHA256WithRSA", subjectName, keyPair.Public, new DerSet(extAttr), keyPair.Private);
 
-        return new Certificate {
-            SerialNumber = serialNumber,
-            SigningCertificate = issuerCertificate,
-            IssuedBy = issuerName.ToString(),
-            IssuedTo = subjectName.ToString(),
-            NotAfter = certificate.NotAfter.ToUniversalTime(),
-            NotBefore = certificate.NotBefore.ToUniversalTime(),
-            EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
-            PrivateKey = subjectPrivateKey,
-            IsApproved = true,
-            CanSign = canSign,
-            PathLen = pathLen,
-            SignedBy = user
+        return new CertificateRequest {
+            EncodedCSR = Convert.ToBase64String(csr.GetEncoded()),
+            RequestedFor = requestedFor,
+            RequestedFrom = requestedFrom,
+            NotBefore = request.NotBefore,
+            NotAfter = request.NotAfter,
+            SubmittedOn = DateTime.UtcNow
         };
     }
 
