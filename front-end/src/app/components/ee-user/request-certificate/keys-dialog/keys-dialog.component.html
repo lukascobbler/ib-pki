@@ -6,19 +6,19 @@
 
   <mat-form-field appearance="outline">
     <mat-label>Private key</mat-label>
-    <textarea disabled [scrollTop]="0" rows="8" class="textarea" matInput [value]="privateKey"></textarea>
+    <textarea disabled [scrollTop]="0" rows="8" class="textarea" matInput [value]="keys.privateKey"></textarea>
   </mat-form-field>
 
   <mat-form-field appearance="outline">
     <mat-label>Public key</mat-label>
-    <textarea disabled [scrollTop]="0" rows="8" class="textarea" matInput [value]="publicKey"></textarea>
+    <textarea disabled [scrollTop]="0" rows="8" class="textarea" matInput [value]="keys.publicKey"></textarea>
   </mat-form-field>
 
   <div class="action-buttons">
-    <button [cdkCopyToClipboard]="privateKey" class="blue-button finish">
+    <button [cdkCopyToClipboard]="keys.privateKey" class="blue-button finish">
       Copy private key
     </button>
-    <button [cdkCopyToClipboard]="publicKey" class="blue-button finish">
+    <button [cdkCopyToClipboard]="keys.publicKey" class="blue-button finish">
       Copy public key
     </button>
   </div>

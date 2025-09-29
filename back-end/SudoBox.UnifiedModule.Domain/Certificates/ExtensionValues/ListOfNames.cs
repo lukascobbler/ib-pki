@@ -1,6 +1,7 @@
 namespace SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
 
 using Org.BouncyCastle.Asn1.X509;
+using System.Text;
 
 public class ListOfNames {
     public required string Value { get; set; }
@@ -31,4 +32,28 @@ public class ListOfNames {
 
     public GeneralName[] ToGeneralNames() => [.. ParseGeneralNames()];
     public IList<GeneralSubtree> ToGeneralSubtrees() => [.. ParseGeneralNames().Select(name => new GeneralSubtree(name))];
+}
+
+public static class GeneralNamesExtensions {
+    public static ListOfNames ToListOfNames(this GeneralNames generalNames) {
+        var sb = new StringBuilder();
+
+        foreach (var gn in generalNames.GetNames()) {
+            string prefix = gn.TagNo switch {
+                GeneralName.OtherName => "other",
+                GeneralName.Rfc822Name => "email",
+                GeneralName.DnsName => "dns",
+                GeneralName.UniformResourceIdentifier => "uri",
+                GeneralName.IPAddress => "ip",
+                _ => throw new ArgumentException($"Unsupported GeneralName tag: {gn.TagNo}")
+            };
+
+            if (sb.Length > 0)
+                sb.Append(',');
+
+            sb.Append(prefix).Append(':').Append(gn.Name.ToString());
+        }
+
+        return new ListOfNames { Value = sb.ToString() };
+    }
 }

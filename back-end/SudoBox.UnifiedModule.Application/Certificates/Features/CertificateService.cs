@@ -1,33 +1,29 @@
-using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities.IO.Pem;
-using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Asn1.Nist;
-using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
+using SudoBox.UnifiedModule.Application.Certificates.Utils;
+using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Domain.Certificates;
-using System.Numerics;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Crypto.Generators;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.X509;
+using System.Numerics;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 public class CertificateService(IUnifiedDbContext db) {
+    public async Task CreateCertificate(IssueCertificateDTO createCertificateRequest, bool isAdmin, string? userId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
+        if (userId == null) throw new Exception("User must be logged in!");
+        var user = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId)) ?? throw new Exception("User not found!");
 
-    public async Task CreateCertificate(CreateCertificateRequest createCertificateRequest, bool isAdmin, string? userId) {
-        if (userId == null) 
-            throw new Exception("User must be logged in!");
-        var user = await db.Users.FindAsync(Guid.Parse(userId));
-        if (user == null)
-            throw new Exception("User not found!");
-        
-        var kpGen = new RsaKeyPairGenerator();
-        kpGen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
-        var subjectKeyPair = kpGen.GenerateKeyPair();
+        if (subjectPublicKey == null) {
+            var kpGen = new RsaKeyPairGenerator();
+            kpGen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
+            var subjectKeyPair = kpGen.GenerateKeyPair();
+            subjectPublicKey = subjectKeyPair.Public;
+            subjectPrivateKey = subjectKeyPair.Private;
+        }
 
         Certificate? signingCertificate = null;
         if (createCertificateRequest.SigningCertificate != "SelfSign") {
@@ -49,8 +45,10 @@ public class CertificateService(IUnifiedDbContext db) {
             throw new Exception("NotAfter cannot be later than the signing certificate's NotAfter!");
         if (createCertificateRequest.NotBefore > createCertificateRequest.NotAfter)
             throw new Exception("NotBefore cannot be later than the NotAfter!");
+        if (signingCertificate != null && !user.MyCertificates.Any(c => c.SerialNumber == signingCertificate.SerialNumber))
+            throw new Exception("You don't have control over selected signing certificate!");
         
-        Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectKeyPair, signingCertificate, user);
+        Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectPublicKey, subjectPrivateKey, signingCertificate, user);
 
         await db.Certificates.AddAsync(certificate);
         await db.SaveChangesAsync();
@@ -60,7 +58,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = await db.Certificates.ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -72,7 +70,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -95,7 +93,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -110,7 +108,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = user.MyCertificates;
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -121,7 +119,7 @@ public class CertificateService(IUnifiedDbContext db) {
             .ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -187,8 +185,7 @@ public class CertificateService(IUnifiedDbContext db) {
         return ms.ToArray();
     }
 
-    // todo: revoking checkup
-    private static CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
+    public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
         if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
             return CertificateStatus.Invalid;
         if (certificate.SerialNumber == original?.SerialNumber)
@@ -197,6 +194,8 @@ public class CertificateService(IUnifiedDbContext db) {
             return CertificateStatus.Dormant;
         if (DateTime.UtcNow > certificate.NotAfter)
             return CertificateStatus.Expired;
+        if (IsRevoked(certificate))
+            return CertificateStatus.Revoked;
         if (certificate.SigningCertificate == null)
             return CertificateStatus.Active;
         return GetStatus(certificate.SigningCertificate, original ?? certificate);
@@ -214,18 +213,10 @@ public class CertificateService(IUnifiedDbContext db) {
         } catch { return false; }
     }
 
-    private static string GetDecryptedCertificate(Certificate certificate) {
-        if (certificate.EncodedValue == null)
-            return "Certificate is empty!";
-        return ToPem(certificate.EncodedValue) ?? "Malformed certificate";
-    }
-
-    private static string? ToPem(string base64) {
-        try {
-            var bytes = Convert.FromBase64String(base64);
-            using var sw = new StringWriter();
-            new PemWriter(sw).WriteObject(new PemObject("CERTIFICATE", bytes));
-            return sw.ToString();
-        } catch { return null; }
+    private bool IsRevoked(Certificate certificate)
+    {
+        return db.RevokedCertificates
+            .Include(rc => rc.Certificate)
+            .FirstOrDefault(rc => rc.Certificate.SerialNumber == certificate.SerialNumber) != null;
     }
 }

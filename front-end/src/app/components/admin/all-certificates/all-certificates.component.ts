@@ -23,6 +23,8 @@ import {DatePipe, NgIf} from '@angular/common';
 import {ToastrService} from '../../common/toastr/toastr.service';
 import {downloadFile} from '../../common/custom-components/blob/download-file';
 import {extractBlobError} from '../../common/custom-components/blob/extract-blob-error';
+import {RevokeCertificate} from '../../../models/RevokeCertificate';
+import {CrlService} from '../../../services/crl/crl.service';
 
 @Component({
   selector: 'app-all-certificates',
@@ -50,17 +52,19 @@ export class AllCertificatesComponent implements OnInit {
   certificatesService = inject(CertificatesService);
   toast = inject(ToastrService)
   dialog = inject(MatDialog);
+  crlService = inject(CrlService);
+
   displayedColumns: string[] = ['issuedTo', 'issuedBy', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
   certificatesDataSource = new MatTableDataSource<Certificate>();
   certificates: Certificate[] = [];
-  loadingCertificates = true;
+  loading = true;
 
   ngOnInit() {
     this.certificatesService.getAllCertificates().subscribe({
       next: value => {
         this.certificates = value;
         this.certificatesDataSource.data = this.certificates;
-        this.loadingCertificates = false;
+        this.loading = false;
       },
       error: err => {
         this.toast.error("Error", "Unable to load certificates: " + err);
@@ -72,6 +76,39 @@ export class AllCertificatesComponent implements OnInit {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {
       width: '30rem'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
+
+      const revokeCertificate: RevokeCertificate = {
+        revocationReason: result,
+        serialNumber: certificate.serialNumber
+      };
+
+      this.loading = true;
+
+      this.crlService.revokeCertificate(revokeCertificate).subscribe({
+        next: () => {
+          this.certificatesService.getAllCertificates().subscribe({
+            next: value => {
+              this.toast.success("Success", "Successfully revoked the certificate");
+              this.certificates = value;
+              this.certificatesDataSource.data = this.certificates;
+              this.loading = false;
+            },
+            error: err => {
+              this.toast.error("Error", "Unable to load certificates: " + err);
+            }
+          })
+        },
+        error: err => {
+          this.loading = false;
+          this.toast.error("Error", "Error revoking the certificate: ", err)
+        }
+      })
+    })
   }
 
   openCertificateDetails(certificate: Certificate) {
@@ -83,7 +120,7 @@ export class AllCertificatesComponent implements OnInit {
   }
 
   downloadCertificate(certificate: Certificate) {
-    this.certificatesService.downloadCertificate(certificate).subscribe({
+    this.certificatesService.downloadCertificate(certificate.serialNumber).subscribe({
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },

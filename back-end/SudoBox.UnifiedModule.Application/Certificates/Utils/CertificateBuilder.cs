@@ -1,8 +1,3 @@
-using SudoBox.UnifiedModule.Domain.Users;
-
-namespace SudoBox.UnifiedModule.Application.Certificates.Features;
-
-using Contracts;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
@@ -10,15 +5,16 @@ using Org.BouncyCastle.Crypto.Operators;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Math;
+using SudoBox.UnifiedModule.Domain.Users;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
-using System.Collections.Generic;
-using System.Linq;
+
+namespace SudoBox.UnifiedModule.Application.Certificates.Utils;
+using Contracts;
 
 public static class CertificateBuilder {
-    public static Certificate CreateCertificate(
-        CreateCertificateRequest request, AsymmetricCipherKeyPair subjectKeyPair, Certificate? issuerCertificate, User user
-        ) {
+    public static Certificate CreateCertificate(IssueCertificateDTO request, AsymmetricKeyParameter subjectPublicKey,
+        AsymmetricKeyParameter? subjectPrivateKey, Certificate? issuerCertificate, User user) {
         var guidBytes = Guid.NewGuid().ToByteArray();
         var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
         var subjectName = request.GetX509Name();
@@ -35,7 +31,7 @@ public static class CertificateBuilder {
         certGen.SetNotBefore(request.NotBefore ?? issuerCertificate?.NotBefore ?? DateTime.UtcNow);
         certGen.SetNotAfter(request.NotAfter ?? issuerCertificate?.NotAfter ?? DateTime.MaxValue);
 
-        certGen.SetPublicKey(subjectKeyPair.Public);
+        certGen.SetPublicKey(subjectPublicKey);
 
         if (request.BasicConstraints != null) {
             var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
@@ -84,7 +80,12 @@ public static class CertificateBuilder {
             certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
         }
 
-        var signer = new Asn1SignatureFactory("SHA256WithRSA", issuerCertificate?.PrivateKey ?? subjectKeyPair.Private, new SecureRandom());
+        const string crlUrl = "https://localhost:8081/api/v1/crl/get-crl";
+        var distPointName = new DistributionPointName(new GeneralNames(new GeneralName(GeneralName.UniformResourceIdentifier, crlUrl)));
+        var distPoint = new DistributionPoint(distPointName, null, null);
+        certGen.AddExtension(X509Extensions.CrlDistributionPoints, false, new DerSequence(distPoint));
+
+        var signer = new Asn1SignatureFactory("SHA256WithRSA", issuerCertificate?.PrivateKey ?? subjectPrivateKey, new SecureRandom());
         var certificate = certGen.Generate(signer);
 
         return new Certificate {
@@ -95,7 +96,7 @@ public static class CertificateBuilder {
             NotAfter = certificate.NotAfter.ToUniversalTime(),
             NotBefore = certificate.NotBefore.ToUniversalTime(),
             EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
-            PrivateKey = subjectKeyPair.Private,
+            PrivateKey = subjectPrivateKey,
             IsApproved = true,
             CanSign = canSign,
             PathLen = pathLen,

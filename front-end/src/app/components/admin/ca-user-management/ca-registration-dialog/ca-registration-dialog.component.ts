@@ -1,15 +1,13 @@
-import {Component, inject, Inject, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {MAT_DIALOG_DATA, MatDialogClose, MatDialogRef} from '@angular/material/dialog';
-import {FormsModule, NgForm} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {FormsModule} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatIconButton} from '@angular/material/button';
 import {Certificate} from '../../../../models/Certificate';
-import {CertificatesService} from '../../../../services/certificates/certificates.service';
 import {ToastrService} from '../../../common/toastr/toastr.service';
-import {CreateCertificate} from '../../../../models/CreateCertificate';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {CreateCaUser} from '../../../../models/CreateCaUser';
 import {AuthService} from '../../../../services/auth/auth.service';
@@ -34,10 +32,10 @@ import {CaUser} from '../../../../models/CaUser';
   styleUrl: './ca-registration-dialog.component.scss'
 })
 export class CaRegistrationDialogComponent {
-  auth = inject(AuthService);
+  dialogRef = inject(MatDialogRef<CaRegistrationDialogComponent, CaUser | null | undefined>);
   data = inject(MAT_DIALOG_DATA) as { allSigningCertificates: Certificate[] };
-
   toast = inject(ToastrService);
+  auth = inject(AuthService);
 
   loading = false;
 
@@ -48,12 +46,8 @@ export class CaRegistrationDialogComponent {
   email = ''
   password = ''
 
-  constructor(
-    public dialogRef: MatDialogRef<CaRegistrationDialogComponent, CaUser | null | undefined>) {
-  }
-
   onNoClick() {
-    this.dialogRef.close(undefined);
+    this.dialogRef.close();
   }
 
   onSubmit() {
@@ -63,7 +57,7 @@ export class CaRegistrationDialogComponent {
       return;
     }
 
-    let createCaUser: CreateCaUser = {
+    const createCaUser: CreateCaUser = {
       email: this.email,
       initialSigningCertificateId: this.signingCertificate.serialNumber,
       name: this.name,

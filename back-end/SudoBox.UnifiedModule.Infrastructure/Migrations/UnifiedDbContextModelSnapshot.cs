@@ -43,6 +43,69 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                     b.ToTable("certificate_user", "unified");
                 });
 
+            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CertificateRequests.CertificateRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("EncodedCSR")
+                        .IsRequired()
+                        .HasMaxLength(65536)
+                        .HasColumnType("character varying(65536)")
+                        .HasColumnName("encoded_csr");
+
+                    b.Property<DateTime?>("NotAfter")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("not_after");
+
+                    b.Property<DateTime?>("NotBefore")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("not_before");
+
+                    b.Property<Guid>("RequestedForId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("requested_for_id");
+
+                    b.Property<Guid>("RequestedFromId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("requested_from_id");
+
+                    b.Property<DateTime>("SubmittedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("submitted_on");
+
+                    b.HasKey("Id")
+                        .HasName("pk_certificate_requests");
+
+                    b.HasIndex("RequestedForId")
+                        .HasDatabaseName("ix_certificate_requests_requested_for_id");
+
+                    b.HasIndex("RequestedFromId")
+                        .HasDatabaseName("ix_certificate_requests_requested_from_id");
+
+                    b.ToTable("certificate_requests", "unified");
+                });
+
+            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CRL.RevokedCertificate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("RevocationReason")
+                        .HasColumnType("integer")
+                        .HasColumnName("revocation_reason");
+
+                    b.HasKey("Id")
+                        .HasName("pk_revoked_certificates");
+
+                    b.ToTable("revoked_certificates", "unified");
+                });
+
             modelBuilder.Entity("SudoBox.UnifiedModule.Domain.Certificates.Certificate", b =>
                 {
                     b.Property<string>("SerialNumber")
@@ -53,7 +116,12 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("can_sign");
 
+                    b.Property<Guid?>("CertificateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("certificate_id");
+
                     b.Property<string>("EncodedValue")
+                        .IsRequired()
                         .HasMaxLength(65536)
                         .HasColumnType("character varying(65536)")
                         .HasColumnName("encoded_value");
@@ -98,6 +166,10 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
 
                     b.HasKey("SerialNumber")
                         .HasName("pk_certificates");
+
+                    b.HasIndex("CertificateId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_certificates_certificate_id");
 
                     b.HasIndex("SignedById")
                         .HasDatabaseName("ix_certificates_signed_by_id");
@@ -299,8 +371,34 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .HasConstraintName("fk_certificate_user_users_user_id");
                 });
 
+            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CertificateRequests.CertificateRequest", b =>
+                {
+                    b.HasOne("SudoBox.UnifiedModule.Domain.Users.User", "RequestedFor")
+                        .WithMany()
+                        .HasForeignKey("RequestedForId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_certificate_requests_users_requested_for_id");
+
+                    b.HasOne("SudoBox.UnifiedModule.Domain.Users.User", "RequestedFrom")
+                        .WithMany()
+                        .HasForeignKey("RequestedFromId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_certificate_requests_users_requested_from_id");
+
+                    b.Navigation("RequestedFor");
+
+                    b.Navigation("RequestedFrom");
+                });
+
             modelBuilder.Entity("SudoBox.UnifiedModule.Domain.Certificates.Certificate", b =>
                 {
+                    b.HasOne("SudoBox.UnifiedModule.Domain.CRL.RevokedCertificate", null)
+                        .WithOne("Certificate")
+                        .HasForeignKey("SudoBox.UnifiedModule.Domain.Certificates.Certificate", "CertificateId")
+                        .HasConstraintName("fk_certificates_revoked_certificates_certificate_id");
+
                     b.HasOne("SudoBox.UnifiedModule.Domain.Users.User", "SignedBy")
                         .WithMany()
                         .HasForeignKey("SignedById")
@@ -338,6 +436,12 @@ namespace SudoBox.UnifiedModule.Infrastructure.Migrations
                         .HasConstraintName("fk_verification_tokens_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SudoBox.UnifiedModule.Domain.CRL.RevokedCertificate", b =>
+                {
+                    b.Navigation("Certificate")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

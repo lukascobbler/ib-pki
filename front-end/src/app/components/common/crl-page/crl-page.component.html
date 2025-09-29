@@ -1,6 +1,9 @@
-<div class="container">
+<div *ngIf="loading" class="loading">
+  <mat-spinner></mat-spinner>
+</div>
+<div *ngIf="!loading" class="container">
   <div class="table-header table-width">
-    <mat-table [dataSource]="certificatesDataSource">
+    <mat-table [dataSource]="revokedCertificatesDataSource">
 
       <ng-container matColumnDef="issuedBy">
         <mat-header-cell class="issuedBy" *matHeaderCellDef>Issued by (DN)</mat-header-cell>
@@ -27,7 +30,7 @@
   </div>
 
   <div class="table-width">
-    <mat-table [dataSource]="certificatesDataSource">
+    <mat-table [dataSource]="revokedCertificatesDataSource">
       <ng-container matColumnDef="issuedBy">
         <mat-cell class="issuedBy" *matCellDef="let certificate">
           {{ certificate.issuedBy }}
@@ -42,7 +45,12 @@
 
       <ng-container matColumnDef="revocationReason">
         <mat-cell class="revocationReason" *matCellDef="let certificate">
-          {{ certificate.revocationReason }}
+          <span *ngIf="certificate.revocationReason === 'Unspecified'">Unspecified</span>
+          <span *ngIf="certificate.revocationReason === 'Superseded'">Superseded</span>
+          <span *ngIf="certificate.revocationReason === 'PrivilegeWithdrawn'">Privilege withdrawn</span>
+          <span *ngIf="certificate.revocationReason === 'KeyCompromise'">Key compromise</span>
+          <span *ngIf="certificate.revocationReason === 'CessationOfOperation'">Cessation of operation</span>
+          <span *ngIf="certificate.revocationReason === 'AffiliationChanged'">Affiliation changed</span>
         </mat-cell>
       </ng-container>
 
@@ -56,9 +64,6 @@
         <mat-cell class="actions" *matCellDef="let certificate">
           <button (click)="openCertificateDetails(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
-          </button>
-          <button mat-icon-button>
-            <span class="material-symbols-rounded">download</span>
           </button>
         </mat-cell>
       </ng-container>

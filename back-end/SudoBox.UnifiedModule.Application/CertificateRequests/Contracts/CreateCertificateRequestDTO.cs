@@ -1,12 +1,11 @@
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
-using Org.BouncyCastle.Math;
 using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
 
-namespace SudoBox.UnifiedModule.Application.Certificates.Contracts;
+namespace SudoBox.UnifiedModule.Application.CertificateRequests.Contracts;
 
-public record CreateCertificateRequest {
-    public required string SigningCertificate { get; set; }
+public record CreateCertificateRequestDTO {
+    public required string SigningOrganization { get; set; }
     public required string CommonName { get; set; }
     public required string Organization { get; set; }
     public required string OrganizationalUnit { get; set; }

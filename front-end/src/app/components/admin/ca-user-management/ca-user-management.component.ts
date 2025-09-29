@@ -110,6 +110,8 @@ export class CaUserManagementComponent implements OnInit {
   }
 
   requestNewCaCertificateFromPool(availableCertificates: Certificate[], caUser: CaUser) {
+    availableCertificates.sort((a, b) => a.prettySerialNumber.localeCompare(b.prettySerialNumber));
+
     const dialogRef: MatDialogRef<CaAddCertificateDialogComponent, Certificate | null> = this.dialog.open(CaAddCertificateDialogComponent, {
       width: '30rem',
       data: { availableCertificates: availableCertificates }
@@ -133,7 +135,7 @@ export class CaUserManagementComponent implements OnInit {
     };
 
     this.certificateService.addNewCertificateToCaUser(newCertToCa).subscribe({
-      next: _ => {
+      next: () => {
         this.toast.success("Successful", "You successfully added a new certificate to a user");
         this.loading = false;
       },
