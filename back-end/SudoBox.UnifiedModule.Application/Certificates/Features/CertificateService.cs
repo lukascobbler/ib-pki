@@ -1,15 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Pkcs;
-using Org.BouncyCastle.Security;
-using Org.BouncyCastle.X509;
-using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
-using SudoBox.UnifiedModule.Domain.Certificates;
-using System.Numerics;
-using Org.BouncyCastle.Pkcs;
 using SudoBox.UnifiedModule.Application.Certificates.Utils;
+using SudoBox.UnifiedModule.Application.Abstractions;
+using SudoBox.UnifiedModule.Domain.Certificates;
+using Org.BouncyCastle.Crypto.Generators;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.X509;
+using System.Numerics;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 

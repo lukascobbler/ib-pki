@@ -1,10 +1,10 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Builder;
-using SudoBox.UnifiedModule.Application.CRL.Contracts;
+﻿using SudoBox.UnifiedModule.Application.CRL.Contracts;
 using SudoBox.UnifiedModule.Application.CRL.Features;
 using SudoBox.UnifiedModule.Domain.Users;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using static System.Enum;
 
 namespace SudoBox.UnifiedModule.API.CRL;

@@ -9,7 +9,7 @@ using SudoBox.UnifiedModule.Domain.Users;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using SudoBox.UnifiedModule.Domain.Certificates.ExtensionValues;
 
-namespace SudoBox.UnifiedModule.Application.Certificates.Features;
+namespace SudoBox.UnifiedModule.Application.Certificates.Utils;
 using Contracts;
 
 public static class CertificateBuilder {
