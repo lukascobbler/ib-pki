@@ -13,7 +13,7 @@ using System.Numerics;
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 public class CertificateService(IUnifiedDbContext db) {
-    public async Task CreateCertificate(IssueCertificateDTO createCertificateRequest, bool isAdmin, string? userId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
+    public async Task CreateCertificate(IssueCertificateRequest createCertificateRequest, bool isAdmin, string? userId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
         if (userId == null) throw new Exception("User must be logged in!");
         var user = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId)) ?? throw new Exception("User not found!");
 
@@ -146,10 +146,10 @@ public class CertificateService(IUnifiedDbContext db) {
     }
 
     // todo prevent someone from downloading any certificate
-    public async Task<byte[]> GetCertificateAsPkcs12(string certificateId) {
+    public async Task<byte[]> GetCertificateWithPasswordAsPkcs12(DownloadCertificateRequest downloadCertificateRequest) {
         var chain = new List<X509Certificate>();
         var parser = new X509CertificateParser();
-        var serialNumber = BigInteger.Parse(certificateId);
+        var serialNumber = BigInteger.Parse(downloadCertificateRequest.CertificateSerialNumber);
         var eeCertificate = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
         var current = eeCertificate;
 
@@ -179,7 +179,7 @@ public class CertificateService(IUnifiedDbContext db) {
                 store.SetCertificateEntry($"{alias}-chain-{i}", intermediateEntries[i]);
         }
 
-        var password = "change-me"; // TODO
+        var password = downloadCertificateRequest.Password;
         await using var ms = new MemoryStream();
         store.Save(ms, password.ToCharArray(), new SecureRandom());
         return ms.ToArray();

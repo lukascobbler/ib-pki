@@ -4,6 +4,7 @@ import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Certificate} from '../../models/Certificate';
 import {AddCertificateToCaUser} from '../../models/AddCertificateToCaUser';
+import {DownloadCertificateRequest} from '../../models/DownloadCertificateRequest';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +41,7 @@ export class CertificatesService {
     return this.httpClient.put<void>(`${this.urlCore}/add-certificate-to-ca-user`, addCertificateToCaUser);
   }
 
-  downloadCertificate(certificateSerialNumber: string): Observable<Blob> {
-    return this.httpClient.get(`${this.urlCore}/download/${certificateSerialNumber}`, { responseType: 'blob' });
+  downloadCertificate(downloadCertificateRequest: DownloadCertificateRequest): Observable<Blob> {
+    return this.httpClient.post(`${this.urlCore}/download`, downloadCertificateRequest, { responseType: 'blob' });
   }
 }

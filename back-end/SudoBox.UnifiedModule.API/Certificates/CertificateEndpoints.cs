@@ -12,7 +12,7 @@ public static class CertificateEndpoints {
         var grp = app.MapGroup("/api/v1/certificates");
 
         grp.MapPost("/issue", async
-            (IssueCertificateDTO createCertificateRequest, CertificateService certificateService, HttpContext httpContext) => {
+            (IssueCertificateRequest createCertificateRequest, CertificateService certificateService, HttpContext httpContext) => {
                 try {
                     var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                     var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -76,14 +76,14 @@ public static class CertificateEndpoints {
             }
         }).RequireAuthorization("CaUser");
 
-        grp.MapGet("/download/{id}", async (string id, CertificateService certificateService) => {
+        grp.MapPost("/download", async (DownloadCertificateRequest downloadCertificateRequest, CertificateService certificateService) => {
             try {
-                var pfxBytes = await certificateService.GetCertificateAsPkcs12(id);
+                var pfxBytes = await certificateService.GetCertificateWithPasswordAsPkcs12(downloadCertificateRequest);
 
                 return Results.File(
                     fileContents: pfxBytes,
                     contentType: "application/x-pkcs12",
-                    fileDownloadName: $"certificate_{id}.pfx"
+                    fileDownloadName: $"certificate_{downloadCertificateRequest.CertificateSerialNumber}.pfx"
                 );
             } catch (Exception e) {
                 return Results.BadRequest(e.Message);
