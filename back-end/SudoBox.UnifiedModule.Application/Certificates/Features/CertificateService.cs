@@ -85,8 +85,10 @@ public class CertificateService(IUnifiedDbContext db) {
             throw new Exception("User not found!");
 
         var allSigningCertificates = await db.Certificates
+            .Include(c => c.SigningCertificate)
             .Include(c => c.SignedBy)
             .Where(c => c.CanSign)
+            .Where(c => c.SigningCertificate != null)
             .ToListAsync();
 
         var allSigningAndNotByUser = allSigningCertificates.Where(c => !user.MyCertificates.Contains(c));
