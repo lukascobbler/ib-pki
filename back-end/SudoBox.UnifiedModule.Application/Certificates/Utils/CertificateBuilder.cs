@@ -35,7 +35,7 @@ public static class CertificateBuilder {
 
         if (request.BasicConstraints != null) {
             var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
-                ? new BasicConstraints(request.BasicConstraints.PathLen)
+                ? new BasicConstraints(request.BasicConstraints.IsCa ? request.BasicConstraints.PathLen : -1)
                 : new BasicConstraints(request.BasicConstraints.IsCa);
             certGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
         }
