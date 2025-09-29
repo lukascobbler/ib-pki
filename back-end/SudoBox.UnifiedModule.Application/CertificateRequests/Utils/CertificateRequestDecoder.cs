@@ -9,8 +9,9 @@ namespace SudoBox.UnifiedModule.Application.CertificateRequests.Utils;
 using Contracts;
 
 public static class CertificateRequestDecoder {
-    public static CertificateRequestResponse DecodeCertificateRequest(CertificateRequest request) {
-        var csrBytes = Convert.FromBase64String(request.EncodedCSR);
+    public static CertificateRequestResponse DecodeCertificateRequest(CertificateRequest request)
+    {
+        var csrBytes = Convert.FromBase64String(request.GetEncodedCsrNoHeader());
         var csr = new Pkcs10CertificationRequest(csrBytes);
 
         var info = csr.GetCertificationRequestInfo();

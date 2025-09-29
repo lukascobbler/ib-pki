@@ -10,4 +10,11 @@ public class CertificateRequest : Entity {
     public required DateTime SubmittedOn { get; set; }
     public DateTime? NotBefore { get; set; }
     public DateTime? NotAfter { get; set; }
+
+    public string GetEncodedCsrNoHeader()
+    {
+        return EncodedCSR.Split("\n")
+            .Where(line => !line.Contains("CERTIFICATE"))
+            .Aggregate("", (current, line) => current + line.Trim());
+    }
 }
