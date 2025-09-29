@@ -3,12 +3,13 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities.IO.Pem;
 using Org.BouncyCastle.X509;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using System.Numerics;
+using Org.BouncyCastle.Pkcs;
+using SudoBox.UnifiedModule.Application.Certificates.Utils;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
@@ -58,7 +59,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = await db.Certificates.ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -70,7 +71,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -93,7 +94,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
 
         return allValidCertificates.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -108,7 +109,7 @@ public class CertificateService(IUnifiedDbContext db) {
         var allCertificatesModels = user.MyCertificates;
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
     
@@ -119,7 +120,7 @@ public class CertificateService(IUnifiedDbContext db) {
             .ToListAsync();
 
         return allCertificatesModels.Select(c =>
-            CertificateResponse.CreateDto(c, GetStatus(c).ToString(), GetDecryptedCertificate(c))
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
         ).ToList();
     }
 
@@ -185,7 +186,6 @@ public class CertificateService(IUnifiedDbContext db) {
         return ms.ToArray();
     }
 
-    // todo: revoking checkup
     public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
         if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
             return CertificateStatus.Invalid;
@@ -195,6 +195,8 @@ public class CertificateService(IUnifiedDbContext db) {
             return CertificateStatus.Dormant;
         if (DateTime.UtcNow > certificate.NotAfter)
             return CertificateStatus.Expired;
+        if (IsRevoked(certificate))
+            return CertificateStatus.Revoked;
         if (certificate.SigningCertificate == null)
             return CertificateStatus.Active;
         return GetStatus(certificate.SigningCertificate, original ?? certificate);
@@ -212,18 +214,10 @@ public class CertificateService(IUnifiedDbContext db) {
         } catch { return false; }
     }
 
-    private static string GetDecryptedCertificate(Certificate certificate) {
-        if (certificate.EncodedValue == null)
-            return "Certificate is empty!";
-        return ToPem(certificate.EncodedValue) ?? "Malformed certificate";
-    }
-
-    private static string? ToPem(string base64) {
-        try {
-            var bytes = Convert.FromBase64String(base64);
-            using var sw = new StringWriter();
-            new PemWriter(sw).WriteObject(new PemObject("CERTIFICATE", bytes));
-            return sw.ToString();
-        } catch { return null; }
+    private bool IsRevoked(Certificate certificate)
+    {
+        return db.RevokedCertificates
+            .Include(rc => rc.Certificate)
+            .FirstOrDefault(rc => rc.Certificate.SerialNumber == certificate.SerialNumber) != null;
     }
 }

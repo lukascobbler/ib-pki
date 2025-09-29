@@ -40,7 +40,7 @@ export class CertificatesService {
     return this.httpClient.put<void>(`${this.urlCore}/add-certificate-to-ca-user`, addCertificateToCaUser);
   }
 
-  downloadCertificate(certificate: Certificate): Observable<Blob> {
-    return this.httpClient.get(`${this.urlCore}/download/${certificate.serialNumber}`, { responseType: 'blob' });
+  downloadCertificate(certificateSerialNumber: string): Observable<Blob> {
+    return this.httpClient.get(`${this.urlCore}/download/${certificateSerialNumber}`, { responseType: 'blob' });
   }
 }

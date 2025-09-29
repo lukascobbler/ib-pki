@@ -4,6 +4,8 @@ import {MatIconButton} from '@angular/material/button';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {MatDialogRef} from '@angular/material/dialog';
+import {RevocationReason} from '../../../models/RevocationReason';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-revoke-certificate-dialog',
@@ -12,19 +14,23 @@ import {MatDialogRef} from '@angular/material/dialog';
     MatFormField,
     MatIconButton,
     MatOption,
-    MatSelect
+    MatSelect,
+    FormsModule
   ],
   templateUrl: './revoke-certificate-dialog.component.html',
   styleUrl: './revoke-certificate-dialog.component.scss'
 })
 export class RevokeCertificateDialogComponent {
-  dialogRef = inject(MatDialogRef<RevokeCertificateDialogComponent, null>);
+  dialogRef = inject(MatDialogRef<RevokeCertificateDialogComponent, RevocationReason | undefined | null>)
+  reason: RevocationReason | null = null;
 
   closeDialog() {
-    this.dialogRef.close(null);
+    this.dialogRef.close(this.reason);
   }
 
   onNoClick() {
     this.dialogRef.close();
   }
+
+  protected readonly RevocationReason = RevocationReason;
 }

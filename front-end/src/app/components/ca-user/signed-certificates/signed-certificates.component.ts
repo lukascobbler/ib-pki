@@ -24,6 +24,8 @@ import {ToastrService} from '../../common/toastr/toastr.service';
 import {extractBlobError} from '../../common/custom-components/blob/extract-blob-error';
 import {AuthService} from '../../../services/auth/auth.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {RevokeCertificate} from '../../../models/RevokeCertificate';
+import {CrlService} from '../../../services/crl/crl.service';
 
 @Component({
   selector: 'app-signed-certificates',
@@ -52,6 +54,7 @@ export class SignedCertificatesComponent implements OnInit {
   toast = inject(ToastrService);
   dialog = inject(MatDialog);
   auth = inject(AuthService);
+  crlService = inject(CrlService);
 
   signedByMeCertificates: Certificate[] = [];
   loading = true;
@@ -83,6 +86,39 @@ export class SignedCertificatesComponent implements OnInit {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {
       width: '30rem'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
+
+      const revokeCertificate: RevokeCertificate = {
+        revocationReason: result,
+        serialNumber: certificate.serialNumber
+      };
+
+      this.loading = true;
+
+      this.crlService.revokeCertificate(revokeCertificate).subscribe({
+        next: () => {
+          this.certificatesService.getCertificatesSignedByMe().subscribe({
+            next: value => {
+              this.toast.success("Success", "Successfully revoked the certificate");
+              this.signedByMeCertificates = value;
+              this.signedCertificatesDataSource.data = this.signedByMeCertificates;
+              this.loading = false;
+            },
+            error: err => {
+              this.toast.error("Error", "Error loading certificates signed by me: ", err);
+            }
+          })
+        },
+        error: err => {
+          this.loading = false;
+          this.toast.error("Error", "Error revoking the certificate: ", err)
+        }
+      })
+    })
   }
 
   openCertificateDetails(certificate: Certificate) {
@@ -94,7 +130,7 @@ export class SignedCertificatesComponent implements OnInit {
   }
 
   downloadCertificate(certificate: Certificate) {
-    this.certificatesService.downloadCertificate(certificate).subscribe({
+    this.certificatesService.downloadCertificate(certificate.serialNumber).subscribe({
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },

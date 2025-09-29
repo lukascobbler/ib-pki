@@ -4,8 +4,10 @@ using SudoBox.UnifiedModule.Domain.Users;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using SudoBox.UnifiedModule.Domain.CertificateRequests;
 using SudoBox.UnifiedModule.Application.Abstractions;
+using SudoBox.UnifiedModule.Domain.CRL;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
 using SudoBox.UnifiedModule.Infrastructure.CertificateRequests.DomainDatabaseSetup;
+using SudoBox.UnifiedModule.Infrastructure.Crl.DomainDatabaseSetup;
 using SudoBox.UnifiedModule.Infrastructure.Users.DomainDatabaseSetup;
 
 namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
@@ -23,6 +25,7 @@ public class UnifiedDbContext : Microsoft.EntityFrameworkCore.DbContext, IUnifie
     public DbSet<User> Users => Set<User>();
     public DbSet<VerificationToken> VerificationTokens => Set<VerificationToken>();
     public DbSet<Certificate> Certificates => Set<Certificate>();
+    public DbSet<RevokedCertificate> RevokedCertificates => Set<RevokedCertificate>();
     public DbSet<CertificateRequest> CertificateRequests => Set<CertificateRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,6 +35,7 @@ public class UnifiedDbContext : Microsoft.EntityFrameworkCore.DbContext, IUnifie
         modelBuilder.ApplyConfiguration(new VerificationTokenEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CertificateTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new RevokedCertificateTypeConfiguration());
         modelBuilder.ApplyConfiguration(new CertificateRequestTypeConfiguration());
         base.OnModelCreating(modelBuilder);
     }

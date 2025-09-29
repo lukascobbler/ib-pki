@@ -5,11 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SudoBox.UnifiedModule.API.CertificateRequests;
 using SudoBox.UnifiedModule.API.Certificates;
+using SudoBox.UnifiedModule.API.CRL;
 using SudoBox.UnifiedModule.API.Users;
 using SudoBox.UnifiedModule.Application.Users.Utils.Email;
 using SudoBox.UnifiedModule.Infrastructure;
 using SudoBox.UnifiedModule.Infrastructure.CertificateRequests.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.ServiceSetup;
+using SudoBox.UnifiedModule.Infrastructure.Crl.ServiceSetup;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using SudoBox.UnifiedModule.Infrastructure.Users.ServiceSetup;
 using System.Security.Claims;
@@ -89,6 +91,7 @@ builder.Services.ConfigureHttpJsonOptions(options => {
 builder.Services.AddUserFeatures(commonPath);
 builder.Services.ConfigureCertificates();
 builder.Services.ConfigureCertificateRequests();
+builder.Services.AddCrlFeatures();
 
 // Swagger/CORS
 builder.Services.AddEndpointsApiExplorer();
@@ -149,6 +152,7 @@ using (var scope = app.Services.CreateScope())
 app.MapUserEndpoints();
 app.MapCertificateEndpoints();
 app.MapCertificateRequestEndpoints();
+app.MapCrlEndpoints();
 
 // who am i test
 var api = app.MapGroup("/api");

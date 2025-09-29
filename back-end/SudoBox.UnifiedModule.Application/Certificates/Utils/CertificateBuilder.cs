@@ -80,6 +80,11 @@ public static class CertificateBuilder {
             certGen.AddExtension(X509Extensions.CertificatePolicies, false, new DerSequence(policyInfo));
         }
 
+        const string crlUrl = "https://localhost:8081/api/v1/crl/get-crl";
+        var distPointName = new DistributionPointName(new GeneralNames(new GeneralName(GeneralName.UniformResourceIdentifier, crlUrl)));
+        var distPoint = new DistributionPoint(distPointName, null, null);
+        certGen.AddExtension(X509Extensions.CrlDistributionPoints, false, new DerSequence(distPoint));
+
         var signer = new Asn1SignatureFactory("SHA256WithRSA", issuerCertificate?.PrivateKey ?? subjectPrivateKey, new SecureRandom());
         var certificate = certGen.Generate(signer);
 

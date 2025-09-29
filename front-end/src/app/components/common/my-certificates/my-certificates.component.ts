@@ -20,6 +20,8 @@ import {AuthService} from '../../../services/auth/auth.service';
 import {ToastrService} from '../toastr/toastr.service';
 import {extractBlobError} from '../custom-components/blob/extract-blob-error';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {RevokeCertificate} from '../../../models/RevokeCertificate';
+import {CrlService} from '../../../services/crl/crl.service';
 
 @Component({
   selector: 'app-my-certificates',
@@ -48,6 +50,7 @@ export class MyCertificatesComponent implements OnInit {
   toast = inject(ToastrService);
   dialog = inject(MatDialog);
   auth = inject(AuthService);
+  crlService = inject(CrlService);
 
   myCertificates: Certificate[] = [];
   loading = true;
@@ -79,6 +82,39 @@ export class MyCertificatesComponent implements OnInit {
     const dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null> = this.dialog.open(RevokeCertificateDialogComponent, {
       width: '30rem'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!result) {
+        return;
+      }
+
+      const revokeCertificate: RevokeCertificate = {
+        revocationReason: result,
+        serialNumber: certificate.serialNumber
+      };
+
+      this.loading = true;
+
+      this.crlService.revokeCertificate(revokeCertificate).subscribe({
+        next: () => {
+          this.certificatesService.getMyCertificates().subscribe({
+            next: value => {
+              this.toast.success("Success", "Successfully revoked the certificate");
+              this.myCertificates = value;
+              this.certificatesDataSource.data = this.myCertificates;
+              this.loading = false;
+            },
+            error: err => {
+              this.toast.error("Error", "Error loading my certificates: ", err);
+            }
+          })
+        },
+        error: err => {
+          this.loading = false;
+          this.toast.error("Error", "Error revoking the certificate: ", err)
+        }
+      })
+    })
   }
 
   openCertificateDetails(certificate: Certificate) {
@@ -90,7 +126,7 @@ export class MyCertificatesComponent implements OnInit {
   }
 
   downloadCertificate(certificate: Certificate) {
-    this.certificatesService.downloadCertificate(certificate).subscribe({
+    this.certificatesService.downloadCertificate(certificate.serialNumber).subscribe({
       next: (blob: Blob) => {
         downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
       },

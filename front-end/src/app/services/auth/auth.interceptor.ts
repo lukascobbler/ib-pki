@@ -16,6 +16,7 @@ export class AuthInterceptor implements HttpInterceptor {
       req.url.includes('/api/v1/users/login') ||
       req.url.includes('/api/v1/users/register') ||
       req.url.includes('/api/v1/users/confirm') ||
+      req.url.includes('/api/v1/crl/get-all') ||
       req.url.includes('/api/v1/users/refresh');
 
     if (!isApi || isAuthEndpoint) {
