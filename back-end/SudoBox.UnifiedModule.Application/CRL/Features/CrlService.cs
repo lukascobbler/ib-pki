@@ -58,6 +58,10 @@ public class CrlService(IUnifiedDbContext db)
                 
                 break;
             }
+            case Role.Admin:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(requesterRole), requesterRole, null);
         };
 
         var newRevokedCertificate = new RevokedCertificate

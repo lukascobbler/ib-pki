@@ -9,6 +9,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.X509;
 using System.Numerics;
+using SudoBox.UnifiedModule.Domain.Users;
 
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
@@ -142,15 +143,32 @@ public class CertificateService(IUnifiedDbContext db) {
     }
 
     private async Task<Certificate?> GetCertificate(BigInteger serialNumber) {
-        return await db.Certificates.Include(c => c.SigningCertificate).FirstOrDefaultAsync(c => c.SerialNumber == serialNumber);
+        return await db.Certificates
+            .Include(c => c.SigningCertificate)
+            .Include(c => c.SignedBy)
+            .FirstOrDefaultAsync(c => c.SerialNumber == serialNumber);
     }
 
     // todo prevent someone from downloading any certificate
-    public async Task<byte[]> GetCertificateWithPasswordAsPkcs12(DownloadCertificateRequest downloadCertificateRequest) {
+    public async Task<byte[]> GetCertificateWithPasswordAsPkcs12(DownloadCertificateRequest downloadCertificateRequest, Guid requesterId, Role requesterRole) {
         var chain = new List<X509Certificate>();
         var parser = new X509CertificateParser();
         var serialNumber = BigInteger.Parse(downloadCertificateRequest.CertificateSerialNumber);
         var eeCertificate = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
+
+        var user = await db.Users
+            .Include(u => u.MyCertificates)
+            .Where(u => u.Id == requesterId)
+            .FirstOrDefaultAsync();
+
+        var requesterContainsCert = user!.MyCertificates.Contains(eeCertificate);
+        var certSignedByRequester = eeCertificate.SignedBy.Id == requesterId;
+
+        if (!requesterContainsCert && !certSignedByRequester && requesterRole != Role.Admin)
+        {
+            throw new Exception("You cannot download certificates that aren't yours!");
+        }
+        
         var current = eeCertificate;
 
         while (current != null) {

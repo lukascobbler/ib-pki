@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using SudoBox.UnifiedModule.Application.Certificates.Contracts;
 using SudoBox.UnifiedModule.Application.Certificates.Features;
 using System.Security.Claims;
+using SudoBox.UnifiedModule.Domain.Users;
+using static System.Enum;
 
 namespace SudoBox.UnifiedModule.API.Certificates;
 
@@ -76,9 +78,17 @@ public static class CertificateEndpoints {
             }
         }).RequireAuthorization("CaUser");
 
-        grp.MapPost("/download", async (DownloadCertificateRequest downloadCertificateRequest, CertificateService certificateService) => {
+        grp.MapPost("/download", async (DownloadCertificateRequest downloadCertificateRequest, CertificateService certificateService, HttpContext httpContext) => {
             try {
-                var pfxBytes = await certificateService.GetCertificateWithPasswordAsPkcs12(downloadCertificateRequest);
+                var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                
+                TryParse(role, out Role parsedRole);
+                
+                var pfxBytes = await certificateService.GetCertificateWithPasswordAsPkcs12(
+                    downloadCertificateRequest,
+                    Guid.Parse(userId!), 
+                    parsedRole);
 
                 return Results.File(
                     fileContents: pfxBytes,
