@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Pkcs;
 
-namespace SudoBox.UnifiedModule.Application.CertificateRequests.Features;
+namespace SudoBox.UnifiedModule.Application.CertificateRequests.Utils;
 using Contracts;
 
 public static class CertificateRequestDecoder {

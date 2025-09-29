@@ -7,7 +7,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Pkcs;
 
-namespace SudoBox.UnifiedModule.Application.CertificateRequests.Features;
+namespace SudoBox.UnifiedModule.Application.CertificateRequests.Utils;
 using Contracts;
 
 public static class CertificateRequestBuilder {

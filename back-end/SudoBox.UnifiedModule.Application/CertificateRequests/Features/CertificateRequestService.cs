@@ -6,6 +6,7 @@ using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Application.CertificateRequests.Contracts;
+using SudoBox.UnifiedModule.Application.CertificateRequests.Utils;
 using SudoBox.UnifiedModule.Application.Certificates.Features;
 using SudoBox.UnifiedModule.Domain.CertificateRequests;
 using SudoBox.UnifiedModule.Domain.Certificates;
