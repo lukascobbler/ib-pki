@@ -35,4 +35,8 @@
       <ProjectReference Include="..\SudoBox.UnifiedModule.Application\SudoBox.UnifiedModule.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DevelopmentSQL\CSR\" />
+    </ItemGroup>
+
 </Project>

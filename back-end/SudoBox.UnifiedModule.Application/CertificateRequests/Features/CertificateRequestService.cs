@@ -109,7 +109,7 @@ public class CertificateRequestService(IUnifiedDbContext db, CertificateService 
         if (request.RequestedFrom.Id != user.Id)
             throw new Exception("This certificate is not requested from you!");
 
-        var publicKey = new Pkcs10CertificationRequest(Convert.FromBase64String(request.EncodedCSR)).GetPublicKey();
+        var publicKey = new Pkcs10CertificationRequest(Convert.FromBase64String(request.GetEncodedCsrNoHeader())).GetPublicKey();
         await certificateService.CreateCertificate(approveRequest.RequestForm, false, userId, publicKey);
         await DeleteCertificateRequest(userId, approveRequest.RequestId);
     }

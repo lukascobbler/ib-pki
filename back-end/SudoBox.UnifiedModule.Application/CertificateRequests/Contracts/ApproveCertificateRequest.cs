@@ -4,5 +4,5 @@ namespace SudoBox.UnifiedModule.Application.CertificateRequests.Contracts;
 
 public record ApproveCertificateRequest {
     public required string RequestId { get; set; }
-    public required IssueCertificateDTO RequestForm { get; set; }
+    public required IssueCertificateRequest RequestForm { get; set; }
 }

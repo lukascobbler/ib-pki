@@ -22,6 +22,10 @@ import {extractBlobError} from '../custom-components/blob/extract-blob-error';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RevokeCertificate} from '../../../models/RevokeCertificate';
 import {CrlService} from '../../../services/crl/crl.service';
+import {
+  DownloadCertificatePwDialogComponent
+} from '../download-certificate-pw-dialog/download-certificate-pw-dialog.component';
+import {DownloadCertificateRequest} from '../../../models/DownloadCertificateRequest';
 
 @Component({
   selector: 'app-my-certificates',
@@ -126,14 +130,29 @@ export class MyCertificatesComponent implements OnInit {
   }
 
   downloadCertificate(certificate: Certificate) {
-    this.certificatesService.downloadCertificate(certificate.serialNumber).subscribe({
-      next: (blob: Blob) => {
-        downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
-      },
-      error: async (err) => {
-        const errorMessage = await extractBlobError(err);
-        this.toast.error("Error", "Download failed: " + errorMessage);
-      }
+    const dialogRef: MatDialogRef<DownloadCertificatePwDialogComponent, string | null | undefined> = this.dialog.open(DownloadCertificatePwDialogComponent, {
+      width: '30rem'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === null || result === undefined) {
+        return;
+      }
+
+      const downloadRequest: DownloadCertificateRequest = {
+        certificateSerialNumber: certificate.serialNumber,
+        password: result
+      }
+
+      this.certificatesService.downloadCertificate(downloadRequest).subscribe({
+        next: (blob: Blob) => {
+          downloadFile(blob, `certificate_${certificate.prettySerialNumber}.pfx`)
+        },
+        error: async (err) => {
+          const errorMessage = await extractBlobError(err);
+          this.toast.error("Error", "Download failed: " + errorMessage);
+        }
+      });
+    })
   }
 }

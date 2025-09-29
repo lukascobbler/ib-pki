@@ -72,6 +72,6 @@ public static class UserEndpoints
             await certificateService.AddCertificateToCaUser(new AddCertificateToCaUserRequest(res.Response.Id!, req.InitialSigningCertificateId));
 
             return Results.Json(res.Response, statusCode: res.StatusCode);
-        }).AllowAnonymous();
+        }).RequireAuthorization("Admin");
     }
 }

@@ -13,7 +13,7 @@ namespace SudoBox.UnifiedModule.Application.Certificates.Utils;
 using Contracts;
 
 public static class CertificateBuilder {
-    public static Certificate CreateCertificate(IssueCertificateDTO request, AsymmetricKeyParameter subjectPublicKey,
+    public static Certificate CreateCertificate(IssueCertificateRequest request, AsymmetricKeyParameter subjectPublicKey,
         AsymmetricKeyParameter? subjectPrivateKey, Certificate? issuerCertificate, User user) {
         var guidBytes = Guid.NewGuid().ToByteArray();
         var serialNumber = new System.Numerics.BigInteger(guidBytes, true, false);
