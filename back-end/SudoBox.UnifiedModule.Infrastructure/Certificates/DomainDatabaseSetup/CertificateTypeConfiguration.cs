@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SudoBox.UnifiedModule.Domain.Certificates;
+using Microsoft.EntityFrameworkCore;
 
 namespace SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
 

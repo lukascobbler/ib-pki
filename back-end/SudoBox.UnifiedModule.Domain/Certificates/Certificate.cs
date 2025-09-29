@@ -19,7 +19,8 @@ public class Certificate {
     public required int PathLen { get; set; }
     public AsymmetricKeyParameter? PrivateKey { get; set; }
     public required User SignedBy { get; set; }
-    
+    public Guid SignedById { get; set; }
+
     public string GetPem() {
         if (EncodedValue == null)
             return "Certificate is empty!";

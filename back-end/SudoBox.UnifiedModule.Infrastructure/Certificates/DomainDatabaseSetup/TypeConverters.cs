@@ -1,46 +1,31 @@
-using System.Numerics;
+using SudoBox.UnifiedModule.Infrastructure.Certificates.Interceptors;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.OpenSsl;
+using System.Numerics;
 
 namespace SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
 
-public static class TypeConverters
-{
-    public static readonly ValueConverter BigIntConverter = new ValueConverter<BigInteger, string>(
+public static class TypeConverters {
+    public static readonly ValueConverter<BigInteger, string> BigIntConverter = new(
         v => v.ToString(),
         v => BigInteger.Parse(v)
     );
 
-    public static readonly ValueConverter KeyConverter = new ValueConverter<AsymmetricKeyParameter?, string?>(
-        v => ToPem(v),
-        v => FromPem(v)
+    public static readonly ValueConverter<AsymmetricKeyParameter?, string> KeyConverter = new(
+        v => ToBase64EncryptedKey(v),
+        v => FromBase64EncryptedKey(v)
     );
-    
-    private static string? ToPem(AsymmetricKeyParameter? key)
-    {
-        if (key == null) return null;
-        using var sw = new StringWriter();
-        var pw = new PemWriter(sw);
-        pw.WriteObject(key);
-        pw.Writer.Flush();
-        return sw.ToString();
+
+    private static string ToBase64EncryptedKey(AsymmetricKeyParameter? keyParam) {
+        if (keyParam is not EncryptedKeyParameter encryptedKey)
+            throw new InvalidCastException($"Expected {nameof(EncryptedKeyParameter)}, got {keyParam?.GetType().Name}");
+        return Convert.ToBase64String(encryptedKey.IV.Concat(encryptedKey.EncryptedBytes).ToArray());
     }
 
-    private static AsymmetricKeyParameter? FromPem(string? pem)
-    {
-        if (string.IsNullOrWhiteSpace(pem))
-            return null;
-
-        using var sr = new StringReader(pem);
-        var pr = new PemReader(sr);
-        var obj = pr.ReadObject();
-
-        if (obj is AsymmetricCipherKeyPair keyPair)
-        {
-            return keyPair.Private;
-        }
-        
-        throw new InvalidOperationException("Private key not stored correctly: " + obj?.GetType().Name);
+    private static EncryptedKeyParameter FromBase64EncryptedKey(string base64) {
+        var allBytes = Convert.FromBase64String(base64);
+        var iv = allBytes[..16];
+        var cipher = allBytes[16..];
+        return new EncryptedKeyParameter(cipher, iv);
     }
 }

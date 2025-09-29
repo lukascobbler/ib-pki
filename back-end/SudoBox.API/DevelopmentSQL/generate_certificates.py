@@ -33,6 +33,8 @@ KEY_USAGE_MAP = {
     "DecipherOnly": "decipher_only"
 }
 
+CRL_DISTRIBUTION_URL = "https://localhost:8081/api/v1/crl"
+
 
 def parse_general_names(general_names_json, for_name_constraints=False):
     general_names_list = []
@@ -151,6 +153,9 @@ def create_certificate(certificate_json, all_certificates):
     if certificate_policies_json:
         policy_list = [x509.PolicyInformation(ObjectIdentifier(p), None) for p in certificate_policies_json]
         certificate_builder = certificate_builder.add_extension(x509.CertificatePolicies(policy_list), critical=False)
+
+    crl_dp = x509.DistributionPoint(full_name=[x509.UniformResourceIdentifier(CRL_DISTRIBUTION_URL)], relative_name=None, reasons=None, crl_issuer=None)
+    certificate_builder = certificate_builder.add_extension(x509.CRLDistributionPoints([crl_dp]), critical=False)
 
     certificate_object = certificate_builder.sign(private_key=issuer_private_key, algorithm=hashes.SHA256())
     return {"Certificate": certificate_object, "Key": certificate_private_key, "Name": certificate_json["Name"]}
