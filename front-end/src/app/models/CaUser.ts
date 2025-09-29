@@ -4,4 +4,6 @@ export interface CaUser {
   surname: string;
   organization: string;
   email: string;
+  minValidFrom?: Date;
+  maxValidUntil?: Date;
 }

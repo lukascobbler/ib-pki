@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {MatFormField} from '@angular/material/form-field';
 import {MatIconButton} from '@angular/material/button';
 import {MatOption} from '@angular/material/core';
@@ -18,15 +18,13 @@ import {MatDialogRef} from '@angular/material/dialog';
   styleUrl: './revoke-certificate-dialog.component.scss'
 })
 export class RevokeCertificateDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<RevokeCertificateDialogComponent, null>) {
-  }
+  dialogRef = inject(MatDialogRef<RevokeCertificateDialogComponent, null>);
 
   closeDialog() {
     this.dialogRef.close(null);
   }
 
   onNoClick() {
-    this.dialogRef.close(undefined);
+    this.dialogRef.close();
   }
 }

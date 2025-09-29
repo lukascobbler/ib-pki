@@ -12,7 +12,6 @@
 .certificate-container {
   background-color: $background2;
   border-radius: 20px;
-  width: 700px;
   overflow: hidden;
   margin: 90px 0 140px 0;
 }
@@ -20,13 +19,14 @@
 ::ng-deep .mat-mdc-tab {
   height: 64px !important;
   font-size: medium !important;
+  width: 50%;
 }
 
 .certificate-form {
   display: flex;
   flex-direction: column;
+  width: 700px;
   gap: 20px;
-  padding-right: 10px;
 
   .row {
     display: flex;
@@ -55,7 +55,7 @@
 
   .extension-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
 
     button[mat-icon-button] {
@@ -65,24 +65,91 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      top: 8px;
+    }
+
+    > :first-child {
+      flex: 70;
+      min-width: 260px;
+    }
+
+    > :not(:first-child):not(:last-child) {
+      flex: 100;
+    }
+
+    > :last-child {
+      flex: 0 0 auto;
+    }
+
+    .extension-value {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 16px;
+    }
+
+    ::ng-deep.extension-value:has(.san-value) {
+      //gap: 24px !important;
+    }
+
+    .extension-value-row {
+      display: flex;
+      max-width: 368px;
+      gap: 16px;
+
+      > :first-child {
+        flex: 64;
+      }
+
+      > :not(:first-child) {
+        flex: 100;
+      }
+    }
+
+    .san-value {
+      display: flex;
+      flex-direction: column;
+      max-width: 368px;
+      margin-bottom: -4px;
+      gap: 4px;
+
+      .input-row {
+        display: flex;
+        gap: 10px;
+
+        > :first-child {
+          flex: 43;
+        }
+
+        > :not(:first-child) {
+          flex: 100;
+        }
+      }
+
+      mat-chip-row {
+        ::ng-deep .text-value {
+          display: block;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 332px;
+          text-align: start;
+          height: 19px;
+          color: $pale-text;
+        }
+      }
     }
   }
-}
-
-::ng-deep .mat-mdc-tab {
-  width: 50%;
 }
 
 .actions {
   display: flex;
   justify-content: space-around;
   margin-top: 36px;
-  padding-right: 16px;
   gap: 20px;
 }
 
 .tab-content {
-  padding: 64px 56px 72px 72px;
+  padding: 64px 72px 72px 72px;
 }
 
 .large-btn {
@@ -147,4 +214,8 @@
   align-items: center;
   align-content: center;
   justify-content: center;
+}
+
+.hidden {
+  display: none;
 }

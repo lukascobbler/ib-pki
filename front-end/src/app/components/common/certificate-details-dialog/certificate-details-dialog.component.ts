@@ -26,7 +26,7 @@ export class CertificateDetailsDialogComponent {
   toastr = inject(ToastrService);
 
   onNoClick() {
-    this.dialogRef.close(undefined);
+    this.dialogRef.close();
   }
 
   onCopied() {

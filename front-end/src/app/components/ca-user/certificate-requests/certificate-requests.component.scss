@@ -37,30 +37,25 @@
 
 mat-header-cell.subject,
 mat-cell.subject {
-  flex: 0 0 20%;
+  flex: 0 0 24%;
 }
 
 mat-header-cell.organization,
 mat-cell.organization {
-  flex: 0 0 20%;
+  flex: 0 0 24%;
 }
 
-mat-header-cell.organizationUnit,
-mat-cell.organizationUnit {
-  flex: 0 0 20%;
+mat-header-cell.organizationalUnit,
+mat-cell.organizationalUnit {
+  flex: 0 0 24%;
 }
 
 mat-header-cell.submittedOn,
 mat-cell.submittedOn {
-  flex: 0 0 15%;
-}
-
-mat-header-cell.serialNumber,
-mat-cell.serialNumber {
-  flex: 0 0 18%;
+  flex: 0 0 22%;
 }
 
 mat-header-cell.actions,
 mat-cell.actions {
-  flex: 0 0 7%;
+  flex: 0 0 8%;
 }

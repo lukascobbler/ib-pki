@@ -1,7 +1,6 @@
 <div class="container">
   <div class="table-header table-width">
-    <mat-table [dataSource]="certificateRequestsDataSource">
-
+    <mat-table>
       <ng-container matColumnDef="subject">
         <mat-header-cell class="subject" *matHeaderCellDef>Subject (CN)</mat-header-cell>
       </ng-container>
@@ -10,16 +9,12 @@
         <mat-header-cell class="organization" *matHeaderCellDef>Organization</mat-header-cell>
       </ng-container>
 
-      <ng-container matColumnDef="organizationUnit">
-        <mat-header-cell class="organizationUnit" *matHeaderCellDef>Organization unit</mat-header-cell>
+      <ng-container matColumnDef="organizationalUnit">
+        <mat-header-cell class="organizationalUnit" *matHeaderCellDef>Organization unit</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="submittedOn">
         <mat-header-cell class="submittedOn" *matHeaderCellDef>Submitted on</mat-header-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="serialNumber">
-        <mat-header-cell class="serialNumber" *matHeaderCellDef>Serial Number</mat-header-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -31,10 +26,10 @@
   </div>
 
   <div class="table-width">
-    <mat-table [dataSource]="certificateRequestsDataSource">
+    <mat-table [dataSource]="certificateRequests">
       <ng-container matColumnDef="subject">
         <mat-cell class="subject" *matCellDef="let certificate">
-          {{ certificate.subject }}
+          {{ certificate.commonName }}
         </mat-cell>
       </ng-container>
 
@@ -44,27 +39,21 @@
         </mat-cell>
       </ng-container>
 
-      <ng-container matColumnDef="organizationUnit">
-        <mat-cell class="organizationUnit" *matCellDef="let certificate">
-          {{ certificate.organizationUnit }}
+      <ng-container matColumnDef="organizationalUnit">
+        <mat-cell class="organizationalUnit" *matCellDef="let certificate">
+          {{ certificate.organizationalUnit }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="submittedOn">
         <mat-cell class="submittedOn" *matCellDef="let certificate">
-          {{ certificate.submittedOn }}
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="serialNumber">
-        <mat-cell class="serialNumber" *matCellDef="let certificate">
-          <p class="fp">{{ certificate.prettySerialNumber }}</p>
+          {{ certificate.submittedOn | date:'HH:mm:ss dd.MM.yyyy.' }}
         </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <mat-cell class="actions" *matCellDef="let certificate">
-          <button (click)="openEditCertificate()" mat-icon-button>
+          <button (click)="openEditCertificate(certificate)" mat-icon-button>
             <span class="material-symbols-rounded">quick_reference_all</span>
           </button>
         </mat-cell>

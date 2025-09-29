@@ -1,18 +1,15 @@
-import { Component } from '@angular/core';
-import {
-  MatCell,
-  MatCellDef,
-  MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow,
-  MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
-} from '@angular/material/table';
+import {EditCertificateRequestDialogComponent} from './edit-certificate-request-dialog/edit-certificate-request-dialog.component';
+import {CSRResponse} from '../../../models/CSRResponse';
 import {MatIconButton} from '@angular/material/button';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
+import {Component, inject, OnInit} from '@angular/core';
 import {
-  EditCertificateRequestDialogComponent
-} from './edit-certificate-request-dialog/edit-certificate-request-dialog.component';
+  MatCell, MatCellDef, MatColumnDef, MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable
+} from '@angular/material/table';
+import {CertificateRequestsService} from '../../../services/certificates/certificate-requests.service';
+import {ToastrService} from '../../common/toastr/toastr.service';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-certificate-requests',
@@ -28,170 +25,47 @@ import {
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    DatePipe
   ],
   templateUrl: './certificate-requests.component.html',
   styleUrl: './certificate-requests.component.scss'
 })
-export class CertificateRequestsComponent {
-  constructor(private dialog: MatDialog) {
-  }
+export class CertificateRequestsComponent implements OnInit {
+  certificateRequestService = inject(CertificateRequestsService);
+  toast = inject(ToastrService);
+  dialog = inject(MatDialog);
 
   displayedColumns: string[] = [
     'subject',
     'organization',
-    'organizationUnit',
+    'organizationalUnit',
     'submittedOn',
-    'serialNumber',
     'actions'
   ];
 
-  certificateRequestsDataSource: {subject: string, organization: string, organizationUnit: string, submittedOn: string, serialNumber: string}[] = [
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },{
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },{
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-    {
-      subject: 'Michael Scott',
-      organization: 'Dunder Mifflin',
-      organizationUnit: 'Sales',
-      submittedOn: '2026-01-01',
-      serialNumber: '9A:BC:DE:F1:23:45:67:89:AB:CD:AB:AC:67:89:AB:CD:AB:AC'
-    },
-  ];
+  certificateRequests: CSRResponse[] = [];
 
-  openEditCertificate() {
-    const dialogRef: MatDialogRef<EditCertificateRequestDialogComponent, null> = this.dialog.open(EditCertificateRequestDialogComponent, {
-      width: '700px',
+  ngOnInit(): void {
+    this.loadRequests();
+  }
+
+  loadRequests() {
+    this.certificateRequestService.getRequests().subscribe({
+      next: data => this.certificateRequests = data,
+      error: err => this.toast.error("Error", "Unable to load certificate requests: " + err)
+    })
+  }
+
+  openEditCertificate(certificate: CSRResponse) {
+    this.dialog.open(EditCertificateRequestDialogComponent, {
       maxWidth: '80vw',
-      autoFocus: false
+      autoFocus: false,
+      data: certificate
+    }).afterClosed().subscribe(result => {
+      if (result === 'reload') {
+        this.loadRequests();
+      }
     });
   }
 }

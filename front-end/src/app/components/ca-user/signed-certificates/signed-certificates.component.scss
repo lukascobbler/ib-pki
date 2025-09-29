@@ -37,12 +37,12 @@
 
 mat-header-cell.issuedTo,
 mat-cell.issuedTo {
-  flex: 0 0 32%;
+  flex: 0 0 22%;
 }
 
 mat-header-cell.status,
 mat-cell.status {
-  flex: 0 0 8%;
+  flex: 0 0 10%;
 }
 
 mat-header-cell.validFrom,
@@ -57,7 +57,7 @@ mat-cell.validUntil {
 
 mat-header-cell.serialNumber,
 mat-cell.serialNumber {
-  flex: 0 0 20%;
+  flex: 0 0 28%;
 }
 
 mat-header-cell.actions,
