@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using SudoBox.BuildingBlocks.Infrastructure;
+using SudoBox.UnifiedModule.Infrastructure.Certificates.Interceptors;
 
 namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
 
-public sealed class UnifiedDbContextFactory : IDesignTimeDbContextFactory<UnifiedDbContext>
-{
-    public UnifiedDbContext CreateDbContext(string[] args)
-    {
+public sealed class UnifiedDbContextFactory : IDesignTimeDbContextFactory<UnifiedDbContext> {
+    public UnifiedDbContext CreateDbContext(string[] args) {
         var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
         var basePath = Directory.GetCurrentDirectory();
 
@@ -27,6 +26,6 @@ public sealed class UnifiedDbContextFactory : IDesignTimeDbContextFactory<Unifie
             .UseSnakeCaseNamingConvention()
             .Options;
 
-        return new UnifiedDbContext(options, cfg);
+        return new UnifiedDbContext(options, cfg, null, null);
     }
 }

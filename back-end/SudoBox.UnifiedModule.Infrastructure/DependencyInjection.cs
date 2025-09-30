@@ -10,30 +10,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SudoBox.UnifiedModule.Infrastructure;
 
-public static class DependencyInjection
-{
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration cfg)
-    {
+public static class DependencyInjection {
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration cfg) {
         var schema = cfg["Database:Schema"] ?? "unified";
         var conn = DbConnectionStringBuilder.Build(schema);
 
+        services.AddMemoryCache();
+        services.AddScoped(sp => new PrivateKeyMaterializationInterceptor(() => sp.GetRequiredService<KeyManagementService>()));
+        services.AddScoped(sp => new PrivateKeySaveInterceptor(() => sp.GetRequiredService<KeyManagementService>()));
+
         services.AddDbContext<UnifiedDbContext>((sp, opt) => {
             opt.UseNpgsql(conn, npgsql => npgsql.MigrationsHistoryTable("__EFMigrationsHistory", schema))
-               .UseSnakeCaseNamingConvention()
-               .AddInterceptors(
-                    new PrivateKeyMaterializationInterceptor(() => sp.GetRequiredService<KeyManagementService>()),
-                    new PrivateKeySaveInterceptor(() => sp.GetRequiredService<KeyManagementService>())
-               );
-        });
-
-        services.AddMemoryCache();
-        services.AddScoped(sp => {
-            var cache = sp.GetRequiredService<IMemoryCache>();
-            var cfg = sp.GetRequiredService<IConfiguration>();
-            return new KeyManagementService(() => new UnifiedDbContextFactory().CreateDbContext([]), cache);
+               .UseSnakeCaseNamingConvention();
         });
 
         services.AddScoped<IUnifiedDbContext>(sp => sp.GetRequiredService<UnifiedDbContext>());
+        services.AddScoped<KeyManagementService>(sp => {
+            var cache = sp.GetRequiredService<IMemoryCache>();
+            var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+            return new KeyManagementService(scopeFactory, cache);
+        });
 
         return services;
     }

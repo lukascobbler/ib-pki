@@ -2,17 +2,19 @@
 using SudoBox.UnifiedModule.Domain.Certificates.KeyManagement;
 using SudoBox.UnifiedModule.Infrastructure.DbContext;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace SudoBox.UnifiedModule.Infrastructure.Certificates.KeyManagement;
 
-public class KeyManagementService(Func<UnifiedDbContext> dbFactory, IMemoryCache cache) {
+public class KeyManagementService(IServiceScopeFactory scopeFactory, IMemoryCache cache) {
     public byte[] GetUserKey(Guid userId) {
         return cache.GetOrCreate(userId, entry => {
             entry.Priority = CacheItemPriority.NeverRemove;
-            using var db = dbFactory();
+            using var scope = scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<UnifiedDbContext>();
             var record = db.UserKeys.AsNoTracking().FirstOrDefault(x => x.UserId == userId);
 
             if (record == null) {
@@ -60,7 +62,9 @@ public class KeyManagementService(Func<UnifiedDbContext> dbFactory, IMemoryCache
             if (cert == null)
                 throw new Exception($"Certificate not found after {timeoutSeconds} seconds.");
 
-            var masterKey = dbFactory().MasterKey.AsNoTracking().SingleOrDefault() ?? throw new Exception("Unable to find master key in the database!");
+            using var scope = scopeFactory.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<UnifiedDbContext>();
+            var masterKey = db.MasterKey.AsNoTracking().SingleOrDefault() ?? throw new Exception("Unable to find master key in the database!");
             var decodedBytes = Convert.FromBase64String(masterKey.EncryptedKey);
 
             return cert.GetRSAPrivateKey()?.Decrypt(decodedBytes, RSAEncryptionPadding.OaepSHA256) ?? throw new Exception("Unable to decrypt master key!");

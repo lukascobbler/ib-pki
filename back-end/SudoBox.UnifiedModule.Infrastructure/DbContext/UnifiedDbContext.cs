@@ -1,7 +1,9 @@
 ﻿using SudoBox.UnifiedModule.Infrastructure.CertificateRequests.DomainDatabaseSetup;
 using SudoBox.UnifiedModule.Infrastructure.Certificates.DomainDatabaseSetup;
 using SudoBox.UnifiedModule.Infrastructure.Users.DomainDatabaseSetup;
+using SudoBox.UnifiedModule.Infrastructure.Certificates.Interceptors;
 using SudoBox.UnifiedModule.Infrastructure.Crl.DomainDatabaseSetup;
+using SudoBox.UnifiedModule.Domain.Certificates.KeyManagement;
 using SudoBox.UnifiedModule.Domain.CertificateRequests;
 using SudoBox.UnifiedModule.Application.Abstractions;
 using SudoBox.UnifiedModule.Domain.Certificates;
@@ -9,11 +11,13 @@ using Microsoft.Extensions.Configuration;
 using SudoBox.UnifiedModule.Domain.Users;
 using SudoBox.UnifiedModule.Domain.CRL;
 using Microsoft.EntityFrameworkCore;
-using SudoBox.UnifiedModule.Domain.Certificates.KeyManagement;
 
 namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
 
-public class UnifiedDbContext(DbContextOptions<UnifiedDbContext> options, IConfiguration cfg) : Microsoft.EntityFrameworkCore.DbContext(options), IUnifiedDbContext {
+public class UnifiedDbContext(DbContextOptions<UnifiedDbContext> options, IConfiguration cfg,
+    PrivateKeyMaterializationInterceptor? materializationInterceptor, PrivateKeySaveInterceptor? saveInterceptor)
+    : Microsoft.EntityFrameworkCore.DbContext(options), IUnifiedDbContext {
+
     private readonly string _schema = cfg["Database:Schema"] ?? "unified";
 
     public DbSet<User> Users => Set<User>();
@@ -23,6 +27,11 @@ public class UnifiedDbContext(DbContextOptions<UnifiedDbContext> options, IConfi
     public DbSet<CertificateRequest> CertificateRequests => Set<CertificateRequest>();
     public DbSet<UserKey> UserKeys => Set<UserKey>();
     public DbSet<MasterKey> MasterKey => Set<MasterKey>();
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        if (materializationInterceptor != null && saveInterceptor != null)
+            optionsBuilder.AddInterceptors(materializationInterceptor, saveInterceptor);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         modelBuilder.HasDefaultSchema(_schema);

@@ -87,7 +87,7 @@ public class RegistrationService(
                     Organization = user.Organization
                 });
         
-        var publicBase = "http://localhost:4200"; // web server address
+        var publicBase = "https://localhost:4200"; // web server address
         var confirmUrl = $"{publicBase}/confirm?token={tokenPlain}";
 
         var html = $@"
