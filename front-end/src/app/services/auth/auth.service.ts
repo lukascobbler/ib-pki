@@ -1,12 +1,12 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { AuthState } from '../../models/AuthState';
-import { BasicUser } from '../../models/BasicUser';
-import { LoginRequest } from '../../models/LoginRequest';
-import { LoginResponse } from '../../models/LoginResponse';
-import { RegisterRequest } from '../../models/RegisterRequest';
-import { RefreshRequest } from '../../models/RefreshRequest';
-import { RefreshResponse } from '../../models/RefreshResponse';
+import {HttpClient} from '@angular/common/http';
+import {inject, Injectable} from '@angular/core';
+import {AuthState} from '../../models/AuthState';
+import {BasicUser} from '../../models/BasicUser';
+import {LoginRequest} from '../../models/LoginRequest';
+import {LoginResponse} from '../../models/LoginResponse';
+import {RegisterRequest} from '../../models/RegisterRequest';
+import {RefreshRequest} from '../../models/RefreshRequest';
+import {RefreshResponse} from '../../models/RefreshResponse';
 import {
   BehaviorSubject,
   Observable,
@@ -16,14 +16,14 @@ import {
   of,
   from,
 } from 'rxjs';
-import { finalize, shareReplay, catchError } from 'rxjs/operators';
-import { Role } from '../../models/Role';
-import { ConfirmEmailResponse } from '../../models/ConfirmEmailResponse';
-import { CreateCaUser } from '../../models/CreateCaUser';
-import { RegisterResponse } from '../../models/RegisterResponse';
-import { HttpErrorResponse } from '@angular/common/http';
+import {finalize, shareReplay, catchError} from 'rxjs/operators';
+import {Role} from '../../models/Role';
+import {ConfirmEmailResponse} from '../../models/ConfirmEmailResponse';
+import {CreateCaUser} from '../../models/CreateCaUser';
+import {RegisterResponse} from '../../models/RegisterResponse';
+import {HttpErrorResponse} from '@angular/common/http';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class AuthService {
   httpClient = inject(HttpClient);
   urlCore = 'https://localhost:8081/api/v1/users';
@@ -52,6 +52,7 @@ export class AuthService {
     this.hydrateFromStorage();
     this.initCrossTabSync();
   }
+
   private initCrossTabSync() {
     window.addEventListener('storage', (e) => {
       if (e.key !== AuthService.STORAGE_KEY) return;
@@ -94,6 +95,7 @@ export class AuthService {
       };
     }
   }
+
   get isLoggedIn(): boolean {
     return !!this._state$.value.accessToken && !!this._state$.value.user;
   }
@@ -137,7 +139,7 @@ export class AuthService {
     const rt = this._state$.value.refreshToken;
     if (!rt) return throwError(() => new Error('Missing refresh token'));
 
-    const body: RefreshRequest = { refreshToken: rt };
+    const body: RefreshRequest = {refreshToken: rt};
     return this.httpClient
       .post<RefreshResponse>(`${this.urlCore}/refresh`, body)
       .pipe(
@@ -174,7 +176,7 @@ export class AuthService {
     const roleFromJwt = (claims['role'] ||
       claims[
         'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
-      ]) as string | undefined;
+        ]) as string | undefined;
 
     const prevUser = this._state$.value.user;
     const state: AuthState = {
@@ -196,7 +198,7 @@ export class AuthService {
     this._state$.next(state);
     localStorage.setItem(AuthService.STORAGE_KEY, JSON.stringify(state));
     if (broadcast) {
-      this.bc?.postMessage({ type: 'auth-state', state, origin: this.tabId });
+      this.bc?.postMessage({type: 'auth-state', state, origin: this.tabId});
     }
   }
 
@@ -210,7 +212,7 @@ export class AuthService {
     });
     localStorage.removeItem(AuthService.STORAGE_KEY);
     if (broadcast) {
-      this.bc?.postMessage({ type: 'auth-logout', origin: this.tabId });
+      this.bc?.postMessage({type: 'auth-logout', origin: this.tabId});
     }
   }
 
@@ -254,7 +256,8 @@ export class AuthService {
       ) {
         this._state$.next(saved);
       }
-    } catch {}
+    } catch {
+    }
   }
 
   private decodeJwt(token: string): Record<string, unknown> {
@@ -308,7 +311,7 @@ export class AuthService {
       finalize(() => {
         this.refreshInFlight$ = undefined;
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({bufferSize: 1, refCount: true})
     );
 
     // 4) Cross-tab mutual exclusion: Web Locks API if available
@@ -346,15 +349,16 @@ export class AuthService {
   }
 
   confirmEmail(token: string): Observable<ConfirmEmailResponse> {
-    return this.httpClient.get<ConfirmEmailResponse>(
-      `${this.urlCore}/confirm`,
-      { params: { token } }
-    );
+    return this.httpClient.get<ConfirmEmailResponse>(`${this.urlCore}/confirm`, {params: {token}});
   }
 
   private shouldLogoutOnRefreshError(err: unknown): boolean {
     if (err instanceof HttpErrorResponse) {
-      return err.status === 400 || err.status === 401 || err.status === 403;
+      if ([400, 401, 403].includes(err.status)) {
+        this.clearState(true);
+        location.reload();
+        return true;
+      }
     }
     return false;
   }

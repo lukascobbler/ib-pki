@@ -1,9 +1,9 @@
 import {Component, inject, OnInit} from '@angular/core';
-import { Router } from '@angular/router';
-import { NgOptimizedImage } from '@angular/common';
-import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
+import {Router} from '@angular/router';
+import {NgOptimizedImage} from '@angular/common';
+import {FormBuilder, Validators, ReactiveFormsModule, FormGroup} from '@angular/forms';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
 import {AuthService} from "../../../services/auth/auth.service";
 import {ToastrService} from "../../common/toastr/toastr.service";
 
@@ -36,17 +36,21 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const { email, password } = this.form.value as { email: string; password: string };
+    const {email, password} = this.form.value as { email: string; password: string };
 
     this.loading = true;
-    this.auth.login({ email, password }).subscribe({
+    this.auth.login({email, password}).subscribe({
       next: (user) => {
         this.toast.success('Welcome', 'You are now logged in.');
 
         const returnUrl = new URLSearchParams(location.search).get('returnUrl');
         const target = returnUrl ?? this.defaultRouteForRole(user.role);
 
-        this.router.navigateByUrl(target);
+        this.router.navigateByUrl(target).then(() => {
+          if (this.router.url === '/login')
+            this.router.navigateByUrl(this.defaultRouteForRole(user.role));
+        });
+
         this.loading = false
       },
       error: (err) => {
@@ -63,10 +67,14 @@ export class LoginComponent implements OnInit {
 
   private defaultRouteForRole(role: string): string {
     switch (role) {
-      case 'EeUser': return '/my-certificates';
-      case 'CaUser': return '/signed-certificates';
-      case 'Admin':  return '/all-certificates';
-      default:       return '/';
+      case 'EeUser':
+        return '/my-certificates';
+      case 'CaUser':
+        return '/signed-certificates';
+      case 'Admin':
+        return '/all-certificates';
+      default:
+        return '/';
     }
   }
 
