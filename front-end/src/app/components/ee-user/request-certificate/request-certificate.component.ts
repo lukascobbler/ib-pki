@@ -58,6 +58,7 @@ export class RequestCertificateComponent implements OnInit {
   @ViewChild('notBeforeModel') dateNotBeforeModel!: NgModel;
   @ViewChild('notAfterModel') dateNotAfterModel!: NgModel;
   @ViewChild('requestForm') requestForm!: NgForm;
+  @ViewChild('csrForm') csrForm!: NgForm;
 
   certificateRequestsService = inject(CertificateRequestsService);
   usersService = inject(UsersService);
@@ -299,15 +300,10 @@ export class RequestCertificateComponent implements OnInit {
     if (!this.signingOrganization) return;
 
     this.certificateRequestsService.createRequestCSR(this.signingOrganization.id, this.csrFile, this.dateNotAfter).subscribe({
-      next: keys => {
+      next: () => {
         this.loading = false;
         this.toast.success("Success", "Certificate request successfully created");
         this.resetFields();
-
-        this.dialog.open(KeysDialogComponent, {
-          width: '800px',
-          data: keys
-        });
       },
       error: err => {
         this.loading = false;
@@ -318,6 +314,8 @@ export class RequestCertificateComponent implements OnInit {
 
   private resetFields() {
     this.extensions = [];
+    this.removeFile();
+    this.csrForm.resetForm();
     this.requestForm.resetForm();
   }
 
@@ -333,8 +331,8 @@ export class RequestCertificateComponent implements OnInit {
     if (this.csrFile) this.fileName = this.csrFile.name;
   }
 
-  removeFile(event: Event) {
-    event.stopPropagation();
+  removeFile(event: Event | undefined = undefined) {
+    event?.stopPropagation();
     this.csrFile = undefined;
     this.fileName = null;
   }

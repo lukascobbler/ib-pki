@@ -15,10 +15,10 @@
   </mat-form-field>
 
   <div class="action-buttons">
-    <button [cdkCopyToClipboard]="keys.privateKey" class="blue-button finish">
+    <button [cdkCopyToClipboard]="keys.privateKey" (cdkCopyToClipboardCopied)="onCopied('Private')" class="blue-button finish">
       Copy private key
     </button>
-    <button [cdkCopyToClipboard]="keys.publicKey" class="blue-button finish">
+    <button [cdkCopyToClipboard]="keys.publicKey" (cdkCopyToClipboardCopied)="onCopied('Public')" class="blue-button finish">
       Copy public key
     </button>
   </div>

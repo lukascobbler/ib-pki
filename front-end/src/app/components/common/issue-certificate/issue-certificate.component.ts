@@ -86,6 +86,7 @@ export class IssueCertificateComponent implements OnInit {
   }
 
   loadCaSigningCertificates() {
+    this.signingCertificates = []
     this.certificatesService.getMyCertificates().subscribe({
       next: value => {
         if (value.length === 0) {
@@ -98,7 +99,7 @@ export class IssueCertificateComponent implements OnInit {
         })
         this.loading = false;
       },
-      error: err => {
+      error: () => {
         this.toast.error("Error", "Unable to get signing certificates");
       }
     })
@@ -114,7 +115,7 @@ export class IssueCertificateComponent implements OnInit {
         });
         this.loading = false;
       },
-      error: err => {
+      error: () => {
         this.toast.error("Error", "Unable to get signing certificates");
       }
     })

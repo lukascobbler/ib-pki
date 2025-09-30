@@ -6,5 +6,6 @@ public enum CertificateStatus {
     Expired,
     Revoked,
     Circural,
-    Invalid
+    Invalid,
+    Prohibited
 }

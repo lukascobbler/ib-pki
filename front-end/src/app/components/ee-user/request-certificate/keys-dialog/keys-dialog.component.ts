@@ -5,6 +5,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CdkCopyToClipboard} from '@angular/cdk/clipboard';
 import {MatInput} from '@angular/material/input';
 import {KeyPair} from '../../../../models/KeyPair';
+import {ToastrService} from '../../../common/toastr/toastr.service';
 
 @Component({
   selector: 'app-keys-dialog',
@@ -22,8 +23,13 @@ import {KeyPair} from '../../../../models/KeyPair';
 export class KeysDialogComponent {
   dialogRef = inject(MatDialogRef<KeysDialogComponent, null>);
   keys = inject<KeyPair>(MAT_DIALOG_DATA);
+  toastr = inject(ToastrService);
 
   onNoClick() {
     this.dialogRef.close();
+  }
+
+  onCopied(type: string) {
+    this.toastr.success('Success', type + ' key copied to clipboard');
   }
 }

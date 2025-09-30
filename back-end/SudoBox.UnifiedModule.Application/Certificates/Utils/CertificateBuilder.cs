@@ -21,7 +21,14 @@ public static class CertificateBuilder {
         var issuerName = issuerCertificate != null ? new X509Name(issuerCertificate.IssuedTo) : subjectName;
 
         var canSign = (request.KeyUsage?.Contains(KeyUsageValue.CertificateSigning) ?? false) && (request.BasicConstraints?.IsCa ?? false);
-        var pathLen = request.BasicConstraints?.PathLen ?? 0;
+        var pathLen = !canSign ? -1 : request.BasicConstraints?.PathLen ?? 0;
+
+        if (canSign && issuerCertificate != null && issuerCertificate.PathLen <= 0)
+            throw new Exception("Issuing certificate can't be used for signing CA certificates!");
+
+        // TODO: Uncomment after frontend update to prevent this case
+        //if (issuerCertificate != null && pathLen >= issuerCertificate.PathLen)
+        //    throw new Exception("Certificate pathLen must be less than the issuer's pathLen.");
 
         var certGen = new X509V3CertificateGenerator();
         certGen.SetSerialNumber(new BigInteger(1, serialNumber.ToByteArray()));
@@ -34,10 +41,8 @@ public static class CertificateBuilder {
         certGen.SetPublicKey(subjectPublicKey);
 
         if (request.BasicConstraints != null) {
-            var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
-                ? new BasicConstraints(request.BasicConstraints.IsCa ? request.BasicConstraints.PathLen : -1)
-                : new BasicConstraints(request.BasicConstraints.IsCa);
-            certGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
+            var bcValue = request.BasicConstraints.IsCa ? new BasicConstraints(request.BasicConstraints.PathLen ?? 0) : new BasicConstraints(false);
+            certGen.AddExtension(X509Extensions.BasicConstraints, true, bcValue);
         }
 
         if (request.KeyUsage != null && request.KeyUsage.Count != 0) {

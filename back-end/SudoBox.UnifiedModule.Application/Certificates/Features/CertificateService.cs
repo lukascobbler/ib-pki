@@ -14,10 +14,12 @@ using System.Numerics;
 namespace SudoBox.UnifiedModule.Application.Certificates.Features;
 
 public class CertificateService(IUnifiedDbContext db) {
-    public async Task CreateCertificate(IssueCertificateRequest createCertificateRequest, bool isAdmin, string? userId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
-        if (userId == null)
+    public async Task CreateCertificate(IssueCertificateRequest createCertificateRequest, bool isAdmin, string? userId, string? requestingUserId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
+        if (userId == null || requestingUserId == null)
             throw new Exception("User must be logged in!");
-        var user = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId)) ?? throw new Exception("User not found!");
+        var user = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId)) ?? throw new Exception("Signing user not found!");
+        var requestingUser = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(requestingUserId)) ?? throw new Exception("Requesting user not found!");
+
 
         if (subjectPublicKey == null) {
             var kpGen = new RsaKeyPairGenerator();
@@ -51,6 +53,9 @@ public class CertificateService(IUnifiedDbContext db) {
             throw new Exception("You don't have control over selected signing certificate!");
 
         Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectPublicKey, subjectPrivateKey, signingCertificate, user);
+
+        if (requestingUser.Role == Role.EeUser || (requestingUser.Role == Role.CaUser && certificate.CanSign))
+            requestingUser.MyCertificates.Add(certificate);
 
         await db.Certificates.AddAsync(certificate);
         await db.SaveChangesAsync();
@@ -194,24 +199,26 @@ public class CertificateService(IUnifiedDbContext db) {
         return ms.ToArray();
     }
 
-    public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null) {
+    public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null, int depth = 0) {
         if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
             return CertificateStatus.Invalid;
+        if (certificate.SigningCertificate != null && depth > certificate.SigningCertificate.PathLen)
+            return CertificateStatus.Prohibited;
         if (certificate.SerialNumber == original?.SerialNumber)
             return CertificateStatus.Circural;
         if (IsRevoked(certificate))
             return CertificateStatus.Revoked;
         if (DateTime.UtcNow > certificate.NotAfter) {
-            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Expired : GetStatus(certificate.SigningCertificate, original ?? certificate);
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Expired : GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
             return parentStatus == CertificateStatus.Active ? CertificateStatus.Expired : parentStatus;
         }
         if (DateTime.UtcNow < certificate.NotBefore) {
-            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Dormant : GetStatus(certificate.SigningCertificate, original ?? certificate);
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Dormant : GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
             return parentStatus == CertificateStatus.Active ? CertificateStatus.Dormant : parentStatus;
         }
         if (certificate.SigningCertificate == null)
             return CertificateStatus.Active;
-        return GetStatus(certificate.SigningCertificate, original ?? certificate);
+        return GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
     }
 
     private static bool IsCertificateSignedBy(string? certB64, string? issuerB64) {

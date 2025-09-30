@@ -103,14 +103,18 @@ public class CertificateRequestService(IUnifiedDbContext db, CertificateService 
 
 
     public async Task ApproveCertificateRequest(string userId, ApproveCertificateRequest approveRequest) {
-        var user = await db.Users.Where(u => u.Role == Role.CaUser && u.Id == Guid.Parse(userId)).FirstAsync() ?? throw new Exception("CA user not found!");
-        var request = await db.CertificateRequests.FindAsync(Guid.Parse(approveRequest.RequestId)) ?? throw new Exception("Certificate request with given ID not found!");
+        var user = await db.Users.Where(u => u.Role == Role.CaUser && u.Id == Guid.Parse(userId)).FirstAsync()
+            ?? throw new Exception("CA user not found!");
+
+        var request = await db.CertificateRequests.Include(cr => cr.RequestedFor)
+            .Where(cr => cr.Id == Guid.Parse(approveRequest.RequestId)).FirstAsync()
+            ?? throw new Exception("Certificate request with given ID not found!");
 
         if (request.RequestedFrom.Id != user.Id)
             throw new Exception("This certificate is not requested from you!");
 
         var publicKey = new Pkcs10CertificationRequest(Convert.FromBase64String(request.GetEncodedCsrNoHeader())).GetPublicKey();
-        await certificateService.CreateCertificate(approveRequest.RequestForm, false, userId, publicKey);
+        await certificateService.CreateCertificate(approveRequest.RequestForm, false, userId, request.RequestedFor.Id.ToString(), publicKey);
         await DeleteCertificateRequest(userId, approveRequest.RequestId);
     }
 }

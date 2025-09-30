@@ -38,7 +38,7 @@ public static class CertificateRequestDecoder {
             var bcExt = extensions.GetExtension(X509Extensions.BasicConstraints);
             if (bcExt != null) {
                 var bc = BasicConstraints.GetInstance(bcExt.GetParsedValue());
-                dto.BasicConstraints = new BasicConstraintsValue { IsCa = bc.IsCA(), PathLen = bc.PathLenConstraint?.IntValue ?? -1 };
+                dto.BasicConstraints = new BasicConstraintsValue { IsCa = bc.IsCA(), PathLen = bc.PathLenConstraint.IntValue };
             }
 
             var kuExt = extensions.GetExtension(X509Extensions.KeyUsage);

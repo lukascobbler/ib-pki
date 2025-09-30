@@ -2,5 +2,5 @@
 
 ## Serve with SSL
 ```shell
-ng serve --ssl true --ssl-cert ssl/fullchain.pem --ssl-key ssl/key.pem
+ng serve --ssl true --ssl-cert ssl/fullchain.pem --ssl-key ssl/key.pem --host 0.0.0.0
 ```

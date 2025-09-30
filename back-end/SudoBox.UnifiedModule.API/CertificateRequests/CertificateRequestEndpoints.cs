@@ -34,7 +34,7 @@ public static class CertificateRequestEndpoints {
                 using var reader = new StreamReader(csrFile.OpenReadStream());
                 string csrContent = await reader.ReadToEndAsync();
 
-                var notAfter = DateTime.TryParse(form["notAfter"], out var dt) ? dt : (DateTime?)null;
+                var notAfter = DateTime.TryParse(form["notAfter"], out var dt) ? dt.ToUniversalTime() : (DateTime?)null;
                 var signingOrganization = form["signingOrganization"].ToString();
                 if (string.IsNullOrWhiteSpace(signingOrganization))
                     throw new Exception("Missing signingOrganization!");

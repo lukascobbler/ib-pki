@@ -19,7 +19,7 @@ public static class CertificateEndpoints {
                     var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                     var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-                    await certificateService.CreateCertificate(createCertificateRequest, role == "Admin", userId);
+                    await certificateService.CreateCertificate(createCertificateRequest, role == "Admin", userId, userId);
                     return Results.Ok();
                 } catch (Exception e) {
                     return Results.BadRequest(e.Message);

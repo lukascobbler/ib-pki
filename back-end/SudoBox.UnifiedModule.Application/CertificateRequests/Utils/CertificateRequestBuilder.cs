@@ -17,10 +17,8 @@ public static class CertificateRequestBuilder {
         var subjectName = request.GetX509Name();
 
         if (request.BasicConstraints != null) {
-            var basicConstraintsValue = request.BasicConstraints.PathLen >= 0
-                ? new BasicConstraints(request.BasicConstraints.PathLen)
-                : new BasicConstraints(request.BasicConstraints.IsCa);
-            extGen.AddExtension(X509Extensions.BasicConstraints, true, basicConstraintsValue);
+            var bcValue = request.BasicConstraints.IsCa ? new BasicConstraints(request.BasicConstraints.PathLen ?? 0) : new BasicConstraints(false);
+            extGen.AddExtension(X509Extensions.BasicConstraints, true, bcValue);
         }
 
         if (request.KeyUsage != null && request.KeyUsage.Count > 0) {
