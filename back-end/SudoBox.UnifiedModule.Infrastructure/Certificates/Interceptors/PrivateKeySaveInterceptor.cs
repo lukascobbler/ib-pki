@@ -2,13 +2,15 @@
 using SudoBox.UnifiedModule.Infrastructure.Certificates.CryptoUtils;
 using SudoBox.UnifiedModule.Domain.Certificates;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Pkcs;
 
 namespace SudoBox.UnifiedModule.Infrastructure.Certificates.Interceptors;
-public class PrivateKeySaveInterceptor(Func<KeyManagementService> kmsFactory) : SaveChangesInterceptor {
+
+public class PrivateKeySaveInterceptor(IServiceProvider provider) : SaveChangesInterceptor {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result) {
         EncryptKeys(eventData.Context);
         return base.SavingChanges(eventData, result);
@@ -31,7 +33,9 @@ public class PrivateKeySaveInterceptor(Func<KeyManagementService> kmsFactory) : 
         foreach (var cert in certs) {
             if (cert.PrivateKey != null) {
                 if (!keyCache.TryGetValue(cert.SignedBy.Id, out var userKey)) {
-                    userKey = kmsFactory().GetUserKey(cert.SignedBy.Id);
+                    using var scope = provider.CreateScope();
+                    var kms = scope.ServiceProvider.GetRequiredService<KeyManagementService>();
+                    userKey = kms.GetUserKey(cert.SignedBy.Id);
                     keyCache[cert.SignedBy.Id] = userKey;
                 }
 

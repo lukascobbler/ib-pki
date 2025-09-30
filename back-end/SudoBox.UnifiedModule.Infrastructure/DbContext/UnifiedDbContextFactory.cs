@@ -1,8 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using SudoBox.BuildingBlocks.Infrastructure;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using SudoBox.BuildingBlocks.Infrastructure;
-using SudoBox.UnifiedModule.Infrastructure.Certificates.Interceptors;
+using Microsoft.EntityFrameworkCore;
 
 namespace SudoBox.UnifiedModule.Infrastructure.DbContext;
 
@@ -26,6 +25,6 @@ public sealed class UnifiedDbContextFactory : IDesignTimeDbContextFactory<Unifie
             .UseSnakeCaseNamingConvention()
             .Options;
 
-        return new UnifiedDbContext(options, cfg, null, null);
+        return new UnifiedDbContext(options, cfg);
     }
 }
