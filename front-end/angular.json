@@ -33,12 +33,16 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/colors.scss",
+              "src/global-styles/colors.scss",
+              "src/global-styles/table.scss",
               "node_modules/ngx-toastr/toastr.css"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["src"]
+              "includePaths": [
+                "src",
+                "src/global-styles"
+              ]
             }
           },
           "configurations": {
@@ -97,15 +101,34 @@
             ],
             "styles": [
               "src/styles.scss",
-              "src/colors.scss"
+              "src/global-styles/colors.scss",
+              "src/global-styles/table.scss"
             ],
             "scripts": [],
             "stylePreprocessorOptions": {
-              "includePaths": ["src"]
+              "includePaths": [
+                "src",
+                "src/global-styles"
+              ]
             }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false,
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

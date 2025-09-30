@@ -1,0 +1,1129 @@
+[
+    {
+        "Name": "Dunder Mifflin Root",
+        "Type": "Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Headquarters",
+        "CN": "Dunder Mifflin Root CA",
+        "NotBefore": "2025-01-01T00:00:00Z",
+        "NotAfter": "2040-01-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 5
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [
+            "1.3.6.1.4.1.11129.2.5.1"
+        ],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Schrute Farms Root",
+        "Type": "Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Cicero",
+        "O": "Schrute Farms",
+        "OU": "Beets & B&B",
+        "CN": "Schrute Farms Root CA",
+        "NotBefore": "2025-02-01T00:00:00Z",
+        "NotAfter": "2038-02-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 3
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "TimeStamping"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Sabre Root",
+        "Type": "Root",
+        "C": "US",
+        "ST": "New York",
+        "L": "New York",
+        "O": "Sabre",
+        "OU": "Corporate",
+        "CN": "Sabre Root CA",
+        "NotBefore": "2025-03-01T00:00:00Z",
+        "NotAfter": "2035-03-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 2
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "OcspSigning"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Dunder Mifflin Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Corporate",
+        "CN": "Dunder Mifflin Intermediate CA",
+        "NotBefore": "2025-04-01T00:00:00Z",
+        "NotAfter": "2032-04-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 3
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "OcspSigning"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [
+                {
+                    "type": "DNS",
+                    "value": "dundermifflin.com"
+                }
+            ],
+            "Excluded": [
+                {
+                    "type": "DNS",
+                    "value": "badvendor.com"
+                }
+            ]
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Scranton Branch Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Scranton Branch",
+        "CN": "Scranton Branch Intermediate CA",
+        "NotBefore": "2025-05-01T00:00:00Z",
+        "NotAfter": "2030-05-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 2
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Stamford Branch Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Connecticut",
+        "L": "Stamford",
+        "O": "Dunder Mifflin",
+        "OU": "Stamford Branch",
+        "CN": "Stamford Branch Intermediate CA",
+        "NotBefore": "2025-06-01T00:00:00Z",
+        "NotAfter": "2030-06-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 1
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "TimeStamping",
+            "OcspSigning"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Schrute Farms Sales Intermediate",
+        "Type": "CA",
+        "Issuer": "Schrute Farms Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales",
+        "CN": "Schrute Farms Sales Intermediate CA",
+        "NotBefore": "2025-07-01T00:00:00Z",
+        "NotAfter": "2030-07-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 1
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "IpSecTunnel",
+            "IpSecUser"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+            "6794b78f-f886-41c5-88db-b30dd5175800"
+        ]
+    },
+    {
+        "Name": "Dunder Mifflin IT Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "IT",
+        "CN": "Dunder Mifflin IT Intermediate CA",
+        "NotBefore": "2025-08-01T00:00:00Z",
+        "NotAfter": "2033-08-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 2
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "OcspSigning",
+            "TimeStamping"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "7edb4bce-6064-461a-8f78-49dbf7c30ecf",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Dunder Mifflin HR Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Human Resources",
+        "CN": "Dunder Mifflin HR Intermediate CA",
+        "NotBefore": "2025-09-01T00:00:00Z",
+        "NotAfter": "2031-09-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 1
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Temporary Project Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Projects",
+        "CN": "Temporary Project Intermediate CA",
+        "NotBefore": "2025-10-01T00:00:00Z",
+        "NotAfter": "2027-10-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 0
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [
+            "Dvcs"
+        ],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Sales Intermediate (Cross-Signed)",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales-Cross",
+        "CN": "Sales Intermediate Cross Signed",
+        "NotBefore": "2025-11-01T00:00:00Z",
+        "NotAfter": "2030-11-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 0
+        },
+        "KeyUsage": [
+            "CertificateSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Michael Scott",
+        "Type": "EndEntity",
+        "Issuer": "Scranton Branch Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Regional Manager",
+        "CN": "Michael Scott",
+        "NotBefore": "2025-09-20T00:00:00Z",
+        "NotAfter": "2026-09-20T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "KeyEncipherment"
+        ],
+        "ExtendedKeyUsage": [
+            "ServerAuthentication",
+            "ClientAuthentication"
+        ],
+        "CertificatePolicies": [
+            "1.2.3.4.5"
+        ],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "michael.dundermifflin.com"
+            },
+            {
+                "type": "EMAIL",
+                "value": "michael@dundermifflin.com"
+            },
+            {
+                "type": "IP",
+                "value": "10.0.0.5"
+            }
+        ],
+        "IssuerAltName": [
+            {
+                "type": "DNS",
+                "value": "scranton.dundermifflin.com"
+            }
+        ],
+        "NameConstraints": {
+            "Permitted": [
+                {
+                    "type": "DNS",
+                    "value": "dundermifflin.com"
+                }
+            ],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Dwight Schrute",
+        "Type": "EndEntity",
+        "Issuer": "Schrute Farms Sales Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales",
+        "CN": "Dwight Schrute",
+        "NotBefore": "2025-09-01T00:00:00Z",
+        "NotAfter": "2027-09-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "KeyAgreement"
+        ],
+        "ExtendedKeyUsage": [
+            "IpSecEndSystem",
+            "IpSecUser"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "dwight.schrute.com"
+            },
+            {
+                "type": "IP",
+                "value": "192.168.2.5"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
+    },
+    {
+        "Name": "Jim Halpert",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Sales",
+        "CN": "Jim Halpert",
+        "NotBefore": "2025-10-01T00:00:00Z",
+        "NotAfter": "2026-10-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature"
+        ],
+        "ExtendedKeyUsage": [
+            "CodeSigning",
+            "EmailProtection"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "jim.dundermifflin.com"
+            },
+            {
+                "type": "URI",
+                "value": "https://linkedin.com/in/jimhalpert"
+            }
+        ],
+        "IssuerAltName": [
+            {
+                "type": "DNS",
+                "value": "corporate.dundermifflin.com"
+            }
+        ],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Pam Beesly",
+        "Type": "EndEntity",
+        "Issuer": "Scranton Branch Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Reception",
+        "CN": "Pam Beesly",
+        "NotBefore": "2025-09-15T00:00:00Z",
+        "NotAfter": "2026-09-15T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "EMAIL",
+                "value": "pam@dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
+    },
+    {
+        "Name": "Angela Martin",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Accounting",
+        "CN": "Angela Martin",
+        "NotBefore": "2025-08-01T00:00:00Z",
+        "NotAfter": "2026-08-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "NonRepudiation",
+            "EncipherOnly",
+            "KeyAgreement"
+        ],
+        "ExtendedKeyUsage": [
+            "EmailProtection"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "EMAIL",
+                "value": "angela@dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3fa51d34-4344-4187-8715-6b26889084b2"
+        ]
+    },
+    {
+        "Name": "Creed Bratton",
+        "Type": "EndEntity",
+        "Issuer": "Temporary Project Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Quality Assurance",
+        "CN": "Creed Bratton",
+        "NotBefore": "2025-10-01T00:00:00Z",
+        "NotAfter": "2026-07-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "NonRepudiation",
+            "KeyAgreement",
+            "EncipherOnly"
+        ],
+        "ExtendedKeyUsage": [
+            "Dvcs",
+            "OcspSigning"
+        ],
+        "CertificatePolicies": [
+            "2.5.29.32.0"
+        ],
+        "SubjectAltName": [],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [
+                {
+                    "type": "IP",
+                    "value": "10.1.1.5/32"
+                }
+            ],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Oscar Martinez",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Accounting",
+        "CN": "Oscar Martinez",
+        "NotBefore": "2025-11-01T00:00:00Z",
+        "NotAfter": "2026-11-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "KeyEncipherment",
+            "NonRepudiation"
+        ],
+        "ExtendedKeyUsage": [
+            "ClientAuthentication"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "oscar.dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Kelly Kapoor",
+        "Type": "EndEntity",
+        "Issuer": "Schrute Farms Sales Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales",
+        "CN": "Kelly Kapoor",
+        "NotBefore": "2025-12-01T00:00:00Z",
+        "NotAfter": "2026-12-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
+    },
+    {
+        "Name": "Ryan Howard",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin IT Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Temp",
+        "CN": "Ryan Howard",
+        "NotBefore": "2025-08-01T00:00:00Z",
+        "NotAfter": "2026-07-15T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature"
+        ],
+        "ExtendedKeyUsage": [
+            "CodeSigning",
+            "TimeStamping"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "URI",
+                "value": "https://portfolio.ryan.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "7edb4bce-6064-461a-8f78-49dbf7c30ecf"
+        ]
+    },
+    {
+        "Name": "Toby Flenderson",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin HR Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Human Resources",
+        "CN": "Toby Flenderson",
+        "NotBefore": "2025-09-01T00:00:00Z",
+        "NotAfter": "2026-05-15T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "NonRepudiation"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
+    },
+    {
+        "Name": "Stanley Hudson",
+        "Type": "EndEntity",
+        "Issuer": "Scranton Branch Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Sales",
+        "CN": "Stanley Hudson",
+        "NotBefore": "2025-06-01T00:00:00Z",
+        "NotAfter": "2026-06-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "stanley.dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "f5ec2837-bdbd-4fc3-83fb-960bd4e22ad4"
+        ]
+    },
+    {
+        "Name": "Phyllis Vance",
+        "Type": "EndEntity",
+        "Issuer": "Scranton Branch Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Sales",
+        "CN": "Phyllis Vance",
+        "NotBefore": "2025-06-15T00:00:00Z",
+        "NotAfter": "2026-06-15T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Meredith Palmer",
+        "Type": "EndEntity",
+        "Issuer": "Sales Intermediate (Cross-Signed)",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales",
+        "CN": "Meredith Palmer",
+        "NotBefore": "2025-11-01T00:00:00Z",
+        "NotAfter": "2026-08-15T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "KeyEncipherment"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "EMAIL",
+                "value": "meredith@schrute.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
+    },
+    {
+        "Name": "Kevin Malone",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Accounting",
+        "CN": "Kevin Malone",
+        "NotBefore": "2025-07-10T00:00:00Z",
+        "NotAfter": "2026-07-10T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "5115def8-0be6-49d6-9155-0c1f82ed1818"
+        ]
+    },
+    {
+        "Name": "Andy Bernard",
+        "Type": "EndEntity",
+        "Issuer": "Schrute Farms Sales Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Schrute Farms",
+        "OU": "Sales",
+        "CN": "Andy Bernard",
+        "NotBefore": "2025-08-01T00:00:00Z",
+        "NotAfter": "2026-08-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [],
+        "ExtendedKeyUsage": [
+            "ServerAuthentication"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "andy.schrute.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "6794b78f-f886-41c5-88db-b30dd5175800"
+        ]
+    },
+    {
+        "Name": "Erin Hannon",
+        "Type": "EndEntity",
+        "Issuer": "Temporary Project Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Reception",
+        "CN": "Erin Hannon",
+        "NotBefore": "2025-10-01T00:00:00Z",
+        "NotAfter": "2026-09-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "DNS",
+                "value": "erin.dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
+    },
+    {
+        "Name": "Holly Flax",
+        "Type": "EndEntity",
+        "Issuer": "Dunder Mifflin HR Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Human Resources",
+        "CN": "Holly Flax",
+        "NotBefore": "2025-09-01T00:00:00Z",
+        "NotAfter": "2026-09-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "NonRepudiation"
+        ],
+        "ExtendedKeyUsage": [
+            "ClientAuthentication"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "EMAIL",
+                "value": "holly@dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
+    },
+    {
+        "Name": "Dunder Mifflin Old Root",
+        "Type": "Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Legacy Root",
+        "CN": "Dunder Mifflin Old Root CA",
+        "NotBefore": "2010-01-01T00:00:00Z",
+        "NotAfter": "2015-01-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 5
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Old Corporate Intermediate",
+        "Type": "CA",
+        "Issuer": "Dunder Mifflin Old Root",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Legacy Corporate",
+        "CN": "Old Corporate Intermediate CA",
+        "NotBefore": "2011-01-01T00:00:00Z",
+        "NotAfter": "2014-06-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": true,
+            "PathLen": 2
+        },
+        "KeyUsage": [
+            "CertificateSigning",
+            "CrlSigning"
+        ],
+        "ExtendedKeyUsage": [],
+        "CertificatePolicies": [],
+        "NameConstraints": {
+            "Permitted": [
+                {
+                    "type": "DNS",
+                    "value": "legacy.dundermifflin.com"
+                }
+            ],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    },
+    {
+        "Name": "Roy Anderson",
+        "Type": "EndEntity",
+        "Issuer": "Old Corporate Intermediate",
+        "C": "US",
+        "ST": "Pennsylvania",
+        "L": "Scranton",
+        "O": "Dunder Mifflin",
+        "OU": "Warehouse",
+        "CN": "Roy Anderson",
+        "NotBefore": "2012-02-01T00:00:00Z",
+        "NotAfter": "2013-02-01T00:00:00Z",
+        "BasicConstraints": {
+            "IsCa": false
+        },
+        "KeyUsage": [
+            "DigitalSignature",
+            "KeyEncipherment"
+        ],
+        "ExtendedKeyUsage": [
+            "ClientAuthentication",
+            "ServerAuthentication"
+        ],
+        "CertificatePolicies": [],
+        "SubjectAltName": [
+            {
+                "type": "EMAIL",
+                "value": "roy.anderson@legacy.dundermifflin.com"
+            }
+        ],
+        "IssuerAltName": [],
+        "NameConstraints": {
+            "Permitted": [],
+            "Excluded": []
+        },
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
+    }
+]

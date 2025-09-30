@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Domain\SudoBox.UnifiedModule.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Users\data\" />
+    </ItemGroup>
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Users\data\common_passwords.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+	  <PackageReference Include="MailKit" Version="4.13.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
+	  <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+      <PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+    </ItemGroup>
+
+</Project>

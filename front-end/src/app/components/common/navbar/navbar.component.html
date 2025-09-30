@@ -1,48 +1,17 @@
 <div class="sidebar">
-  <h2 class="sidebar-title">
-    <span class="sudo">Sudo</span><span class="box">Box</span>
-  </h2>
-
-  <!-- EE user -->
+  <span class="sidebar-banner">
+    <img priority ngSrc="/banner.svg" alt="" fill>
+  </span>
 
   <hr class="sidebar-line">
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">library_books</mat-icon> My certificates
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">add_notes</mat-icon> Request Certificate
-  </p>
 
-  <!-- CA user -->
-
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">library_books</mat-icon> Signed certificates
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">stacks</mat-icon> Certificate requests
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">add_notes</mat-icon> Issue a certificate
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">home_storage</mat-icon> My certificates
-  </p>
-
-  <!-- Admin -->
-
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">library_books</mat-icon> All certificates
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">add_notes</mat-icon> Issue a certificate
-  </p>
-  <p routerLinkActive="active-link">
-    <mat-icon class="material-icons-outlined">group</mat-icon> Manage CA users
-  </p>
-
-  <!-- Common -->
-
-  <p class = "logout" routerLinkActive="active-link">
-    <mat-icon>logout</mat-icon> Logout
-  </p>
+  <ng-container *ngFor="let item of sidebarItems">
+    <a *ngIf="currentUserRole && item.roles.includes(currentUserRole)"
+       (click)="item.action ? item.action() : null"
+       routerLinkActive="active-link"
+       [routerLink]="item.link"
+       [ngClass]="item.class">
+      <span class="material-symbols-rounded">{{ item.icon }}</span> {{ item.label }}
+    </a>
+  </ng-container>
 </div>

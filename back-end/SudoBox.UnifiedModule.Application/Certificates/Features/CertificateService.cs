@@ -1,0 +1,241 @@
+using SudoBox.UnifiedModule.Application.Certificates.Contracts;
+using SudoBox.UnifiedModule.Application.Certificates.Utils;
+using SudoBox.UnifiedModule.Application.Abstractions;
+using SudoBox.UnifiedModule.Domain.Certificates;
+using Org.BouncyCastle.Crypto.Generators;
+using SudoBox.UnifiedModule.Domain.Users;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.X509;
+using System.Numerics;
+
+namespace SudoBox.UnifiedModule.Application.Certificates.Features;
+
+public class CertificateService(IUnifiedDbContext db) {
+    public async Task CreateCertificate(IssueCertificateRequest createCertificateRequest, bool isAdmin, string? userId, string? requestingUserId, AsymmetricKeyParameter? subjectPublicKey = null, AsymmetricKeyParameter? subjectPrivateKey = null) {
+        if (userId == null || requestingUserId == null)
+            throw new Exception("User must be logged in!");
+        var user = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId)) ?? throw new Exception("Signing user not found!");
+        var requestingUser = await db.Users.Include(u => u.MyCertificates).FirstOrDefaultAsync(u => u.Id == Guid.Parse(requestingUserId)) ?? throw new Exception("Requesting user not found!");
+
+
+        if (subjectPublicKey == null) {
+            var kpGen = new RsaKeyPairGenerator();
+            kpGen.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
+            var subjectKeyPair = kpGen.GenerateKeyPair();
+            subjectPublicKey = subjectKeyPair.Public;
+            subjectPrivateKey = subjectKeyPair.Private;
+        }
+
+        Certificate? signingCertificate = null;
+        if (createCertificateRequest.SigningCertificate != "SelfSign") {
+            var signingSerialNumber = BigInteger.Parse(createCertificateRequest.SigningCertificate);
+            signingCertificate = await db.Certificates.FindAsync(signingSerialNumber);
+            if (signingCertificate == null)
+                throw new Exception("Signing certificate not found!");
+        }
+        if (!isAdmin && signingCertificate == null)
+            throw new Exception("Only admin can issue self signing certificates!");
+        if (!(signingCertificate?.CanSign ?? true))
+            throw new Exception("Selected certificate can't be used for signing!");
+        CertificateStatus? status = signingCertificate != null ? GetStatus(signingCertificate) : null;
+        if (status != null && status != CertificateStatus.Active)
+            throw new Exception($"Selected certificate is {status.ToString()!.ToLower()}!");
+        if (signingCertificate != null && createCertificateRequest.NotBefore < signingCertificate.NotBefore)
+            throw new Exception("NotBefore cannot be earlier than the signing certificate's NotBefore!");
+        if (signingCertificate != null && createCertificateRequest.NotAfter > signingCertificate.NotAfter)
+            throw new Exception("NotAfter cannot be later than the signing certificate's NotAfter!");
+        if (createCertificateRequest.NotBefore > createCertificateRequest.NotAfter)
+            throw new Exception("NotBefore cannot be later than the NotAfter!");
+        if (!isAdmin && signingCertificate != null && !user.MyCertificates.Any(c => c.SerialNumber == signingCertificate.SerialNumber))
+            throw new Exception("You don't have control over selected signing certificate!");
+
+        Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectPublicKey, subjectPrivateKey, signingCertificate, user);
+
+        if (requestingUser.Role == Role.EeUser || (requestingUser.Role == Role.CaUser && certificate.CanSign))
+            requestingUser.MyCertificates.Add(certificate);
+
+        await db.Certificates.AddAsync(certificate);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetAllCertificates() {
+        var allCertificatesModels = await db.Certificates.ToListAsync();
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
+        ).ToList();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetAllValidSigningCertificates() {
+        var allSigningCertificates = await db.Certificates
+            .Where(c => c.CanSign)
+            .ToListAsync();
+        var allValidCertificates = allSigningCertificates.Where(c => GetStatus(c) == CertificateStatus.Active);
+
+        return allValidCertificates.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
+        ).ToList();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetValidSigningCertificatesCaUserDoesntHave(string caUserId) {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(caUserId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var allSigningCertificates = await db.Certificates
+            .Include(c => c.SigningCertificate)
+            .Include(c => c.SignedBy)
+            .Where(c => c.CanSign)
+            .Where(c => c.SigningCertificate != null)
+            .ToListAsync();
+
+        var allSigningAndNotByUser = allSigningCertificates.Where(c => !user.MyCertificates.Contains(c));
+
+        var allValidCertificates = allSigningAndNotByUser.Where(c => GetStatus(c) == CertificateStatus.Active);
+
+        return allValidCertificates.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
+        ).ToList();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetMyCertificates(string userId) {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(userId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var allCertificatesModels = user.MyCertificates;
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
+        ).ToList();
+    }
+
+    public async Task<ICollection<CertificateResponse>> GetCertificatesSignedByMe(string userId) {
+        var allCertificatesModels = await db.Certificates
+            .Include(c => c.SignedBy)
+            .Where(c => c.SignedBy.Id == Guid.Parse(userId))
+            .ToListAsync();
+
+        return allCertificatesModels.Select(c =>
+            CertificateResponse.CreateDto(c, GetStatus(c).ToString())
+        ).ToList();
+    }
+
+    public async Task AddCertificateToCaUser(AddCertificateToCaUserRequest addCertificateToCaUserRequest) {
+        var user = await db.Users
+            .Where(u => u.Id == Guid.Parse(addCertificateToCaUserRequest.CaUserId))
+            .Include(u => u.MyCertificates)
+            .FirstOrDefaultAsync();
+        if (user == null)
+            throw new Exception("User not found!");
+
+        var certificate = await db.Certificates
+            .FindAsync(BigInteger.Parse(addCertificateToCaUserRequest.NewCertificateSerialNumber));
+        if (certificate == null)
+            throw new Exception("Certificate not found!");
+
+        user.MyCertificates.Add(certificate);
+        await db.SaveChangesAsync();
+    }
+
+    private async Task<Certificate?> GetCertificate(BigInteger serialNumber) {
+        return await db.Certificates
+            .Include(c => c.SigningCertificate)
+            .Include(c => c.SignedBy)
+            .FirstOrDefaultAsync(c => c.SerialNumber == serialNumber);
+    }
+
+    public async Task<byte[]> GetCertificateWithPasswordAsPkcs12(DownloadCertificateRequest downloadCertificateRequest, Guid requesterId, Role requesterRole) {
+        var chain = new List<X509Certificate>();
+        var parser = new X509CertificateParser();
+        var serialNumber = BigInteger.Parse(downloadCertificateRequest.CertificateSerialNumber);
+        var eeCertificate = await GetCertificate(serialNumber) ?? throw new Exception("Certificate not found!");
+
+        var user = await db.Users.Include(u => u.MyCertificates).Where(u => u.Id == requesterId).FirstOrDefaultAsync();
+        var requesterContainsCert = user!.MyCertificates.Contains(eeCertificate);
+        var certSignedByRequester = eeCertificate.SignedBy.Id == requesterId;
+        if (!requesterContainsCert && !certSignedByRequester && requesterRole != Role.Admin)
+            throw new Exception("You cannot download certificates that aren't yours!");
+
+        var current = eeCertificate;
+        while (current != null) {
+            if (string.IsNullOrWhiteSpace(current.EncodedValue))
+                throw new Exception($"Certificate {current.SerialNumber} has no encoded value!");
+
+            var bytes = Convert.FromBase64String(current.EncodedValue);
+            chain.Add(parser.ReadCertificate(bytes));
+
+            if (current.SigningCertificate != null)
+                current = await GetCertificate(current.SigningCertificate.SerialNumber);
+            else
+                current = null;
+        }
+
+        var alias = chain[0].SubjectDN.ToString();
+        var store = new Pkcs12StoreBuilder().Build();
+        var eeCertEntry = new X509CertificateEntry(chain[0]);
+        var intermediateEntries = chain.Skip(1).Select(c => new X509CertificateEntry(c)).ToArray();
+
+        if (eeCertificate.PrivateKey != null) {
+            store.SetKeyEntry(alias, new AsymmetricKeyEntry(eeCertificate.PrivateKey), [eeCertEntry, .. intermediateEntries]);
+        } else {
+            store.SetCertificateEntry(alias, eeCertEntry);
+            for (var i = 0; i < intermediateEntries.Length; i++)
+                store.SetCertificateEntry($"{alias}-chain-{i}", intermediateEntries[i]);
+        }
+
+        var password = downloadCertificateRequest.Password;
+        await using var ms = new MemoryStream();
+        store.Save(ms, password.ToCharArray(), new SecureRandom());
+        return ms.ToArray();
+    }
+
+    public CertificateStatus GetStatus(Certificate certificate, Certificate? original = null, int depth = 0) {
+        if (certificate.SigningCertificate != null && !IsCertificateSignedBy(certificate.EncodedValue, certificate.SigningCertificate.EncodedValue))
+            return CertificateStatus.Invalid;
+        if (certificate.SigningCertificate != null && depth > certificate.SigningCertificate.PathLen)
+            return CertificateStatus.Prohibited;
+        if (certificate.SerialNumber == original?.SerialNumber)
+            return CertificateStatus.Circural;
+        if (IsRevoked(certificate))
+            return CertificateStatus.Revoked;
+        if (DateTime.UtcNow > certificate.NotAfter) {
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Expired : GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
+            return parentStatus == CertificateStatus.Active ? CertificateStatus.Expired : parentStatus;
+        }
+        if (DateTime.UtcNow < certificate.NotBefore) {
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Dormant : GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
+            return parentStatus == CertificateStatus.Active ? CertificateStatus.Dormant : parentStatus;
+        }
+        if (certificate.SigningCertificate == null)
+            return CertificateStatus.Active;
+        return GetStatus(certificate.SigningCertificate, original ?? certificate, depth + 1);
+    }
+
+    private static bool IsCertificateSignedBy(string? certB64, string? issuerB64) {
+        if (string.IsNullOrEmpty(certB64) || string.IsNullOrEmpty(issuerB64))
+            return false;
+        try {
+            var parser = new X509CertificateParser();
+            var cert = parser.ReadCertificate(Convert.FromBase64String(certB64));
+            var issuer = parser.ReadCertificate(Convert.FromBase64String(issuerB64));
+            cert.Verify(issuer.GetPublicKey());
+            return true;
+        } catch { return false; }
+    }
+
+    private bool IsRevoked(Certificate certificate) {
+        return db.RevokedCertificates
+            .Include(rc => rc.Certificate)
+            .FirstOrDefault(rc => rc.Certificate.SerialNumber == certificate.SerialNumber) != null;
+    }
+}

@@ -1,16 +1,88 @@
-@import "colors";
+@import "../global-styles/colors";
 
 .container {
   display: flex;
   height: 100%;
 }
 
-.sidebar {
-  width: 400px;
-}
-
 .content {
   width: 100%;
-  background-color: $background;
   overflow: auto;
+  background-color: $background;
+  scrollbar-color: $edge2 transparent;
+}
+
+::ng-deep .loading {
+  position: absolute;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+::ng-deep .loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+::ng-deep .toast.success,
+::ng-deep .toast.error,
+::ng-deep .toast.info {
+  background-color: $background2 !important;
+  border-radius: 12px !important;
+  color: $whitish !important;
+  margin-right: 0.4rem !important;
+  margin-bottom: 0.6rem !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2) !important;
+  z-index: 9999 !important;
+}
+
+::ng-deep .toast.success {
+  border: 3px solid $green !important;
+}
+
+::ng-deep .toast.error {
+  border: 3px solid $red !important;
+}
+
+::ng-deep .toast.info {
+  border: 3px solid $accent !important;
+}
+
+::ng-deep .toast.success,
+::ng-deep .toast.error,
+::ng-deep .toast.info {
+  .title {
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+  }
+}
+
+::ng-deep .toast.success,
+::ng-deep .toast.error,
+::ng-deep .toast.info {
+  .message {
+    font-size: 0.9rem !important;
+  }
+}
+
+::ng-deep .mat-mdc-snackbar-surface {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+::ng-deep input.mat-mdc-input-element:autofill {
+  transition: background-color 99999s ease 0s,
+  color 99999s ease 0s, font-weight 99999s ease 0s,
+  font-size 99999s ease 0s !important;
 }

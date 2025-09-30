@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+      <PackageReference Include="EFCore.NamingConventions" Version="9.0.0" />
+      <PackageReference Include="MailKit" Version="4.13.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0-rc.1.25451.107">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.9" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.9" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SudoBox.BuildingBlocks.Infrastructure\SudoBox.BuildingBlocks.Infrastructure.csproj" />
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Application\SudoBox.UnifiedModule.Application.csproj" />
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Domain\SudoBox.UnifiedModule.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\SudoBox.BuildingBlocks.Infrastructure\SudoBox.BuildingBlocks.Infrastructure.csproj" />
+      <ProjectReference Include="..\SudoBox.UnifiedModule.Application\SudoBox.UnifiedModule.Application.csproj" />
+    </ItemGroup>
+
+</Project>

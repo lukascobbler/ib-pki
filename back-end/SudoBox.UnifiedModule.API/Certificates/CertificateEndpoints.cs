@@ -1,0 +1,103 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using SudoBox.UnifiedModule.Application.Certificates.Contracts;
+using SudoBox.UnifiedModule.Application.Certificates.Features;
+using System.Security.Claims;
+using SudoBox.UnifiedModule.Domain.Users;
+using static System.Enum;
+
+namespace SudoBox.UnifiedModule.API.Certificates;
+
+public static class CertificateEndpoints {
+    public static void MapCertificateEndpoints(this WebApplication app) {
+        var grp = app.MapGroup("/api/v1/certificates");
+
+        grp.MapPost("/issue", async
+            (IssueCertificateRequest createCertificateRequest, CertificateService certificateService, HttpContext httpContext) => {
+                try {
+                    var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                    var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                    await certificateService.CreateCertificate(createCertificateRequest, role == "Admin", userId, userId);
+                    return Results.Ok();
+                } catch (Exception e) {
+                    return Results.BadRequest(e.Message);
+                }
+            }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser" });
+
+        grp.MapGet("/get-all", async (CertificateService certificateService) => {
+            var response = await certificateService.GetAllCertificates();
+            return Results.Ok(response);
+        }).AllowAnonymous();
+
+        grp.MapGet("/get-all-valid-signing", async (CertificateService certificateService) => {
+            try {
+                var response = await certificateService.GetAllValidSigningCertificates();
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).AllowAnonymous();
+
+        grp.MapGet("/get-signing-ca-doesnt-have/{caUserId}", async (string caUserId, CertificateService certificateService) => {
+            try {
+                var response = await certificateService.GetValidSigningCertificatesCaUserDoesntHave(caUserId);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization("Admin");
+
+        grp.MapPut("/add-certificate-to-ca-user", async (AddCertificateToCaUserRequest addCertificateToCaUserRequest, CertificateService certificateService) => {
+            try {
+                await certificateService.AddCertificateToCaUser(addCertificateToCaUserRequest);
+                return Results.Ok();
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization("Admin");
+
+        grp.MapGet("/get-my-certificates", async (CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var response = await certificateService.GetMyCertificates(userId!);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization();
+
+        grp.MapGet("/get-certificates-signed-by-me", async (CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var response = await certificateService.GetCertificatesSignedByMe(userId!);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization("CaUser");
+
+        grp.MapPost("/download", async (DownloadCertificateRequest downloadCertificateRequest, CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var role = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                
+                TryParse(role, out Role parsedRole);
+                
+                var pfxBytes = await certificateService.GetCertificateWithPasswordAsPkcs12(
+                    downloadCertificateRequest,
+                    Guid.Parse(userId!), 
+                    parsedRole);
+
+                return Results.File(
+                    fileContents: pfxBytes,
+                    contentType: "application/x-pkcs12",
+                    fileDownloadName: $"certificate_{downloadCertificateRequest.CertificateSerialNumber}.pfx"
+                );
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,CaUser,EeUser" });
+    }
+}

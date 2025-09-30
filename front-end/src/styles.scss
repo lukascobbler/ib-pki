@@ -8,13 +8,116 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat.core();
+@import "colors";
+
+
+$blue-palette: (
+  0: #000000,
+  10: #001926,
+  20: #00334C,
+  25: #004171,
+  30: #005697,
+  35: #0067A8,
+  40: #0077BA,
+  50: #3388CB,
+  60: #5599DC,
+  70: #7AA9EE,
+  80: $accent,
+  90: #DCECFF,
+  95: #EDF7FF,
+  98: #F7FBFF,
+  99: #FBFDFF,
+  100: #FFFFFF,
+  secondary: (
+    0: #000000,
+    10: #00162b,
+    20: #002945,
+    25: #003250,
+    30: #303134,
+    35: #004667,
+    40: #005173,
+    50: #7389a0,
+    60: #8ca4b8,
+    70: #a7bfce,
+    80: #c2dbeb,
+    90: #e0f7ff,
+    95: #edf7ff,
+    98: #f7fbff,
+    99: #fbfdff,
+    100: #ffffff,
+  ),
+  neutral: (
+    0: #000000,
+    10: #0d1b26,
+    20: #213233,
+    25: #2d3d3e,
+    30: #3a494a,
+    35: #455455,
+    40: #51605d,
+    50: #7a7a7a,
+    60: #949494,
+    70: #aeaeae,
+    80: #cacaca,
+    90: #e6e6e6,
+    95: #f5f5f5,
+    98: #fefefe,
+    99: #fffbff,
+    100: #ffffff,
+    4: #0f1011,
+    6: #161616,
+    12: #212225,
+    17: #2b2d2d,
+    22: #363838,
+    24: #3b3c3c,
+    87: #dedede,
+    92: #edecec,
+    94: #f2f2f2,
+    96: #f8f8f8,
+  ),
+  neutral-variant: (
+    0: #000000,
+    10: #1a1d22,
+    20: #2f3337,
+    25: #3a3e42,
+    30: #45494e,
+    35: #51555a,
+    40: #5c6166,
+    50: #757b7f,
+    60: #81858C,
+    70: #a9b0b3,
+    80: #c4cbcfc,
+    90: #e0e8eb,
+    95: #eef6f9,
+    98: #f7fbff,
+    99: #fffbff,
+    100: #ffffff,
+  ),
+  error: (
+    0: #000000,
+    10: #410002,
+    20: #690005,
+    25: #7e0007,
+    30: #93000a,
+    35: #a80710,
+    40: #ba1a1a,
+    50: #de3730,
+    60: #ff5449,
+    70: #ff897d,
+    80: $red,
+    90: #ffdad6,
+    95: #ffedea,
+    98: #fff8f7,
+    99: #fffbff,
+    100: #ffffff,
+  ),
+);
+
 
 // Define the theme object.
-$front-end-theme: mat.define-theme((
+$blue-theme: mat.define-theme((
   color: (
-    theme-type: light,
-    primary: mat.$azure-palette,
-    tertiary: mat.$blue-palette,
+    theme-type: dark,
+    primary: $blue-palette,
   ),
   density: (
     scale: 0,
@@ -25,7 +128,7 @@ $front-end-theme: mat.define-theme((
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 :root {
-  @include mat.all-component-themes($front-end-theme);
+  @include mat.all-component-themes($blue-theme);
 }
 
 // Comment out the line below if you want to use the pre-defined typography utility classes.
@@ -38,3 +141,11 @@ $front-end-theme: mat.define-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-floating-label {
+  color: $pale-text !important;
+}
+
+.mat-datepicker-toggle {
+  margin-right: 8px;
+}
