@@ -199,12 +199,16 @@ public class CertificateService(IUnifiedDbContext db) {
             return CertificateStatus.Invalid;
         if (certificate.SerialNumber == original?.SerialNumber)
             return CertificateStatus.Circural;
-        if (DateTime.UtcNow < certificate.NotBefore)
-            return CertificateStatus.Dormant;
-        if (DateTime.UtcNow > certificate.NotAfter)
-            return CertificateStatus.Expired;
         if (IsRevoked(certificate))
             return CertificateStatus.Revoked;
+        if (DateTime.UtcNow > certificate.NotAfter) {
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Expired : GetStatus(certificate.SigningCertificate, original ?? certificate);
+            return parentStatus == CertificateStatus.Active ? CertificateStatus.Expired : parentStatus;
+        }
+        if (DateTime.UtcNow < certificate.NotBefore) {
+            var parentStatus = certificate.SigningCertificate == null ? CertificateStatus.Dormant : GetStatus(certificate.SigningCertificate, original ?? certificate);
+            return parentStatus == CertificateStatus.Active ? CertificateStatus.Dormant : parentStatus;
+        }
         if (certificate.SigningCertificate == null)
             return CertificateStatus.Active;
         return GetStatus(certificate.SigningCertificate, original ?? certificate);

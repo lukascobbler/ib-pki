@@ -51,8 +51,8 @@ export class CrlPageComponent implements OnInit {
   toast = inject(ToastrService);
 
   displayedColumns: string[] = [
-    'issuedBy',
     'issuedTo',
+    'issuedBy',
     'revocationReason',
     'serialNumber',
     'actions'

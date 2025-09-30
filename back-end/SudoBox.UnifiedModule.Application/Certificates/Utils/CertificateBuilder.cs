@@ -97,7 +97,6 @@ public static class CertificateBuilder {
             NotBefore = certificate.NotBefore.ToUniversalTime(),
             EncodedValue = Convert.ToBase64String(certificate.GetEncoded()),
             PrivateKey = subjectPrivateKey,
-            IsApproved = true,
             CanSign = canSign,
             PathLen = pathLen,
             SignedBy = user

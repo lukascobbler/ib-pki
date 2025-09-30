@@ -76,8 +76,8 @@ def encrypt_master_key(master_key, rsa_pub_file):
 
 
 def generate_sql_script(certs, json_data, master_aes_key):
-    lines = ["INSERT INTO unified.certificates "
-             "(serial_number, issued_by, issued_to, not_before, not_after, encoded_value, is_approved, private_key, can_sign, path_len, signing_certificate_serial_number, signed_by_id) \nVALUES "]
+    lines = ["-- Certificates\nINSERT INTO unified.certificates "
+             "(serial_number, issued_by, issued_to, not_before, not_after, encoded_value, private_key, can_sign, path_len, signing_certificate_serial_number, signed_by_id) \nVALUES "]
     values_list = []
 
     user_ids = {entry.get("SignedById") for entry in json_data if entry.get("SignedById")}
@@ -112,7 +112,6 @@ def generate_sql_script(certs, json_data, master_aes_key):
             encrypted_key = encrypt_with_aes(user_aes_keys[signed_by_id], key_bytes)
             private_key = f"e'{encrypted_key}'"
 
-        is_approved = "true"
         can_sign = "true" if cert_json.get("BasicConstraints", {}).get("IsCa", False) else "false"
         path_len = cert_json.get("BasicConstraints", {}).get("PathLen")
         path_len_str = str(path_len) if path_len is not None else "-1"
@@ -122,15 +121,32 @@ def generate_sql_script(certs, json_data, master_aes_key):
 
         value_line = (
             f"    ('{serial_number}', '{issued_by}', '{issued_to}', '{not_before}', '{not_after}', '{encoded_value}', "
-            f"{is_approved}, {private_key}, {can_sign}, {path_len_str}, {signing_serial}, {signed_by_id_str})"
+            f"{private_key}, {can_sign}, {path_len_str}, {signing_serial}, {signed_by_id_str})"
         )
         values_list.append(value_line)
 
     lines.append(",\n".join(values_list) + ";\n")
-
-    lines.append(f"\n-- Master AES key encrypted with RSA public key\nINSERT INTO unified.master_keys (id, encrypted_key)\nVALUES\n    ('00000000-0000-0000-0000-000000000000', '{master_key_encrypted_b64}');\n")
-    lines.append("\nINSERT INTO unified.user_keys (user_id, encrypted_key) \nVALUES ")
+    
+    lines.append("\n-- Certificate-User Linking\nINSERT INTO unified.certificate_user (my_certificates_serial_number, user_id)\nVALUES ")
+    certificate_user_lines = []
+    for cert_json in json_data:
+        name = cert_json["Name"]
+        entry = certs.get(name)
+        if not entry:
+            continue
+        for uid in cert_json.get("UserIds", []):
+            certificate_user_lines.append(f"    ('{entry['cert'].serial_number}', '{uid}')")
+    if certificate_user_lines:
+        lines.append(",\n".join(certificate_user_lines) + ";\n")
+    
+    lines.append(f"\n-- Master AES key encrypted with RSA public key\nINSERT INTO unified.master_keys (id, encrypted_key)")
+    lines.append(f"VALUES \n    ('00000000-0000-0000-0000-000000000000', '{master_key_encrypted_b64}');\n")
+    
+    lines.append("\n-- Per user encrypted AES keys used for encrypting certificate private keys\nINSERT INTO unified.user_keys (user_id, encrypted_key) \nVALUES ")
     lines.append(",\n".join(user_key_inserts) + ";\n")
+    
+    lines.append("\n-- CRL\nINSERT INTO unified.revoked_certificates (revocation_reason, certificate_serial_number) \nVALUES ")
+    lines.append(f"    ('{1}', '{str(certs.get("Dunder Mifflin Intermediate")["cert"].serial_number)}');\n")
 
     with open(SQL_OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))

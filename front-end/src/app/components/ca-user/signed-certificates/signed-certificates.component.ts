@@ -63,15 +63,7 @@ export class SignedCertificatesComponent implements OnInit {
   signedByMeCertificates: Certificate[] = [];
   loading = true;
   signedCertificatesDataSource = new MatTableDataSource();
-
-  displayedColumns: string[] = [
-    'issuedTo',
-    'status',
-    'validFrom',
-    'validUntil',
-    'serialNumber',
-    'actions'
-  ];
+  displayedColumns: string[] = ['issuedTo', 'issuedBy', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
 
   ngOnInit() {
     this.certificatesService.getCertificatesSignedByMe().subscribe({

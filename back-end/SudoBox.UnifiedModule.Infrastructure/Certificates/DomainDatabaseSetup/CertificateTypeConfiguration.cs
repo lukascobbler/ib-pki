@@ -10,14 +10,13 @@ public sealed class CertificateTypeConfiguration : IEntityTypeConfiguration<Cert
         b.HasKey(x => x.SerialNumber);
 
         b.Property(x => x.SerialNumber).HasConversion(TypeConverters.BigIntConverter).HasColumnType("text");
-        b.Property(x => x.EncodedValue).HasMaxLength(65536);
-        b.Property(x => x.IsApproved);
-        b.Property(x => x.IssuedBy);
-        b.Property(x => x.IssuedTo);
-        b.Property(x => x.NotAfter);
-        b.Property(x => x.NotBefore);
-        b.Property(x => x.CanSign);
-        b.Property(x => x.PathLen);
+        b.Property(x => x.EncodedValue).IsRequired().HasMaxLength(65536);
+        b.Property(x => x.IssuedBy).IsRequired();
+        b.Property(x => x.IssuedTo).IsRequired();
+        b.Property(x => x.NotAfter).IsRequired();
+        b.Property(x => x.NotBefore).IsRequired();
+        b.Property(x => x.CanSign).IsRequired();
+        b.Property(x => x.PathLen).IsRequired();
 
         b.Property(e => e.PrivateKey)
             .HasConversion(TypeConverters.KeyConverter)

@@ -59,15 +59,7 @@ export class MyCertificatesComponent implements OnInit {
   myCertificates: Certificate[] = [];
   loading = true;
   certificatesDataSource = new MatTableDataSource();
-
-  displayedColumns: string[] = [
-    'issuedBy',
-    'status',
-    'validFrom',
-    'validUntil',
-    'serialNumber',
-    'actions'
-  ];
+  displayedColumns: string[] = ['issuedTo', 'issuedBy', 'status', 'validFrom', 'validUntil', 'serialNumber', 'actions'];
 
   ngOnInit() {
     this.certificatesService.getMyCertificates().subscribe({

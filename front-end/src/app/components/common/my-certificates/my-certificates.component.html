@@ -5,6 +5,10 @@
   <div class="table-header table-width">
     <mat-table [dataSource]="certificatesDataSource">
 
+      <ng-container matColumnDef="issuedTo">
+        <mat-header-cell class="issuedTo" *matHeaderCellDef>Issued to (DN)</mat-header-cell>
+      </ng-container>
+
       <ng-container matColumnDef="issuedBy">
         <mat-header-cell class="issuedBy" *matHeaderCellDef>Issued by (DN)</mat-header-cell>
       </ng-container>
@@ -35,6 +39,12 @@
 
   <div class="table-width">
     <mat-table [dataSource]="certificatesDataSource">
+      <ng-container matColumnDef="issuedTo">
+        <mat-cell class="issuedTo" *matCellDef="let certificate">
+          {{ certificate.issuedTo }}
+        </mat-cell>
+      </ng-container>
+
       <ng-container matColumnDef="issuedBy">
         <mat-cell class="issuedBy" *matCellDef="let certificate">
           {{ certificate.issuedBy }}

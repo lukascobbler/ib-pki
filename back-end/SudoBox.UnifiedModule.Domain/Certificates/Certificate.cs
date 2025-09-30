@@ -14,7 +14,6 @@ public class Certificate {
     public required DateTime NotBefore { get; set; }
     public required DateTime NotAfter { get; set; }
     public required string EncodedValue { get; set; }
-    public required bool IsApproved { get; set; }
     public required bool CanSign { get; set; }
     public required int PathLen { get; set; }
     public AsymmetricKeyParameter? PrivateKey { get; set; }

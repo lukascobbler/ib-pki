@@ -26,7 +26,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Schrute Farms Root",
@@ -55,7 +58,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Sabre Root",
@@ -83,7 +89,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Dunder Mifflin Intermediate",
@@ -123,7 +132,11 @@
                 }
             ]
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Scranton Branch Intermediate",
@@ -150,7 +163,11 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Stamford Branch Intermediate",
@@ -180,7 +197,11 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Schrute Farms Sales Intermediate",
@@ -210,7 +231,11 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+            "6794b78f-f886-41c5-88db-b30dd5175800"
+        ]
     },
     {
         "Name": "Dunder Mifflin IT Intermediate",
@@ -241,7 +266,12 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+            "7edb4bce-6064-461a-8f78-49dbf7c30ecf",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Dunder Mifflin HR Intermediate",
@@ -268,7 +298,11 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Temporary Project Intermediate",
@@ -297,7 +331,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Sales Intermediate (Cross-Signed)",
@@ -324,7 +361,11 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Michael Scott",
@@ -381,7 +422,11 @@
             ],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Dwight Schrute",
@@ -422,7 +467,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
     },
     {
         "Name": "Jim Halpert",
@@ -467,7 +515,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Pam Beesly",
@@ -498,7 +549,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
     },
     {
         "Name": "Angela Martin",
@@ -535,7 +589,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3fa51d34-4344-4187-8715-6b26889084b2"
+        ]
     },
     {
         "Name": "Creed Bratton",
@@ -576,7 +633,10 @@
             ],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Oscar Martinez",
@@ -613,7 +673,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Kelly Kapoor",
@@ -639,7 +702,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
     },
     {
         "Name": "Ryan Howard",
@@ -675,7 +741,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "7edb4bce-6064-461a-8f78-49dbf7c30ecf"
+        ]
     },
     {
         "Name": "Toby Flenderson",
@@ -704,7 +773,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
     },
     {
         "Name": "Stanley Hudson",
@@ -735,7 +807,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "f5ec2837-bdbd-4fc3-83fb-960bd4e22ad4"
+        ]
     },
     {
         "Name": "Phyllis Vance",
@@ -763,7 +838,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Meredith Palmer",
@@ -797,7 +875,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        ]
     },
     {
         "Name": "Kevin Malone",
@@ -825,7 +906,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "5115def8-0be6-49d6-9155-0c1f82ed1818"
+        ]
     },
     {
         "Name": "Andy Bernard",
@@ -858,7 +942,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91"
+        "SignedById": "303704ce-e854-4fa4-9fb1-a397d3a46f91",
+        "UserIds": [
+            "6794b78f-f886-41c5-88db-b30dd5175800"
+        ]
     },
     {
         "Name": "Erin Hannon",
@@ -889,7 +976,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        "SignedById": "3eda5494-d83e-49dc-aa7a-f15375b9f4b5",
+        "UserIds": [
+            "3eda5494-d83e-49dc-aa7a-f15375b9f4b5"
+        ]
     },
     {
         "Name": "Holly Flax",
@@ -925,7 +1015,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        "SignedById": "4973f67c-a78d-4e7b-bcec-c185a363a015",
+        "UserIds": [
+            "4973f67c-a78d-4e7b-bcec-c185a363a015"
+        ]
     },
     {
         "Name": "Dunder Mifflin Old Root",
@@ -952,7 +1045,10 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Old Corporate Intermediate",
@@ -985,7 +1081,10 @@
             ],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     },
     {
         "Name": "Roy Anderson",
@@ -1022,6 +1121,9 @@
             "Permitted": [],
             "Excluded": []
         },
-        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        "SignedById": "d6e28a9d-354c-431c-8912-8c78b3b23a39",
+        "UserIds": [
+            "d6e28a9d-354c-431c-8912-8c78b3b23a39"
+        ]
     }
 ]

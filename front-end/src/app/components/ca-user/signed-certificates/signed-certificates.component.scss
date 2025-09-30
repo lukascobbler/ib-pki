@@ -10,7 +10,8 @@
 }
 
 .table-width {
-  min-width: max(1040px, 55vw);
+  min-width: max(1300px, 70vw);
+  max-width: min(1400px, 70vw);
 }
 
 .container {
@@ -40,27 +41,35 @@ mat-cell.issuedTo {
   flex: 0 0 22%;
 }
 
+mat-header-cell.issuedBy,
+mat-cell.issuedBy {
+  flex: 0 0 22%;
+}
+
 mat-header-cell.status,
 mat-cell.status {
-  flex: 0 0 10%;
+  flex: 0 0 7%;
 }
 
 mat-header-cell.validFrom,
 mat-cell.validFrom {
-  flex: 0 0 13%;
+  flex: 0 0 9%;
 }
 
 mat-header-cell.validUntil,
 mat-cell.validUntil {
-  flex: 0 0 13%;
+  flex: 0 0 9%;
 }
 
 mat-header-cell.serialNumber,
 mat-cell.serialNumber {
-  flex: 0 0 28%;
+  flex: 0 0 20%;
 }
 
 mat-header-cell.actions,
 mat-cell.actions {
-  flex: 0 0 14%;
+  flex: 0 0 11%;
+  justify-content: flex-end;
+  padding-right: 7px;
+  display: flex;
 }
