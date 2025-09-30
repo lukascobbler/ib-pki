@@ -50,7 +50,7 @@ public class CrlService(IUnifiedDbContext db) {
 
     public async Task<byte[]> GetRevocationFile() {
         // hardcoded main certificate that should sign the CRL
-        var singingCertificate = await db.Certificates.FindAsync(BigInteger.Parse("325237371638983214349629308374620880901")); // todo generate certificate with serial number 0
+        var singingCertificate = await db.Certificates.FindAsync(BigInteger.Parse("1"));
 
         var issuerDn = new Org.BouncyCastle.Asn1.X509.X509Name(singingCertificate!.IssuedBy);
         var now = DateTime.UtcNow;

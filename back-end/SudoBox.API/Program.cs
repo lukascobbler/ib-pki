@@ -25,7 +25,7 @@ builder.WebHost.ConfigureKestrel((ctx, kestrel) =>
 {
     var pfxRel = "secrets/sudobox_ee.pfx";
     var pfxAbs = Path.Combine(builder.Environment.ContentRootPath, pfxRel);
-    var pass = "change-me"; // TODO
+    var pass = "Yl35I+7<FWHL_#>Zr1{vIs8X";
 
     if (File.Exists(pfxAbs))
     {

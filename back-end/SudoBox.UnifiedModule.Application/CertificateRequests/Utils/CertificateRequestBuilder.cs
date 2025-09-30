@@ -30,7 +30,7 @@ public static class CertificateRequestBuilder {
             extGen.AddExtension(X509Extensions.KeyUsage, true, new KeyUsage(usageBits));
         }
 
-        if (request.ExtendedKeyUsage != null && request.ExtendedKeyUsage.Any()) {
+        if (request.ExtendedKeyUsage != null && request.ExtendedKeyUsage.Count != 0) {
             var ekuOids = new List<DerObjectIdentifier>();
             foreach (var eku in request.ExtendedKeyUsage)
                 if (ExtendedKeyUsageMap.TryGetValue(eku, out var oid))

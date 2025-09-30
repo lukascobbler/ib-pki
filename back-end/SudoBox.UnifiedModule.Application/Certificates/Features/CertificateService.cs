@@ -49,7 +49,7 @@ public class CertificateService(IUnifiedDbContext db) {
             throw new Exception("NotAfter cannot be later than the signing certificate's NotAfter!");
         if (createCertificateRequest.NotBefore > createCertificateRequest.NotAfter)
             throw new Exception("NotBefore cannot be later than the NotAfter!");
-        if (signingCertificate != null && !user.MyCertificates.Any(c => c.SerialNumber == signingCertificate.SerialNumber))
+        if (!isAdmin && signingCertificate != null && !user.MyCertificates.Any(c => c.SerialNumber == signingCertificate.SerialNumber))
             throw new Exception("You don't have control over selected signing certificate!");
 
         Certificate certificate = CertificateBuilder.CreateCertificate(createCertificateRequest, subjectPublicKey, subjectPrivateKey, signingCertificate, user);
