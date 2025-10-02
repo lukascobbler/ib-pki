@@ -33,6 +33,10 @@ export class CertificatesService {
     return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-my-certificates`);
   }
 
+  getMyValidCertificates(): Observable<Certificate[]> {
+    return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-my-valid-certificates`);
+  }
+
   getCertificatesSignedByMe(): Observable<Certificate[]> {
     return this.httpClient.get<Certificate[]>(`${this.urlCore}/get-certificates-signed-by-me`);
   }

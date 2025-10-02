@@ -68,6 +68,16 @@ public static class CertificateEndpoints {
             }
         }).RequireAuthorization();
 
+        grp.MapGet("/get-my-valid-certificates", async (CertificateService certificateService, HttpContext httpContext) => {
+            try {
+                var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                var response = await certificateService.GetMyValidCertificates(userId!);
+                return Results.Ok(response);
+            } catch (Exception e) {
+                return Results.BadRequest(e.Message);
+            }
+        }).RequireAuthorization();
+
         grp.MapGet("/get-certificates-signed-by-me", async (CertificateService certificateService, HttpContext httpContext) => {
             try {
                 var userId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;

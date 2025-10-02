@@ -146,7 +146,7 @@ export class EditCertificateRequestDialogComponent implements OnInit {
   }
 
   loadCaSigningCertificates() {
-    this.certificatesService.getMyCertificates().subscribe({
+    this.certificatesService.getMyValidCertificates().subscribe({
       next: value => {
         if (value.length === 0) {
           this.noSigningCertificates = true;
